@@ -166,6 +166,30 @@ app/main.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdla.dir/build.make CMakeFiles/nvdla.dir/app/main.cc.s
 .PHONY : app/main.cc.s
 
+src/sdp_act.o: src/sdp_act.cc.o
+.PHONY : src/sdp_act.o
+
+# target to build an object file
+src/sdp_act.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_act.cc.o
+.PHONY : src/sdp_act.cc.o
+
+src/sdp_act.i: src/sdp_act.cc.i
+.PHONY : src/sdp_act.i
+
+# target to preprocess a source file
+src/sdp_act.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_act.cc.i
+.PHONY : src/sdp_act.cc.i
+
+src/sdp_act.s: src/sdp_act.cc.s
+.PHONY : src/sdp_act.s
+
+# target to generate assembly for a file
+src/sdp_act.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_act.cc.s
+.PHONY : src/sdp_act.cc.s
+
 src/sdp_input.o: src/sdp_input.cc.o
 .PHONY : src/sdp_input.o
 
@@ -275,6 +299,9 @@ help:
 	@echo "... app/main.o"
 	@echo "... app/main.i"
 	@echo "... app/main.s"
+	@echo "... src/sdp_act.o"
+	@echo "... src/sdp_act.i"
+	@echo "... src/sdp_act.s"
 	@echo "... src/sdp_input.o"
 	@echo "... src/sdp_input.i"
 	@echo "... src/sdp_input.s"

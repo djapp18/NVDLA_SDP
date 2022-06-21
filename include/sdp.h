@@ -28,7 +28,7 @@
 #define NVDLA_SDP_H__
 
 #include <string>
-#include "ilang++.h"
+#include <ilang/ilang++.h>
 #include <sdp_config.h>
 
 namespace ilang {

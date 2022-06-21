@@ -25,7 +25,7 @@
 // File: sdp_act.cc
 
 #include <ilang/ilang++.h>
-#include <uninterpreted_func/uninterpreted_func.h>
+#include "uninterpreted_func/uninterpreted_func.h"
 #include <sdp_config.h>
 
 namespace ilang {
