@@ -770,12 +770,25 @@ void DefineSDPInstrs(Ila& m) {
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_CVT_SHIFT)), Extract(m.input("csb_data"), 5, 0));
     }
 
-    // STATUS
-    { // 00cc_group0
-        auto instr = m.NewInstr("STATUS_group0");
-        instr.SetDecode(csb_addr == 0x0cc & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+    // PERF ENABLE
+    { // 00dc_group0
+        auto instr = m.NewInstr("PERF_ENABLE_group0");
+        instr.SetDecode(csb_addr == 0x0dc & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
 
-        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_STATUS)), SelectBit(m.input("csb_data"), 0));
+        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_PERF_NAN_INF_COUNT_EN)), SelectBit(m.input("csb_data"), 3));
+        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_PERF_SAT_EN)), SelectBit(m.input("csb_data"), 2));
+        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_PERF_LUT_EN)), SelectBit(m.input("csb_data"), 1));
+        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_PERF_DMA_EN)), SelectBit(m.input("csb_data"), 0));
+    }
+
+    { // 00dc_group1
+        auto instr = m.NewInstr("PERF_ENABLE_group1");
+        instr.SetDecode(csb_addr == 0x0dc & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+
+        instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_PERF_NAN_INF_COUNT_EN)), SelectBit(m.input("csb_data"), 3));
+        instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_PERF_SAT_EN)), SelectBit(m.input("csb_data"), 2));
+        instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_PERF_LUT_EN)), SelectBit(m.input("csb_data"), 1));
+        instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_PERF_DMA_EN)), SelectBit(m.input("csb_data"), 0));
     }
 
     // { // Start from IDLE

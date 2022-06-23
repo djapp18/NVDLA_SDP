@@ -30,14 +30,6 @@
 
 namespace ilang {
 
-void DefineSDPOutput(Ila& m) {
-    m.NewBvState("data_valid", 1);
-    m.NewBvState("weight_valid", 1);
-    // Config Ready
-    m.NewBvState("csb_rdy", 1);
-
-}
-
 void DefineSDPState(Ila& m) {
     // Config Registers
 

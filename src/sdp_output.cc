@@ -22,7 +22,7 @@
 // SOFTWARE.
 // =============================================================================
 
-// File: sdp_input.cc
+// File: sdp_output.cc
 
 #include <ilang/ilang++.h>
 
@@ -30,33 +30,16 @@
 
 namespace ilang {
 
-void DefineSDPInput(Ila& m) {
-    // CSB MMIO
-    // Total should be 63 bits, omit 8 bits for now
-    m.NewBvInput("csb_addr", 22); // need to offset for 2 bit
-    m.NewBvInput("csb_data", 32);
-    m.NewBvInput("csb_write", 1);
-    // m.NewBvInput("csb_other", 8);
-    m.NewBvInput("csb_vld", 1);
+void DefineSDPOutput(Ila& m) {
 
-    // Cresits
-    // m.NewBvInput("credit_vld", 1);
-    // m.NewBvInput("credits_add", 4);
-
-    // Control Signals
-    m.NewBvInput("pending_clr", 1);
-    m.NewBvInput("sg2dl_vld", 1);
-    m.NewBvInput("sg2wt_vld", 1);
-    m.NewBvInput("fifo_clr", 1);
-    m.NewBvInput("done", 1);
+    m.NewBvState("data_valid", 1);
+    m.NewBvState("weight_valid", 1);
+    // Config Ready
+    m.NewBvState("csb_rdy", 1);
 
     // Datapath
     for (int i = 0; i < 16; i++) {
-        m.NewBvInput("cacc_data" + "_" + (std::to_string(i)), 32);
-        m.NewBvInput("sdp_mrdma_data" + "_" + (std::to_string(i)), 16);
-        
-        m.NewBvInput("regs_data" + "_" + (std::to_string(i)), 16);
-        m.NewBvInput("dma_data" + "_" + (std::to_string(i)), 16);
+        m.NewBvState("pdp_output" + "_" + (std::to_string(i)), 32);
     }
 }
 
