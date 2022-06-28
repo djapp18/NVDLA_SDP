@@ -268,6 +268,11 @@ void DefineSDPState(Ila& m) {
 
     }
 
+    // LUT
+
+    m.NewMemState("le_tbl", 32, 65);
+    m.NewMemState("lo_tbl", 32, 257);
+
     // // States
     // m.NewBvState("credits", 9);
 

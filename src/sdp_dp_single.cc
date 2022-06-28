@@ -22,7 +22,7 @@
 // SOFTWARE.
 // =============================================================================
 
-// File: sdp_dp_x.cc
+// File: sdp_dp_single.cc
 
 #include <ilang/ilang++.h>
 #include "uninterpreted_func/uninterpreted_func.h"
@@ -31,13 +31,13 @@
 namespace ilang {
 
 // TODO:
-// - every output here has to end with c1; also separate into an sdp_dp_y and sdp_dp_x instructions (ie, throughput is different for x and y)
+// - every output here has to end with c1; also separate into an sdp_dp_y and sdp_dp_x instructions (ie, throughput is different for x and y, acrually doesnt matter for software so imcorporate both here)
 // - do we need to account for format conversions among int throughout the datapath?
 // - next, need multi-step instructions like the ones on the unit description (i.e., batch norm)
 // - make a copy of every instruction for group 1
 // - looks like when doing configure, have producer & !group0; here do consumer & group0 (i.e., this is datapath running, no more config here)
 
-void DefineSDPInstrsDP_X(Ila& m) {
+void DefineSDPInstrsDP_Single(Ila& m) {
     // m.AddInit(m.state(NVDLA_CSC_S_STATUS_0) == BvConst(0, 2));
     // m.AddInit(m.state(NVDLA_CSC_S_STATUS_1) == BvConst(0, 2));
 
@@ -65,7 +65,7 @@ void DefineSDPInstrsDP_X(Ila& m) {
                     (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)));
         auto x2_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS))) & 
                     (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)));
-        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & producer == BvConst(0, 1) & !group0_unset;
+        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
 
         instr.SetDecode(group0_regs);
 
@@ -82,43 +82,18 @@ void DefineSDPInstrsDP_X(Ila& m) {
         }
     }
 
-    { // ReLU computation - Group 1
-        auto instr = m.NewInstr("Compute_ReLU");
-        auto reg_group = "group1_";
-
-        // Account for possibility that ReLU can be computed using either the X1 module or the X2 module
-        auto x1_ok_g1 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS))) & 
-                    (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)))
-        auto x2_ok_g1 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS))) & 
-                    (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)))
-        auto group1_regs = (x1_ok_g1 | x2_ok_g1) & producer == BvConst(1, 1) & !group1_unset
-
-        instr.SetDecode(group1_regs);
-
-        // Determine the source of the input
-        auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
-
-        for (int i = 0; i < 16; i++) {
-            auto input = Ite(flying_mode, m.input("cacc_data" + "_" + (std::to_string(i))), m.input("sdp_mrdma_data" + "_" + (std::to_string(i))));
-            auto pdp_output = m.state("pdp_output" + "_" + (std::to_string(i));
-
-            // Compute ReLU
-            auto output = Ite((input > 0x0), input, 0x0);
-            instr.SetUpdate(pdp_output, output);
-        }
-
-    }
-
     { // ALU max computation - Group 0
         auto instr = m.NewInstr("Compute_Max");
         auto reg_group = "group0_";
 
-        // Account for possibility that ALU max can be computed using either the X1 module or the X2 module
+        // Account for possibility that ALU max can be computed using either the X1 module, X2 module, or Y module
         auto x1_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS))) & 
                     (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)));
         auto x2_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS))) & 
                     (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)));
-        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & producer == BvConst(0, 1) & !group0_unset;
+        auto y_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS))) & 
+                    (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_BYPASS)));
+        auto group0_regs = (x1_ok_g0 | x2_ok_g0 | y_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
 
         instr.SetDecode(group0_regs);
 
@@ -252,6 +227,30 @@ void DefineSDPInstrsDP_X(Ila& m) {
         auto mul_shift = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_SHIFT_VALUE));
 
         for (int i = 0; i < 16; i++) {
+            // Setup operands
+            auto input = Ite(flying_mode, m.input("cacc_data" + "_" + (std::to_string(i))), m.input("sdp_mrdma_data" + "_" + (std::to_string(i))));
+            auto pdp_output = m.state("pdp_output" + "_" + (std::to_string(i));
+            auto operand = Ite(data_source, m.input("dma_data" + "_" + (std::to_string(i))), m.input("regs_data" + "_" + (std::to_string(i))));
+
+            // Compute PReLU
+            auto output = Ite((input > 0x0), input, (operand * input) >> mul_shift)
+            instr.SetUpdate(pdp_output, output);
+        }
+    }
+
+    { // Write to LUT Table LE
+        auto instr = m.NewInstr("Write_LUT_LE");
+
+        // ... lut access type needs to be write, table id needs to be 1 for lo and 0 for le
+
+        instr.SetDecode();
+
+        // Determine the source of the operands
+        auto lut = m.state("le_tbl");
+        auto lut_addr = m.state(NVDLA_SDP_S_LUT_ADDR);
+        auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
+
+        for (int i = 0; i < 257; i++) {
             // Setup operands
             auto input = Ite(flying_mode, m.input("cacc_data" + "_" + (std::to_string(i))), m.input("sdp_mrdma_data" + "_" + (std::to_string(i))));
             auto pdp_output = m.state("pdp_output" + "_" + (std::to_string(i));
