@@ -36,6 +36,16 @@ namespace ilang {
 // - next, need multi-step instructions like the ones on the unit description (i.e., batch norm)
 // - make a copy of every instruction for group 1
 // - looks like when doing configure, have producer & !group0; here do consumer & group0 (i.e., this is datapath running, no more config here)
+// - remake the following instructions with general functions, will prevent need to have too much code re-write (ie, still have group instructions and just pass in name of group as an arg)
+
+// need an intlof2 and intlog2 fraction as separate funcitons
+void IntLog2() {
+
+}
+
+void IntLog2Frac() {
+
+}
 
 void DefineSDPInstrsDP_Single(Ila& m) {
     // m.AddInit(m.state(NVDLA_CSC_S_STATUS_0) == BvConst(0, 2));
@@ -241,24 +251,164 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     { // Write to LUT Table LE
         auto instr = m.NewInstr("Write_LUT_LE");
 
-        // ... lut access type needs to be write, table id needs to be 1 for lo and 0 for le
+        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+        auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
+        auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
 
-        instr.SetDecode();
+        instr.SetDecode(access_type & !table_id);
 
-        // Determine the source of the operands
+        // Set the relevant table
         auto lut = m.state("le_tbl");
         auto lut_addr = m.state(NVDLA_SDP_S_LUT_ADDR);
         auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
 
-        for (int i = 0; i < 257; i++) {
-            // Setup operands
-            auto input = Ite(flying_mode, m.input("cacc_data" + "_" + (std::to_string(i))), m.input("sdp_mrdma_data" + "_" + (std::to_string(i))));
-            auto pdp_output = m.state("pdp_output" + "_" + (std::to_string(i));
-            auto operand = Ite(data_source, m.input("dma_data" + "_" + (std::to_string(i))), m.input("regs_data" + "_" + (std::to_string(i))));
+        for (int i = 0; i < 65; i++) {
+            // Write to table
+            auto new_lut = Store(lut, i, lut_data);
+            instr.SetUpdate(lut, new_lut);
+        }
+    }
 
-            // Compute PReLU
-            auto output = Ite((input > 0x0), input, (operand * input) >> mul_shift)
-            instr.SetUpdate(pdp_output, output);
+    { // Write to LUT Table LO
+        auto instr = m.NewInstr("Write_LUT_LO");
+
+        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+        auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
+        auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
+
+        instr.SetDecode(access_type & table_id);
+
+        // Set the relevant table
+        auto lut = m.state("lo_tbl");
+        auto lut_addr = m.state(NVDLA_SDP_S_LUT_ADDR);
+        auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
+
+        for (int i = 0; i < 257; i++) {
+            // Write to table
+            auto new_lut = Store(lut, i, lut_data);
+            instr.SetUpdate(lut, new_lut);
+        }
+    }
+
+    { // Read from LUT Table LE
+        auto instr = m.NewInstr("Read_LUT_LE");
+
+        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+        auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
+        auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
+        auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
+
+        instr.SetDecode(!access_type & table_id & !lut_bypass);
+
+        // Set the relevant table
+        auto lut = m.state("le_tbl");
+        auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
+        auto lut_start = m.state(NVDLA_SDP_S_LUT_LE_START);
+        auto lut_index_offset = m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET);
+        auto lut_index_select = m.state(NVDLA_SDP_S_LUT_LE_INDEX_SELECT);
+        
+        // Determine intermediate values for LUT index
+        auto le_index_idx =
+        Ite(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0,
+            IntLog2(lut_data - lut_start),
+            lut_data - lut_start
+        );
+
+        auto le_index_s =
+        Ite(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0,
+            le_index_idx - lut_index_offset,
+            le_index_idx >> lut_index_select
+        );
+
+        // Generate out-of-bounds flags
+        auto le_uflow = 
+        Ite(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0,
+            Ite(lut_data <= lut_start,
+                0x1,
+                Ite(le_index_idx < lut_index_offset,
+                    0x1,
+                    0x0
+                )
+            ),
+
+            Ite(lut_data <= lut_start,
+                0x1,
+                0x0
+            ),
+        );
+
+        auto le_oflow = 
+        Ite(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0,
+            Ite(lut_data <= lut_start,
+                0x0,
+                Ite(le_index_idx < lut_index_offset,
+                    0x0,
+                    Ite(le_index_s >= 64,
+                        0x1,
+                        0x0
+                    )
+                )
+            ),
+
+            Ite(lut_data <= lut_start,
+                0x0,
+                Ite(le_index_s >= 64,
+                    0x1,
+                    0x0
+                )
+            ),
+        );
+
+        // Determine final value for LUT index
+        auto le_index = 
+        Ite(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0,
+            Ite(lut_data <= lut_start,
+                0x0,
+                Ite(le_index_idx < lut_index_offset,
+                    0x0,
+                    Ite(le_index_s >= 64,
+                        0x40,
+                        le_index_s
+                    )
+                )
+            ),
+
+            Ite(lut_data <= lut_start,
+                0x0,
+                Ite(le_index_s >= 64,
+                        0x40,
+                        le_index_s
+                )
+            ),
+        );
+
+        // Determine final value for LUT fraction
+        auto le_fraction = 
+        Ite(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0,
+            Ite(lut_data <= lut_start,
+                0x0,
+                Ite(le_index_idx < lut_index_offset,
+                    0x0,
+                    Ite(le_index_s >= 64,
+                        0x0,
+                        IntLog2Frac(lut_data - lut_start) << (35 - le_index_idx)
+                    )
+                )
+            ),
+
+            Ite(lut_data <= lut_start,
+                0x0,
+                Ite(le_index_s >= 64,
+                        0x40,
+                        le_index_s
+                )
+            ),
+        );
+
+        for (int i = 0; i < 257; i++) {
+            // Write to table
+            auto new_lut = Store(lut, i, lut_data);
+            instr.SetUpdate(lut, new_lut);
         }
     }
 
