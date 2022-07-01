@@ -290,7 +290,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         }
     }
 
-    { // Read from LUT Table LE
+    { // Read index from LUT Table LE
         auto instr = m.NewInstr("Read_LUT_LE");
 
         // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
@@ -298,7 +298,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
         auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
 
-        instr.SetDecode(!access_type & table_id & !lut_bypass);
+        instr.SetDecode(!access_type & !table_id & !lut_bypass);
 
         // Set the relevant table
         auto lut = m.state("le_tbl");
@@ -336,6 +336,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                 0x0
             ),
         );
+        m.SetUpdate("le_uflow", le_uflow);
 
         auto le_oflow = 
         Ite(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0,
@@ -358,6 +359,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                 )
             ),
         );
+        m.SetUpdate("le_oflow", le_oflow);
 
         // Determine final value for LUT index
         auto le_index = 
@@ -381,6 +383,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                 )
             ),
         );
+        m.SetUpdate("le_index", le_index);
 
         // Determine final value for LUT fraction
         auto le_fraction = 
@@ -399,20 +402,113 @@ void DefineSDPInstrsDP_Single(Ila& m) {
             Ite(lut_data <= lut_start,
                 0x0,
                 Ite(le_index_s >= 64,
-                        0x40,
-                        le_index_s
+                        0x0,
+                        (le_index_idx & ((0x1 << lut_index_select) - 1)) >> (lut_index_select - 35)
                 )
             ),
         );
+        m.SetUpdate("le_fraction", le_fraction);
 
-        for (int i = 0; i < 257; i++) {
-            // Write to table
-            auto new_lut = Store(lut, i, lut_data);
-            instr.SetUpdate(lut, new_lut);
-        }
     }
 
-}
+    { // Read index from LUT Table LO
+        auto instr = m.NewInstr("Read_LUT_LO");
+
+        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+        auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
+        auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
+        auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
+
+        instr.SetDecode(!access_type & table_id & !lut_bypass);
+
+        // Set the relevant table
+        auto lut = m.state("lo_tbl");
+        auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
+        auto lut_start = m.state(NVDLA_SDP_S_LUT_LO_START);
+        auto lut_index_select = m.state(NVDLA_SDP_S_LUT_LO_INDEX_SELECT);
+        
+        // Determine intermediate values for LUT index
+        auto lo_index_idx = lut_data - lut_start;
+
+        auto lo_index_s = le_index_idx >> lut_index_select;
+
+        // Generate out-of-bounds flags
+        auto lo_uflow = 
+        Ite(lut_data <= lut_start,
+            0x1,
+            0x0
+        );
+        m.SetUpdate("lo_uflow", lo_uflow);
+
+        auto lo_oflow = 
+        Ite(lut_data <= lut_start,
+            0x0,
+            Ite(lo_index_s >= 256,
+                0x1,
+                0x0
+            )
+        );
+        m.SetUpdate("lo_uflow", lo_uflow);
+
+        // Determine final value for LUT index
+        auto lo_index = 
+        Ite(lut_data <= lut_start,
+            0x0,
+            Ite(lo_index_s >= 256,
+                    0x100,
+                    lo_index_s
+            )
+        );
+        m.SetUpdate("lo_index", lo_index);
+
+        // Determine final value for LUT fraction
+        auto lo_fraction = 
+        Ite(lut_data <= lut_start,
+            0x0,
+            Ite(lo_index_s >= 256,
+                    0x0,
+                    (lo_index_idx & ((0x1 << lut_index_select) - 1)) >> (lut_index_select - 35)
+            )
+        );
+        m.SetUpdate("lo_fraction", lo_fraction);
+    }
+
+    { // Present final LUT output
+        auto instr = m.NewInstr("Present_LUT_Output");
+
+        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+        auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
+        auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
+        auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
+
+
+        instr.SetDecode(!access_type & table_id & !lut_bypass);
+
+        // Set the relevant table
+        auto lut = m.state("lo_tbl");
+        auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
+        auto lut_start = m.state(NVDLA_SDP_S_LUT_LO_START);
+        auto lut_index_select = m.state(NVDLA_SDP_S_LUT_LO_INDEX_SELECT);
+
+        Ite(le_uflow & lo_uflow,
+            //...,
+            Ite(le_oflow & lo_oflow,
+                //...,
+                Ite(le_hit & lo_hit,
+                    //...,
+                    Ite(le_miss & lo_miss,
+                        //...,
+                        Ite(le_hit,
+                            //...,
+                            Ite(lo_hit,
+                                //...
+                            )
+                        )
+                    )
+                )
+            )
+        );
+    }
 
 
 } // namespace ilang

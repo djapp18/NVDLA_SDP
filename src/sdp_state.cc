@@ -268,10 +268,19 @@ void DefineSDPState(Ila& m) {
 
     }
 
-    // LUT
-
+    // LUT - LE
     m.NewMemState("le_tbl", 32, 65);
+    m.NewBvState("le_uflow", 1);
+    m.NewBvState("le_oflow", 1);
+    m.NewBvState("le_index", 9);
+    m.NewBvState("le_fraction", 35);
+        
+    // LUT - LO
     m.NewMemState("lo_tbl", 32, 257);
+    m.NewBvState("lo_uflow", 1);
+    m.NewBvState("lo_oflow", 1);
+    m.NewBvState("lo_index", 9);
+    m.NewBvState("lo_fraction", 35);
 
     // // States
     // m.NewBvState("credits", 9);
