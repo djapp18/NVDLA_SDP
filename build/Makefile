@@ -166,29 +166,29 @@ app/main.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdla.dir/build.make CMakeFiles/nvdla.dir/app/main.cc.s
 .PHONY : app/main.cc.s
 
-src/sdp_act.o: src/sdp_act.cc.o
-.PHONY : src/sdp_act.o
+src/sdp_dp_single.o: src/sdp_dp_single.cc.o
+.PHONY : src/sdp_dp_single.o
 
 # target to build an object file
-src/sdp_act.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_act.cc.o
-.PHONY : src/sdp_act.cc.o
+src/sdp_dp_single.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_dp_single.cc.o
+.PHONY : src/sdp_dp_single.cc.o
 
-src/sdp_act.i: src/sdp_act.cc.i
-.PHONY : src/sdp_act.i
+src/sdp_dp_single.i: src/sdp_dp_single.cc.i
+.PHONY : src/sdp_dp_single.i
 
 # target to preprocess a source file
-src/sdp_act.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_act.cc.i
-.PHONY : src/sdp_act.cc.i
+src/sdp_dp_single.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_dp_single.cc.i
+.PHONY : src/sdp_dp_single.cc.i
 
-src/sdp_act.s: src/sdp_act.cc.s
-.PHONY : src/sdp_act.s
+src/sdp_dp_single.s: src/sdp_dp_single.cc.s
+.PHONY : src/sdp_dp_single.s
 
 # target to generate assembly for a file
-src/sdp_act.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_act.cc.s
-.PHONY : src/sdp_act.cc.s
+src/sdp_dp_single.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_dp_single.cc.s
+.PHONY : src/sdp_dp_single.cc.s
 
 src/sdp_input.o: src/sdp_input.cc.o
 .PHONY : src/sdp_input.o
@@ -237,6 +237,30 @@ src/sdp_instrs.s: src/sdp_instrs.cc.s
 src/sdp_instrs.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.s
 .PHONY : src/sdp_instrs.cc.s
+
+src/sdp_output.o: src/sdp_output.cc.o
+.PHONY : src/sdp_output.o
+
+# target to build an object file
+src/sdp_output.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o
+.PHONY : src/sdp_output.cc.o
+
+src/sdp_output.i: src/sdp_output.cc.i
+.PHONY : src/sdp_output.i
+
+# target to preprocess a source file
+src/sdp_output.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_output.cc.i
+.PHONY : src/sdp_output.cc.i
+
+src/sdp_output.s: src/sdp_output.cc.s
+.PHONY : src/sdp_output.s
+
+# target to generate assembly for a file
+src/sdp_output.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_output.cc.s
+.PHONY : src/sdp_output.cc.s
 
 src/sdp_state.o: src/sdp_state.cc.o
 .PHONY : src/sdp_state.o
@@ -299,15 +323,18 @@ help:
 	@echo "... app/main.o"
 	@echo "... app/main.i"
 	@echo "... app/main.s"
-	@echo "... src/sdp_act.o"
-	@echo "... src/sdp_act.i"
-	@echo "... src/sdp_act.s"
+	@echo "... src/sdp_dp_single.o"
+	@echo "... src/sdp_dp_single.i"
+	@echo "... src/sdp_dp_single.s"
 	@echo "... src/sdp_input.o"
 	@echo "... src/sdp_input.i"
 	@echo "... src/sdp_input.s"
 	@echo "... src/sdp_instrs.o"
 	@echo "... src/sdp_instrs.i"
 	@echo "... src/sdp_instrs.s"
+	@echo "... src/sdp_output.o"
+	@echo "... src/sdp_output.i"
+	@echo "... src/sdp_output.s"
 	@echo "... src/sdp_state.o"
 	@echo "... src/sdp_state.i"
 	@echo "... src/sdp_state.s"

@@ -52,11 +52,11 @@ void DefineSDPInput(Ila& m) {
 
     // Datapath
     for (int i = 0; i < 16; i++) {
-        m.NewBvInput("cacc_data" + "_" + (std::to_string(i)), 32);
-        m.NewBvInput("sdp_mrdma_data" + "_" + (std::to_string(i)), 16);
+        m.NewBvInput(GetVarName("cacc_data_", (std::to_string(i))), 32);
+        m.NewBvInput(GetVarName("mrdma_data_", (std::to_string(i))), 32);
         
-        m.NewBvInput("regs_data" + "_" + (std::to_string(i)), 16);
-        m.NewBvInput("dma_data" + "_" + (std::to_string(i)), 16);
+        m.NewBvInput(GetVarName("regs_data_", (std::to_string(i))), 16);
+        m.NewBvInput(GetVarName("dma_data_", (std::to_string(i))), 16);
     }
 }
 

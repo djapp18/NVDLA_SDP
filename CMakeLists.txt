@@ -30,10 +30,11 @@ find_package(ilang REQUIRED 1.1.0)
 # ---------------------------------------------------------------------------- #
 add_library(${MyTarget}ila
   src/sdp_input.cc
+  src/sdp_output.cc
   src/sdp_state.cc
   src/sdp_instrs.cc
   src/sdp_top.cc
-  src/sdp_act.cc
+  src/sdp_dp_single.cc
 )
 
 add_library(${PROJECT_NAME}::${MyTarget}ila ALIAS ${MyTarget}ila)

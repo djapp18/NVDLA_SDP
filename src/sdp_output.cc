@@ -39,7 +39,7 @@ void DefineSDPOutput(Ila& m) {
 
     // Datapath
     for (int i = 0; i < 16; i++) {
-        m.NewBvState("pdp_output" + "_" + (std::to_string(i)), 32);
+        m.NewBvState(GetVarName("pdp_output_", (std::to_string(i))), 32);
     }
 }
 

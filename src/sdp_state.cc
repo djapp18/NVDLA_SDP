@@ -282,6 +282,12 @@ void DefineSDPState(Ila& m) {
     m.NewBvState("lo_index", 9);
     m.NewBvState("lo_fraction", 35);
 
+    // LUT - General
+    m.NewBvState("uflow", 1);
+    m.NewBvState("oflow", 1);
+    m.NewBvState("index", 9);
+    m.NewBvState("fraction", 35);
+
     // // States
     // m.NewBvState("credits", 9);
 
