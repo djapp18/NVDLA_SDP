@@ -25,6 +25,8 @@
 // File: sdp_dp_single.cc
 
 #include <ilang/ilang++.h>
+#include <iostream>
+using namespace std;
 //#include "uninterpreted_func/uninterpreted_func.h"
 #include <sdp_config.h>
 
@@ -92,64 +94,45 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         }
     }
 
-    // { // ReLU computation - Group 0
-    //     auto instr = m.NewInstr("Compute_ReLU");
-    //     auto reg_group = "group0_";
+    { // ALU max computation - Group 0
+        auto instr = m.NewInstr("Compute_Max");
+        auto reg_group = "group0_";
 
-    //     // Account for possibility that ReLU can be computed using either the X1 module or the X2 module
-    //     auto x1_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS))) & 
-    //                 (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)));
-    //     auto x2_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS))) & 
-    //                 (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)));
-    //     auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
+        // Account for possibility that ALU max can be computed using either the X1 module, X2 module, or Y module
+        auto x1_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
+                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_ALGO)), 1, 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)), 0) == 0x1);
+        auto x2_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
+                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_ALGO)), 1, 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
+        // auto y_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS))) & 
+        //             (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_BYPASS)));
+        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
 
-    //     instr.SetDecode(group0_regs);
+        instr.SetDecode(group0_regs);
 
-    //     // Determine the source of the input
-    //     auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
+        // Determine the source of the operands
+        auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
+        auto data_source = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SRC));
+        auto alu_shift = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SHIFT_VALUE));
 
-    //     for (int i = 0; i < 16; i++) {
-    //         auto input = Ite(flying_mode, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
-    //         auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
+        for (int i = 0; i < 16; i++) {
+            // Setup operands
+            auto input = Ite(SelectBit(flying_mode, 0) == 0x1, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
+            auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
+            auto operand = Ite(SelectBit(data_source, 0) == 0x1, m.input(GetVarName("dma_data_", (std::to_string(i)))), m.input(GetVarName("regs_data_", (std::to_string(i)))));
 
-    //         // Compute ReLU
-    //         auto output = Ite((input > 0x0), input, BvConst(0, 32));
-    //         instr.SetUpdate(pdp_output, output);
-    //     }
-    // }
+            auto test = BvConst(0x7, 6);
+            cout << test;
+            cout << "\n";
+            auto test2 = Extract(test, 5, 0);
+            cout << test2;
+            cout << "\n";
 
-    // { // ALU max computation - Group 0
-    //     auto instr = m.NewInstr("Compute_Max");
-    //     auto reg_group = "group0_";
-
-    //     // Account for possibility that ALU max can be computed using either the X1 module, X2 module, or Y module
-    //     auto x1_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS))) & 
-    //                 (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)));
-    //     auto x2_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS))) & 
-    //                 (!m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)));
-    //     auto y_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS))) & 
-    //                 (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_BYPASS)));
-    //     auto group0_regs = (x1_ok_g0 | x2_ok_g0 | y_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
-
-    //     instr.SetDecode(group0_regs);
-
-    //     // Determine the source of the operands
-    //     auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
-    //     auto data_source = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SRC));
-    //     auto alu_shift = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SHIFT_VALUE));
-
-    //     for (int i = 0; i < 16; i++) {
-    //         // Setup operands
-    //         auto input = Ite(flying_mode, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
-    //         auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
-    //         auto operand = Ite(data_source, m.input(GetVarName("dma_data_", (std::to_string(i)))), m.input(GetVarName("regs_data_", (std::to_string(i)))));
-
-    //         // Compute maximum
-    //         auto operand_shifted = operand << alu_shift;
-    //         auto output = Ite((input > operand_shifted), input, operand_shifted);
-    //         instr.SetUpdate(pdp_output, output);
-    //     }
-    // }
+            // // Compute maximum
+            // auto operand_shifted = operand << Extract(alu_shift, 15, 0);
+            // auto output = Ite((input > operand_shifted), input, operand_shifted);
+            // instr.SetUpdate(pdp_output, output);
+        }
+    }
 
     // { // ALU min computation - Group 0
     //     auto instr = m.NewInstr("Compute_Min");
@@ -499,139 +482,188 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     //     instr.SetUpdate("lo_fraction", lo_fraction);
     // }
 
-    { // Present final LUT output
-        auto instr = m.NewInstr("Present_LUT_Output");
+    // { // Present final LUT output
+    //     auto instr = m.NewInstr("Present_LUT_Output");
 
-        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
-        auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
-        auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
-        auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
+    //     // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+    //     auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
+    //     auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
+    //     auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
 
-        instr.SetDecode(!access_type & table_id & !lut_bypass);
+    //     instr.SetDecode(!access_type & table_id & !lut_bypass);
 
-        auto le_index = m.state("le_index");
-        auto lo_index = m.state("lo_index");
+    //     auto le_index = m.state("le_index");
+    //     auto lo_index = m.state("lo_index");
 
-        auto le_uflow = m.state("le_uflow");
-        auto lo_uflow = m.state("lo_uflow");
+    //     auto le_uflow = m.state("le_uflow");
+    //     auto lo_uflow = m.state("lo_uflow");
 
-        auto le_oflow = m.state("le_oflow");
-        auto lo_oflow = m.state("lo_oflow");
+    //     auto le_oflow = m.state("le_oflow");
+    //     auto lo_oflow = m.state("lo_oflow");
 
-        auto le_function = m.state("le_function");
-        auto lo_function = m.state("lo_function");
+    //     auto le_function = m.state("le_function");
+    //     auto lo_function = m.state("lo_function");
 
-        auto le_miss = le_uflow | le_oflow;
-        auto le_hit = !le_miss;
-        auto lo_miss = lo_uflow | lo_oflow;        
-        auto lo_hit = !lo_miss;
+    //     auto le_miss = le_uflow | le_oflow;
+    //     auto le_hit = !le_miss;
+    //     auto lo_miss = lo_uflow | lo_oflow;        
+    //     auto lo_hit = !lo_miss;
 
-        auto index = 
-        Ite(le_uflow & lo_uflow,
-            Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), lo_index, le_index),
-            Ite(le_oflow & lo_oflow,
-                Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), lo_index, le_index),
-                Ite(le_hit & lo_hit,
-                    Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_index, le_index),
-                    Ite(le_miss & lo_miss,
-                        Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_index, le_index),
-                        Ite(le_hit,
-                            le_index,
-                            lo_index
-                        )
-                    )
-                )
-            )
-        );
-        instr.SetUpdate("index", index);
+    //     auto index = 
+    //     Ite(le_uflow & lo_uflow,
+    //         Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), lo_index, le_index),
+    //         Ite(le_oflow & lo_oflow,
+    //             Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), lo_index, le_index),
+    //             Ite(le_hit & lo_hit,
+    //                 Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_index, le_index),
+    //                 Ite(le_miss & lo_miss,
+    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_index, le_index),
+    //                     Ite(le_hit,
+    //                         le_index,
+    //                         lo_index
+    //                     )
+    //                 )
+    //             )
+    //         )
+    //     );
+    //     instr.SetUpdate("index", index);
     
-        auto fraction = 
-        Ite(le_uflow & lo_uflow,
-            Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), lo_fraction, le_fraction),
-            Ite(le_oflow & lo_oflow,
-                Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), lo_fraction, le_fraction),
-                Ite(le_hit & lo_hit,
-                    Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_fraction, le_fraction),
-                    Ite(le_miss & lo_miss,
-                        Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_fraction, le_fraction),
-                        Ite(le_hit,
-                            le_fraction,
-                            lo_fraction
-                        )
-                    )
-                )
-            )
-        );
-        instr.SetUpdate("fraction", fraction);
+    //     auto fraction = 
+    //     Ite(le_uflow & lo_uflow,
+    //         Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), lo_fraction, le_fraction),
+    //         Ite(le_oflow & lo_oflow,
+    //             Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), lo_fraction, le_fraction),
+    //             Ite(le_hit & lo_hit,
+    //                 Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_fraction, le_fraction),
+    //                 Ite(le_miss & lo_miss,
+    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_fraction, le_fraction),
+    //                     Ite(le_hit,
+    //                         le_fraction,
+    //                         lo_fraction
+    //                     )
+    //                 )
+    //             )
+    //         )
+    //     );
+    //     instr.SetUpdate("fraction", fraction);
 
-        auto uflow = 
-        Ite(le_uflow & lo_uflow,
-            Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), lo_uflow, le_uflow),
-            Ite(le_oflow & lo_oflow,
-                0x0,
-                Ite(le_hit & lo_hit,
-                    0x0,
-                    Ite(le_miss & lo_miss,
-                        Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_uflow, le_uflow),
-                        0x0
-                    )
-                )
-            )
-        );
-        instr.SetUpdate("uflow", uflow);
+    //     auto uflow = 
+    //     Ite(le_uflow & lo_uflow,
+    //         Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), lo_uflow, le_uflow),
+    //         Ite(le_oflow & lo_oflow,
+    //             0x0,
+    //             Ite(le_hit & lo_hit,
+    //                 0x0,
+    //                 Ite(le_miss & lo_miss,
+    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_uflow, le_uflow),
+    //                     0x0
+    //                 )
+    //             )
+    //         )
+    //     );
+    //     instr.SetUpdate("uflow", uflow);
 
-        auto oflow = 
-        Ite(le_uflow & lo_uflow,
-            0x0,
-            Ite(le_oflow & lo_oflow,
-                Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), lo_oflow, le_oflow),
-                Ite(le_hit & lo_hit,
-                    0x0,
-                    Ite(le_miss & lo_miss,
-                        Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_oflow, le_oflow),
-                        0x0
-                    )
-                )
-            )
-        );
-        instr.SetUpdate("oflow", oflow);
+    //     auto oflow = 
+    //     Ite(le_uflow & lo_uflow,
+    //         0x0,
+    //         Ite(le_oflow & lo_oflow,
+    //             Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), lo_oflow, le_oflow),
+    //             Ite(le_hit & lo_hit,
+    //                 0x0,
+    //                 Ite(le_miss & lo_miss,
+    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_oflow, le_oflow),
+    //                     0x0
+    //                 )
+    //             )
+    //         )
+    //     );
+    //     instr.SetUpdate("oflow", oflow);
 
-        auto id = 
-        Ite(le_uflow & lo_uflow,
-            Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), 0x1, 0x0),
-            Ite(le_oflow & lo_oflow,
-                Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), 0x1, 0x0),
-                Ite(le_hit & lo_hit,
-                    Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), 0x1, 0x0),
-                    Ite(le_miss & lo_miss,
-                        Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), 0x1, 0x0),
-                        Ite(le_hit,
-                            0x0,
-                            0x1
-                        )
-                    )
-                )
-            )
-        );
-        instr.SetUpdate("id", id);
-    }
+    //     auto id = 
+    //     Ite(le_uflow & lo_uflow,
+    //         Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), 0x1, 0x0),
+    //         Ite(le_oflow & lo_oflow,
+    //             Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), 0x1, 0x0),
+    //             Ite(le_hit & lo_hit,
+    //                 Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), 0x1, 0x0),
+    //                 Ite(le_miss & lo_miss,
+    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), 0x1, 0x0),
+    //                     Ite(le_hit,
+    //                         0x0,
+    //                         0x1
+    //                     )
+    //                 )
+    //             )
+    //         )
+    //     );
+    //     instr.SetUpdate("id", id);
+    // }
 
-    { // Perform interpolation or extrapolation
-        auto instr = m.NewInstr("Final_LUT_Processing");
+    // { // Perform interpolation or extrapolation
+    //     auto instr = m.NewInstr("Final_LUT_Processing");
 
-        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
-        auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
-        auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
-        auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
+    //     // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+    //     auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
+    //     auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
+    //     auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
+    //     auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
 
-        instr.SetDecode(!access_type & table_id & !lut_bypass);
+    //     instr.SetDecode(!access_type & table_id & !lut_bypass);
 
-        auto the_table = Ite(m.state("id"), m.state("lo_table", m.state("le_table")));
-        auto y0 = Load(the_table, m.state("index"));
-        auto y1 = Ite(!m.state("oflow") && !m.state("uflow"), Load(the_table, m.state("index") + 1), 0x0);
+    //     auto the_table = Ite(m.state("id"), m.state("lo_table", m.state("le_table")));
+    //     auto y0 = Load(the_table, m.state("index"));
+    //     auto y1 = Ite(!m.state("oflow") && !m.state("uflow"), Load(the_table, m.state("index") + 1), 0x0);
+    //     auto fraction = m.state("fraction");
 
-        auto bias = Ite((m.state("oflow") || m.state("uflow")) && the_table == 0x0 && m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0x0 && !m.state("oflow") && m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 0x1 << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 0x0);
+    //     auto bias = Ite((m.state("oflow") || m.state("uflow")) && the_table == 0x0 && m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0x0 && !m.state("oflow") && m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 0x1 << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 0x0);
         
+    //     auto scale = 
+    //     Ite(m.state("oflow") || m.state("uflow"),
+    //         Ite(m.state("id") == 0x0,
+    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SCALE)),
+    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SCALE)),
+    //         ),
+    //         0x0
+    //     );
+
+    //     auto shift = 
+    //     Ite(m.state("oflow") || m.state("uflow"),
+    //         Ite(m.state("id") == 0x0,
+    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SHIFT)),
+    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SHIFT)),
+    //         ),
+    //         0x0
+    //     );
+
+    //     auto offset = 
+    //     Ite(m.state("oflow") || m.state("uflow"),
+    //         Ite(m.state("id") == 0x0,
+    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LE_END), m.state(NVDLA_SDP_S_LUT_LE_START)),
+    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LO_END), m.state(NVDLA_SDP_S_LUT_LO_START)),
+    //         ),
+    //         0x0
+    //     );
+
+    //     // Interpolation and extrapolation
+    //     auto o =
+    //     Ite(m.state("oflow") || m.state("uflow"),
+    //         y0 + ((lut_data - bias - offset) * scale) >> shift,
+    //         (((1 << 35) - fraction) * y0) + (fraction * y1)
+    //     );
+
+    //     auto oMax = (1 << 31) - 1;
+    //     auto oMin = -(1 << 31);
+    //     auto out_data =
+    //     Ite(m.state("oflow") || m.state("uflow"),
+    //         Ite(o > oMax, 
+    //             oMax,
+    //             Ite(o < oMin,
+    //                 oMin,
+    //                 o
+    //             )            
+    //         ),
+    //         o >> 35
+    //     );
     }
 
 

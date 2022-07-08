@@ -21,6 +21,7 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_SCALE_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_SHIFT_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_SHIFT_group1.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Max.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_ReLU.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_CHANNEL_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_CHANNEL_group1.cc

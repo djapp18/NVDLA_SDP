@@ -625,6 +625,12 @@ if (valid_sdp() && decode_sdp_Compute_ReLU()) {
   LogInstrSequence("Compute_ReLU");
 #endif
 }
+if (valid_sdp() && decode_sdp_Compute_Max()) {
+  update_sdp_Compute_Max();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Compute_Max");
+#endif
+}
 while (1) {
   int schedule_counter = 0;
   if (schedule_counter == 0) {

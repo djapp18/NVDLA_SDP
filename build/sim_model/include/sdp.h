@@ -154,6 +154,10 @@ SC_MODULE(sdp) {
   sc_in<sc_biguint<16>> sdp_regs_data_6_in;
   sc_biguint<16> sdp_regs_data_6;
   sc_biguint<2> sdp_sdp_state;
+  sc_biguint<35> sdp_fraction;
+  sc_biguint<9> sdp_index;
+  sc_biguint<1> sdp_oflow;
+  sc_biguint<1> sdp_uflow;
   sc_biguint<35> sdp_lo_fraction;
   sc_biguint<9> sdp_lo_index;
   sc_biguint<1> sdp_lo_oflow;
@@ -374,6 +378,7 @@ SC_MODULE(sdp) {
   bool decode_sdp_CVT_SCALE_group1();
   bool decode_sdp_CVT_SHIFT_group0();
   bool decode_sdp_CVT_SHIFT_group1();
+  bool decode_sdp_Compute_Max();
   bool decode_sdp_Compute_ReLU();
   bool decode_sdp_DATA_CUBE_CHANNEL_group0();
   bool decode_sdp_DATA_CUBE_CHANNEL_group1();
@@ -464,6 +469,7 @@ SC_MODULE(sdp) {
   void update_sdp_CVT_SCALE_group1();
   void update_sdp_CVT_SHIFT_group0();
   void update_sdp_CVT_SHIFT_group1();
+  void update_sdp_Compute_Max();
   void update_sdp_Compute_ReLU();
   void update_sdp_DATA_CUBE_CHANNEL_group0();
   void update_sdp_DATA_CUBE_CHANNEL_group1();

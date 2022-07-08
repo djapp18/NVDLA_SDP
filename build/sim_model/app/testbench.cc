@@ -19,8 +19,6 @@ SC_MODULE(Source) {
   sc_out < sc_biguint<32> > sdp_mrdma_data[16];
   sc_out < sc_biguint<16> > sdp_regs_data[16];
   sc_out < sc_biguint<16> > sdp_dma_data[16];
-  
-  sc_out< sc_biguint<1> > input_done;
 
   SC_CTOR(Source) {
     SC_THREAD(source_input);
@@ -29,15 +27,11 @@ SC_MODULE(Source) {
 
   void source_input() {
     // reset the port
-    vta_instr_in = 0;
-    vta_mem_mode_in = 0;
-    vta_mem_addr_in = 0;
-    vta_mem_uop_data_in = 0;
-    vta_mem_inp_data_in = 0;
-    vta_mem_wgt_data_in = 0;
-    vta_mem_bias_data_in = 0;
+    sdp_cacc_data = {};
+    sdp_mrdma_data = {};
+    sdp_regs_data = {};
+    sdp_dma_data = {};
 
-    input_done = 0;
     wait(100, SC_NS);
 
     // read program fragment from file
@@ -62,6 +56,16 @@ SC_MODULE(Source) {
       vta_mem_bias_data_in = 
         (cmd_seq["program fragment"][i]["mem_bias_in"].get<std::string>()).c_str();
 
+// input 1: csb_in -> relu_bypass = 0
+// input 2: csb_in -> lut_bypass = 1
+// input 3: csb_in -> producer = 1
+// input 4: csb_in -> enable group 0
+// input 5: data in, buffer not empty (csb_in arbitrary for group 1)
+// input 6: data in, buffer empty 
+// input 7: csb_in -> ...
+
+
+
       wait(10, SC_NS);
     }
 
@@ -75,15 +79,10 @@ SC_MODULE(testbench) {
   Source src;
 
   sc_clock clk;
-  sc_signal< sc_biguint<128> > vta_instr_in_signal;
-  sc_signal< sc_biguint<3> > vta_mem_mode_in_signal;
-  sc_signal< sc_biguint<32> > vta_mem_addr_in_signal;
-  sc_signal< sc_biguint<32> > vta_mem_uop_data_in_signal;
-  sc_signal< sc_biguint<8> > vta_mem_inp_data_in_signal;
-  sc_signal< sc_biguint<8> > vta_mem_wgt_data_in_signal;
-  sc_signal< sc_biguint<32> > vta_mem_bias_data_in_signal;
-
-  sc_signal< sc_biguint<1> > input_done;
+  sc_out < sc_biguint<32> > sdp_cacc_data_signal[16];
+  sc_out < sc_biguint<32> > sdp_mrdma_data_signal[16];
+  sc_out < sc_biguint<16> > sdp_regs_data_signal[16];
+  sc_out < sc_biguint<16> > sdp_dma_data_signal[16];
 
   SC_CTOR(testbench) :
     clk("clk", 1, SC_NS),
@@ -91,24 +90,15 @@ SC_MODULE(testbench) {
     src("source")
   {
     src.clk(clk);
-    src.vta_instr_in(vta_instr_in_signal);
-    src.vta_mem_mode_in(vta_mem_mode_in_signal);
-    src.vta_mem_addr_in(vta_mem_addr_in_signal);
-    src.vta_mem_uop_data_in(vta_mem_uop_data_in_signal);
-    src.vta_mem_inp_data_in(vta_mem_inp_data_in_signal);
-    src.vta_mem_wgt_data_in(vta_mem_wgt_data_in_signal);
-    src.vta_mem_bias_data_in(vta_mem_bias_data_in_signal);
+    src.sdp_cacc_data(sdp_cacc_data_signal);
+    src.sdp_mrdma_data(sdp_mrdma_data_signal);
+    src.sdp_regs_data(sdp_regs_data_signal);
+    src.sdp_dma_data(sdp_dma_data_signal);
 
-    src.input_done(input_done);
-  
-
-    vta_inst.vta_vta_top_instr_in_in(vta_instr_in_signal);
-    vta_inst.vta_vta_vir_mem_mode_in_in(vta_mem_mode_in_signal);
-    vta_inst.vta_vta_vir_mem_addr_in_in(vta_mem_addr_in_signal);
-    vta_inst.vta_vta_vir_mem_uop_data_in_in(vta_mem_uop_data_in_signal);
-    vta_inst.vta_vta_vir_mem_inp_data_in_in(vta_mem_inp_data_in_signal);
-    vta_inst.vta_vta_vir_mem_wgt_data_in_in(vta_mem_wgt_data_in_signal);
-    vta_inst.vta_vta_vir_mem_bias_data_in_in(vta_mem_bias_data_in_signal);
+    sdp_inst.sdp_sdp_top_cacc_data_in(sdp_cacc_data_signal);
+    sdp_inst.sdp_sdp_vir_mrdma_data_in(sdp_mrdma_data_signal);
+    sdp_inst.sdp_sdp_vir_regs_data_in(sdp_regs_data_signal);
+    sdp_inst.sdp_sdp_vir_dma_data_in(sdp_dma_data_signal);
 
     SC_THREAD(run);
   }
