@@ -21,7 +21,11 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_SCALE_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_SHIFT_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_SHIFT_group1.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Add.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Max.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Min.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Multiply.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_PReLU.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_ReLU.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_CHANNEL_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_CHANNEL_group1.cc
@@ -105,6 +109,8 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_PERF_ENABLE_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_PERF_ENABLE_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_SET_PRODUCER.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Write_LUT_LE.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Write_LUT_LO.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/memory_update_functions_0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/setup_initial_condition.cc
 )

@@ -631,6 +631,42 @@ if (valid_sdp() && decode_sdp_Compute_Max()) {
   LogInstrSequence("Compute_Max");
 #endif
 }
+if (valid_sdp() && decode_sdp_Compute_Min()) {
+  update_sdp_Compute_Min();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Compute_Min");
+#endif
+}
+if (valid_sdp() && decode_sdp_Compute_Add()) {
+  update_sdp_Compute_Add();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Compute_Add");
+#endif
+}
+if (valid_sdp() && decode_sdp_Compute_Multiply()) {
+  update_sdp_Compute_Multiply();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Compute_Multiply");
+#endif
+}
+if (valid_sdp() && decode_sdp_Compute_PReLU()) {
+  update_sdp_Compute_PReLU();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Compute_PReLU");
+#endif
+}
+if (valid_sdp() && decode_sdp_Write_LUT_LE()) {
+  update_sdp_Write_LUT_LE();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Write_LUT_LE");
+#endif
+}
+if (valid_sdp() && decode_sdp_Write_LUT_LO()) {
+  update_sdp_Write_LUT_LO();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Write_LUT_LO");
+#endif
+}
 while (1) {
   int schedule_counter = 0;
   if (schedule_counter == 0) {
