@@ -201,6 +201,11 @@ bool local_var_158 = (local_var_156 > local_var_157);
 sc_biguint<32> local_var_159 = 0;
 auto local_var_160 = (local_var_158) ? local_var_156 : local_var_159;
 auto local_var_160_nxt_holder = local_var_160;
+sc_biguint<20> local_var_161 = 7;
+auto local_var_161_nxt_holder = local_var_161;
+sc_biguint<12> local_var_162 = 0;
+univ_var_91 = (sc_biguint<12>(local_var_162), sc_biguint<20>(local_var_161));
+auto univ_var_91_nxt_holder = univ_var_91;
 sdp_pdp_output_0 = local_var_10_nxt_holder;
 sdp_pdp_output_1 = local_var_20_nxt_holder;
 sdp_pdp_output_10 = local_var_30_nxt_holder;
@@ -217,6 +222,8 @@ sdp_pdp_output_6 = local_var_130_nxt_holder;
 sdp_pdp_output_7 = local_var_140_nxt_holder;
 sdp_pdp_output_8 = local_var_150_nxt_holder;
 sdp_pdp_output_9 = local_var_160_nxt_holder;
+sdp_test = local_var_161_nxt_holder;
+sdp_test2 = univ_var_91_nxt_holder;
 #ifdef ILATOR_VERBOSE
 instr_update_log << "No." << std::dec << GetInstrCntr() << '\t' << "Compute_ReLU state updates:" << std::endl;
 instr_update_log << "    sdp_pdp_output_0 => " << std::hex << "0x" << sdp_pdp_output_0 << std::endl; 
@@ -235,6 +242,8 @@ instr_update_log << "    sdp_pdp_output_6 => " << std::hex << "0x" << sdp_pdp_ou
 instr_update_log << "    sdp_pdp_output_7 => " << std::hex << "0x" << sdp_pdp_output_7 << std::endl; 
 instr_update_log << "    sdp_pdp_output_8 => " << std::hex << "0x" << sdp_pdp_output_8 << std::endl; 
 instr_update_log << "    sdp_pdp_output_9 => " << std::hex << "0x" << sdp_pdp_output_9 << std::endl; 
+instr_update_log << "    sdp_test => " << std::hex << "0x" << sdp_test << std::endl; 
+instr_update_log << "    sdp_test2 => " << std::hex << "0x" << sdp_test2 << std::endl; 
 instr_update_log << std::endl;
 #endif
 }

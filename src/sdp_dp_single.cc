@@ -41,12 +41,27 @@ namespace ilang {
 // - remake the following instructions with general functions, will prevent need to have too much code re-write (ie, still have group instructions and just pass in name of group as an arg)
 
 // need an intlof2 and intlog2 fraction as separate funcitons
-BvConst IntLog2(BvConst test) {
+ExprRef IntLog2(ExprRef operand) {
+    const int length = operand.bit_width();
+    
+    // Initialization
+    ExprRef* result = (ExprRef*)malloc(sizeof(ExprRef) * length);
+    for (int j = 0; j < length; j++) {
+        result[j] = BvConst(0, 32);
+    }
 
+    auto flag = BvConst(0, 1);
+    for (int i = length - 1; i >= 0; i--) {
+        result[i] = Ite(SelectBit(flag, 0) == 0x0 & SelectBit(operand, i) == 0x1, BvConst(i, 32), result[i + 1]);
+        flag = flag | Ite(SelectBit(operand, i), BvConst(1, 1), BvConst(0, 1));
+    }
+
+    return result[0];
 }
 
-BvConst IntLog2Frac(BvConst test2) {
-
+// Technically is 1ull, so might be 64 bits
+ExprRef IntLog2Frac(ExprRef operand, ExprRef index) {
+    return operand & ((BvConst(1, 32) << index) - 1);
 }
 
 void DefineSDPInstrsDP_Single(Ila& m) {
@@ -351,7 +366,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                 BvConst(0, 1)
             )
         );
-        instr.SetUpdate("le_uflow", le_uflow);
+        instr.SetUpdate(m.state("le_uflow"), le_uflow);
 
         auto le_oflow = 
         Ite(lut_function == 0x0,
@@ -374,7 +389,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                 )
             )
         );
-        instr.SetUpdate("le_oflow", le_oflow);
+        instr.SetUpdate(m.state("le_oflow"), le_oflow);
 
         // Determine final value for LUT index
         auto le_index = 
@@ -398,7 +413,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                 )
             )
         );
-        instr.SetUpdate("le_index", le_index);
+        instr.SetUpdate(m.state("le_index"), le_index);
 
         // Determine final value for LUT fraction; assume it is the same size as the LUT index
         auto le_fraction = 
@@ -409,7 +424,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                     BvConst(0, 7),
                     Ite(le_index_s >= 0x40,
                         BvConst(0, 7),
-                        IntLog2Frac(lut_data - lut_start) << (35 - le_index_idx)
+                        IntLog2Frac(lut_data - lut_start, le_index_idx) << (BvConst(35, 7) - le_index_idx)
                     )
                 )
             ),
@@ -418,75 +433,75 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                 BvConst(0, 7),
                 Ite(le_index_s >= 0x40,
                         BvConst(0, 7),
-                        (le_index_idx & ((BvConst(1, 8) << lut_index_select) - 1)) >> (lut_index_select - 35)
+                        (le_index_idx & ((BvConst(1, 32) << lut_index_select) - 1)) >> (lut_index_select - BvConst(35, 7))
                 )
             )
         );
-        instr.SetUpdate("le_fraction", le_fraction);
+        instr.SetUpdate(m.state("le_fraction"), le_fraction);
 
     }
 
-    // { // Read index from LUT Table LO
-    //     auto instr = m.NewInstr("Read_LUT_LO");
+    { // Read index from LUT Table LO
+        auto instr = m.NewInstr("Read_LUT_LO");
 
-    //     // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
-    //     auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
-    //     auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
-    //     auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
+        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+        auto access_type = SelectBit(m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE), 0);
+        auto table_id = SelectBit(m.state(NVDLA_SDP_S_LUT_TABLE_ID), 0);
+        auto lut_bypass = SelectBit(m.state(NVDLA_SDP_D_EW_LUT_BYPASS), 0);
 
-    //     instr.SetDecode(!access_type & table_id & !lut_bypass);
+        instr.SetDecode(access_type == 0x0 & table_id == 0x1 & lut_bypass == 0x0);
 
-    //     // Set the relevant table
-    //     auto lut = m.state("lo_tbl");
-    //     auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
-    //     auto lut_start = m.state(NVDLA_SDP_S_LUT_LO_START);
-    //     auto lut_index_select = m.state(NVDLA_SDP_S_LUT_LO_INDEX_SELECT);
-        
-    //     // Determine intermediate values for LUT index
-    //     auto lo_index_idx = lut_data - lut_start;
+        // Set the relevant table
+        auto lut = m.state("lo_tbl");
+        auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
+        auto lut_start = m.state(NVDLA_SDP_S_LUT_LO_START);
+        auto lut_index_select = m.state(NVDLA_SDP_S_LUT_LO_INDEX_SELECT);
 
-    //     auto lo_index_s = le_index_idx >> lut_index_select;
+        // Determine intermediate values for LUT index
+        auto lo_index_idx = lut_data - lut_start;
 
-    //     // Generate out-of-bounds flags
-    //     auto lo_uflow = 
-    //     Ite(lut_data <= lut_start,
-    //         0x1,
-    //         0x0
-    //     );
-    //     instr.SetUpdate("lo_uflow", lo_uflow);
+        auto lo_index_s = lo_index_idx >> lut_index_select;
 
-    //     auto lo_oflow = 
-    //     Ite(lut_data <= lut_start,
-    //         0x0,
-    //         Ite(lo_index_s >= 256,
-    //             0x1,
-    //             0x0
-    //         )
-    //     );
-    //     instr.SetUpdate("lo_oflow", lo_oflow);
+        // Generate out-of-bounds flags
+        auto lo_uflow = 
+        Ite(lut_data <= lut_start,
+            BvConst(1, 1),
+            BvConst(0, 1)
+        );
+        instr.SetUpdate(m.state("lo_uflow"), lo_uflow);
 
-    //     // Determine final value for LUT index
-    //     auto lo_index = 
-    //     Ite(lut_data <= lut_start,
-    //         0x0,
-    //         Ite(lo_index_s >= 256,
-    //                 0x100,
-    //                 lo_index_s
-    //         )
-    //     );
-    //     instr.SetUpdate("lo_index", lo_index);
+        auto lo_oflow = 
+        Ite(lut_data <= lut_start,
+            BvConst(0, 1),
+            Ite(lo_index_s >= 0x100,
+                BvConst(1, 1),
+                BvConst(0, 1)
+            )
+        );
+        instr.SetUpdate(m.state("lo_oflow"), lo_oflow);
 
-    //     // Determine final value for LUT fraction
-    //     auto lo_fraction = 
-    //     Ite(lut_data <= lut_start,
-    //         0x0,
-    //         Ite(lo_index_s >= 256,
-    //                 0x0,
-    //                 (lo_index_idx & ((0x1 << lut_index_select) - 1)) >> (lut_index_select - 35)
-    //         )
-    //     );
-    //     instr.SetUpdate("lo_fraction", lo_fraction);
-    // }
+        // Determine final value for LUT index
+        auto lo_index = 
+        Ite(lut_data <= lut_start,
+            BvConst(0, 9),
+            Ite(lo_index_s >= 0x100,
+                    BvConst(256, 9),
+                    lo_index_s
+            )
+        );
+        instr.SetUpdate(m.state("lo_index"), lo_index);
+
+        // Determine final value for LUT fraction
+        auto lo_fraction = 
+        Ite(lut_data <= lut_start,
+            BvConst(0, 9),
+            Ite(lo_index_s >= 0x100,
+                    BvConst(0, 9),
+                    (lo_index_idx & ((BvConst(1, 32) << lut_index_select) - 1)) >> (lut_index_select - BvConst(35, 9))
+            )
+        );
+        instr.SetUpdate(m.state("lo_fraction"), lo_fraction);
+    }
 
     // { // Present final LUT output
     //     auto instr = m.NewInstr("Present_LUT_Output");
