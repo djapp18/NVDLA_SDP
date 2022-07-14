@@ -108,6 +108,9 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_OP_ENABLE_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_PERF_ENABLE_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_PERF_ENABLE_group1.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Present_LUT_Output.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Read_LUT_LE.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Read_LUT_LO.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_SET_PRODUCER.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Write_LUT_LE.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Write_LUT_LO.cc

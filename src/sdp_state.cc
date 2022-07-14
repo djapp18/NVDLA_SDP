@@ -287,6 +287,7 @@ void DefineSDPState(Ila& m) {
     m.NewBvState("oflow", 1);
     m.NewBvState("index", 9);
     m.NewBvState("fraction", 35);
+    m.NewBvState("id", 1);
 
     // // States
     // m.NewBvState("credits", 9);

@@ -667,6 +667,24 @@ if (valid_sdp() && decode_sdp_Write_LUT_LO()) {
   LogInstrSequence("Write_LUT_LO");
 #endif
 }
+if (valid_sdp() && decode_sdp_Read_LUT_LE()) {
+  update_sdp_Read_LUT_LE();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Read_LUT_LE");
+#endif
+}
+if (valid_sdp() && decode_sdp_Read_LUT_LO()) {
+  update_sdp_Read_LUT_LO();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Read_LUT_LO");
+#endif
+}
+if (valid_sdp() && decode_sdp_Present_LUT_Output()) {
+  update_sdp_Present_LUT_Output();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Present_LUT_Output");
+#endif
+}
 while (1) {
   int schedule_counter = 0;
   if (schedule_counter == 0) {

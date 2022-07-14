@@ -45,15 +45,16 @@ ExprRef IntLog2(ExprRef operand) {
     const int length = operand.bit_width();
     
     // Initialization
-    ExprRef* result = (ExprRef*)malloc(sizeof(ExprRef) * length);
-    for (int j = 0; j < length; j++) {
+    ExprRef* result = (ExprRef*)malloc(sizeof(ExprRef) * (length + 1));
+    // auto result[length];
+    for (int j = 0; j < length + 1; j++) {
         result[j] = BvConst(0, 32);
     }
 
     auto flag = BvConst(0, 1);
-    for (int i = length - 1; i >= 0; i--) {
-        result[i] = Ite(SelectBit(flag, 0) == 0x0 & SelectBit(operand, i) == 0x1, BvConst(i, 32), result[i + 1]);
-        flag = flag | Ite(SelectBit(operand, i), BvConst(1, 1), BvConst(0, 1));
+    for (int i = length - 1; i >= 0; i--) { 
+        result[i] = Ite(SelectBit(flag, 0) == BvConst(0, 1) & SelectBit(operand, i) == BvConst(1, 1), BvConst(i, 32), result[i + 1]);
+        flag = flag | Ite(SelectBit(operand, i) == 0x1, BvConst(1, 1), BvConst(0, 1));
     }
 
     return result[0];
@@ -321,11 +322,12 @@ void DefineSDPInstrsDP_Single(Ila& m) {
 
     { // Read index from LUT Table LE
         auto instr = m.NewInstr("Read_LUT_LE");
+        auto reg_group = "group0_";
 
         // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
         auto access_type = SelectBit(m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE), 0);
         auto table_id = SelectBit(m.state(NVDLA_SDP_S_LUT_TABLE_ID), 0);
-        auto lut_bypass = SelectBit(m.state(NVDLA_SDP_D_EW_LUT_BYPASS), 0);
+        auto lut_bypass = SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)), 0);
 
         instr.SetDecode(access_type == 0x0 & table_id == 0x0 & lut_bypass == 0x0);
 
@@ -340,28 +342,28 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         // Determine intermediate values for LUT index
         auto le_index_idx =
         Ite(lut_function == 0x0,
-            IntLog2(lut_data - lut_start),
-            lut_data - lut_start
+            IntLog2(Concat(BvConst(0, 16), lut_data) - lut_start),
+            Concat(BvConst(0, 16), lut_data) - lut_start
         );
 
         auto le_index_s =
         Ite(lut_function == 0x0,
-            le_index_idx - lut_index_offset,
-            le_index_idx >> lut_index_select
+            le_index_idx - Concat(BvConst(0, 24), lut_index_offset),
+            le_index_idx >> Concat(BvConst(0, 24), lut_index_select)
         );
 
         // Generate out-of-bounds flags
         auto le_uflow = 
         Ite(lut_function == 0x0,
-            Ite(lut_data <= lut_start,
+            Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
                 BvConst(1, 1),
-                Ite(le_index_idx < lut_index_offset,
+                Ite(le_index_idx < Concat(BvConst(0, 24), lut_index_offset),
                     BvConst(1, 1),
                     BvConst(0, 1)
                 )
             ),
 
-            Ite(lut_data <= lut_start,
+            Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
                 BvConst(1, 1),
                 BvConst(0, 1)
             )
@@ -370,9 +372,9 @@ void DefineSDPInstrsDP_Single(Ila& m) {
 
         auto le_oflow = 
         Ite(lut_function == 0x0,
-            Ite(lut_data <= lut_start,
+            Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
                 BvConst(0, 1),
-                Ite(le_index_idx < lut_index_offset,
+                Ite(le_index_idx < Concat(BvConst(0, 24), lut_index_offset),
                     BvConst(0, 1),
                     Ite(le_index_s >= 0x40,
                         BvConst(1, 1),
@@ -381,7 +383,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                 )
             ),
 
-            Ite(lut_data <= lut_start,
+            Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
                 BvConst(0, 1),
                 Ite(le_index_s >= 0x40,
                     BvConst(1, 1),
@@ -394,60 +396,63 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         // Determine final value for LUT index
         auto le_index = 
         Ite(lut_function == 0x0,
-            Ite(lut_data <= lut_start,
-                BvConst(1, 7),
-                Ite(le_index_idx < lut_index_offset,
-                    BvConst(1, 7),
+            Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
+                BvConst(1, 32),
+                Ite(le_index_idx < Concat(BvConst(0, 24), lut_index_offset),
+                    BvConst(1, 32),
                     Ite(le_index_s >= 0x40,
-                        BvConst(64, 7),
+                        BvConst(64, 32),
                         le_index_s
                     )
                 )
             ),
 
-            Ite(lut_data <= lut_start,
-                BvConst(0, 7),
+            Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
+                BvConst(0, 32),
                 Ite(le_index_s >= 0x40,
-                        BvConst(64, 7),
+                        BvConst(64, 32),
                         le_index_s
                 )
             )
         );
+        le_index = Extract(le_index, 6, 0);
         instr.SetUpdate(m.state("le_index"), le_index);
 
         // Determine final value for LUT fraction; assume it is the same size as the LUT index
         auto le_fraction = 
         Ite(lut_function == 0x0,
-            Ite(lut_data <= lut_start,
-                BvConst(0, 7),
-                Ite(le_index_idx < lut_index_offset,
-                    BvConst(0, 7),
+            Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
+                BvConst(0, 32),
+                Ite(le_index_idx < Concat(BvConst(0, 24), lut_index_offset),
+                    BvConst(0, 32),
                     Ite(le_index_s >= 0x40,
-                        BvConst(0, 7),
-                        IntLog2Frac(lut_data - lut_start, le_index_idx) << (BvConst(35, 7) - le_index_idx)
+                        BvConst(0, 32),
+                        IntLog2Frac(Concat(BvConst(0, 16), lut_data) - lut_start, le_index_idx) << (BvConst(35, 32) - le_index_idx)
                     )
                 )
             ),
 
-            Ite(lut_data <= lut_start,
-                BvConst(0, 7),
+            Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
+                BvConst(0, 32),
                 Ite(le_index_s >= 0x40,
-                        BvConst(0, 7),
-                        (le_index_idx & ((BvConst(1, 32) << lut_index_select) - 1)) >> (lut_index_select - BvConst(35, 7))
+                        BvConst(0, 32),
+                        (le_index_idx & ((BvConst(1, 32) << Concat(BvConst(0, 24), lut_index_select)) - 1)) >> (Concat(BvConst(0, 24), lut_index_select) - BvConst(35, 32))
                 )
             )
         );
+        le_fraction = Extract(le_fraction, 6, 0);
         instr.SetUpdate(m.state("le_fraction"), le_fraction);
 
     }
 
     { // Read index from LUT Table LO
         auto instr = m.NewInstr("Read_LUT_LO");
+        auto reg_group = "group0_";
 
         // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
         auto access_type = SelectBit(m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE), 0);
         auto table_id = SelectBit(m.state(NVDLA_SDP_S_LUT_TABLE_ID), 0);
-        auto lut_bypass = SelectBit(m.state(NVDLA_SDP_D_EW_LUT_BYPASS), 0);
+        auto lut_bypass = SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)), 0);
 
         instr.SetDecode(access_type == 0x0 & table_id == 0x1 & lut_bypass == 0x0);
 
@@ -458,20 +463,20 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         auto lut_index_select = m.state(NVDLA_SDP_S_LUT_LO_INDEX_SELECT);
 
         // Determine intermediate values for LUT index
-        auto lo_index_idx = lut_data - lut_start;
+        auto lo_index_idx = Concat(BvConst(0, 16), lut_data) - lut_start;
 
-        auto lo_index_s = lo_index_idx >> lut_index_select;
+        auto lo_index_s = lo_index_idx >> Concat(BvConst(0, 24), lut_index_select);
 
         // Generate out-of-bounds flags
         auto lo_uflow = 
-        Ite(lut_data <= lut_start,
+        Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
             BvConst(1, 1),
             BvConst(0, 1)
         );
         instr.SetUpdate(m.state("lo_uflow"), lo_uflow);
 
         auto lo_oflow = 
-        Ite(lut_data <= lut_start,
+        Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
             BvConst(0, 1),
             Ite(lo_index_s >= 0x100,
                 BvConst(1, 1),
@@ -482,161 +487,173 @@ void DefineSDPInstrsDP_Single(Ila& m) {
 
         // Determine final value for LUT index
         auto lo_index = 
-        Ite(lut_data <= lut_start,
-            BvConst(0, 9),
+        Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
+            BvConst(0, 32),
             Ite(lo_index_s >= 0x100,
-                    BvConst(256, 9),
+                    BvConst(256, 32),
                     lo_index_s
             )
         );
+        lo_index = Extract(lo_index, 8, 0);
         instr.SetUpdate(m.state("lo_index"), lo_index);
 
         // Determine final value for LUT fraction
         auto lo_fraction = 
-        Ite(lut_data <= lut_start,
-            BvConst(0, 9),
+        Ite(Concat(BvConst(0, 16), lut_data) <= lut_start,
+            BvConst(0, 32),
             Ite(lo_index_s >= 0x100,
-                    BvConst(0, 9),
-                    (lo_index_idx & ((BvConst(1, 32) << lut_index_select) - 1)) >> (lut_index_select - BvConst(35, 9))
+                    BvConst(0, 32),
+                    (lo_index_idx & ((BvConst(1, 32) << Concat(BvConst(0, 24), lut_index_select)) - 1)) >> (Concat(BvConst(0, 24), lut_index_select) - BvConst(35, 32))
             )
         );
+        lo_fraction = Extract(lo_fraction, 8, 0);
         instr.SetUpdate(m.state("lo_fraction"), lo_fraction);
     }
 
-    // { // Present final LUT output
-    //     auto instr = m.NewInstr("Present_LUT_Output");
+    { // Present LUT output
+        auto instr = m.NewInstr("Present_LUT_Output");
+        auto reg_group = "group0_";
 
-    //     // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
-    //     auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
-    //     auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
-    //     auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
+        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+        auto access_type = SelectBit(m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE), 0);
+        auto table_id = SelectBit(m.state(NVDLA_SDP_S_LUT_TABLE_ID), 0);
+        auto lut_bypass = SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)), 0);
 
-    //     instr.SetDecode(!access_type & table_id & !lut_bypass);
+        instr.SetDecode(access_type == 0x0 & table_id == 0x1 & lut_bypass == 0x0);
 
-    //     auto le_index = m.state("le_index");
-    //     auto lo_index = m.state("lo_index");
+        // LUT parameters
+        auto le_index = SelectBit(m.state("le_index"), 0);
+        auto lo_index = SelectBit(m.state("lo_index"), 0);
 
-    //     auto le_uflow = m.state("le_uflow");
-    //     auto lo_uflow = m.state("lo_uflow");
+        auto le_uflow = SelectBit(m.state("le_uflow"), 0);
+        auto lo_uflow = SelectBit(m.state("lo_uflow"), 0);
 
-    //     auto le_oflow = m.state("le_oflow");
-    //     auto lo_oflow = m.state("lo_oflow");
+        auto le_oflow = SelectBit(m.state("le_oflow"), 0);
+        auto lo_oflow = SelectBit(m.state("lo_oflow"), 0);
 
-    //     auto le_function = m.state("le_function");
-    //     auto lo_function = m.state("lo_function");
+        auto le_fraction = SelectBit(m.state("le_fraction"), 0);
+        auto lo_fraction = SelectBit(m.state("lo_fraction"), 0);
 
-    //     auto le_miss = le_uflow | le_oflow;
-    //     auto le_hit = !le_miss;
-    //     auto lo_miss = lo_uflow | lo_oflow;        
-    //     auto lo_hit = !lo_miss;
+        auto le_miss = le_uflow == 0x1 | le_oflow == 0x1;
+        auto le_hit = le_miss == 0x0;
+        auto lo_miss = lo_uflow == 0x1 | lo_oflow == 0x1;        
+        auto lo_hit = lo_miss == 0x0;
 
-    //     auto index = 
-    //     Ite(le_uflow & lo_uflow,
-    //         Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), lo_index, le_index),
-    //         Ite(le_oflow & lo_oflow,
-    //             Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), lo_index, le_index),
-    //             Ite(le_hit & lo_hit,
-    //                 Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_index, le_index),
-    //                 Ite(le_miss & lo_miss,
-    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_index, le_index),
-    //                     Ite(le_hit,
-    //                         le_index,
-    //                         lo_index
-    //                     )
-    //                 )
-    //             )
-    //         )
-    //     );
-    //     instr.SetUpdate("index", index);
+        // LUT priorities
+        auto uflow_priority = SelectBit(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), 0);
+        auto oflow_priority = SelectBit(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), 0);
+        auto hybrid_priority = SelectBit(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), 0);
+
+        auto index = 
+        Ite(le_uflow == 0x1 & lo_uflow == 0x1,
+            Ite(uflow_priority == 0x1, lo_index, le_index),
+            Ite(le_oflow == 0x1 & lo_oflow == 0x1,
+                Ite(oflow_priority == 0x1, lo_index, le_index),
+                Ite(le_hit == 0x1 & lo_hit == 0x1,
+                    Ite(hybrid_priority == 0x1, lo_index, le_index),
+                    Ite(le_miss == 0x1 & lo_miss == 0x1,
+                        Ite(hybrid_priority == 0x1, lo_index, le_index),
+                        Ite(le_hit == 0x1,
+                            le_index,
+                            lo_index
+                        )
+                    )
+                )
+            )
+        );
+        instr.SetUpdate(m.state("index"), index);
     
-    //     auto fraction = 
-    //     Ite(le_uflow & lo_uflow,
-    //         Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), lo_fraction, le_fraction),
-    //         Ite(le_oflow & lo_oflow,
-    //             Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), lo_fraction, le_fraction),
-    //             Ite(le_hit & lo_hit,
-    //                 Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_fraction, le_fraction),
-    //                 Ite(le_miss & lo_miss,
-    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_fraction, le_fraction),
-    //                     Ite(le_hit,
-    //                         le_fraction,
-    //                         lo_fraction
-    //                     )
-    //                 )
-    //             )
-    //         )
-    //     );
-    //     instr.SetUpdate("fraction", fraction);
+        auto fraction = 
+        Ite(le_uflow == 0x1 & lo_uflow == 0x1,
+            Ite(uflow_priority == 0x1, lo_fraction, le_fraction),
+            Ite(le_oflow == 0x1 & lo_oflow == 0x1,
+                Ite(oflow_priority == 0x1, lo_fraction, le_fraction),
+                Ite(le_hit == 0x1 & lo_hit == 0x1,
+                    Ite(hybrid_priority == 0x1, lo_fraction, le_fraction),
+                    Ite(le_miss == 0x1 & lo_miss == 0x1,
+                        Ite(hybrid_priority == 0x1, lo_fraction, le_fraction),
+                        Ite(le_hit == 0x1,
+                            le_fraction,
+                            lo_fraction
+                        )
+                    )
+                )
+            )
+        );
+        instr.SetUpdate(m.state("fraction"), fraction);
 
-    //     auto uflow = 
-    //     Ite(le_uflow & lo_uflow,
-    //         Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), lo_uflow, le_uflow),
-    //         Ite(le_oflow & lo_oflow,
-    //             0x0,
-    //             Ite(le_hit & lo_hit,
-    //                 0x0,
-    //                 Ite(le_miss & lo_miss,
-    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_uflow, le_uflow),
-    //                     0x0
-    //                 )
-    //             )
-    //         )
-    //     );
-    //     instr.SetUpdate("uflow", uflow);
+        auto uflow = 
+        Ite(le_uflow == 0x1 & lo_uflow == 0x1,
+            Ite(uflow_priority == 0x1, lo_uflow, le_uflow),
+            Ite(le_oflow == 0x1 & lo_oflow == 0x1,
+                BvConst(0, 1),
+                Ite(le_hit == 0x1 & lo_hit == 0x1,
+                    BvConst(0, 1),
+                    Ite(le_miss == 0x1 & lo_miss == 0x1,
+                        Ite(hybrid_priority == 0x1, lo_uflow, le_uflow),
+                        BvConst(0, 1)
+                    )
+                )
+            )
+        );
+        instr.SetUpdate(m.state("uflow"), uflow);
 
-    //     auto oflow = 
-    //     Ite(le_uflow & lo_uflow,
-    //         0x0,
-    //         Ite(le_oflow & lo_oflow,
-    //             Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), lo_oflow, le_oflow),
-    //             Ite(le_hit & lo_hit,
-    //                 0x0,
-    //                 Ite(le_miss & lo_miss,
-    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), lo_oflow, le_oflow),
-    //                     0x0
-    //                 )
-    //             )
-    //         )
-    //     );
-    //     instr.SetUpdate("oflow", oflow);
+        auto oflow = 
+        Ite(le_uflow == 0x1 & lo_uflow == 0x1,
+            BvConst(0, 1),
+            Ite(le_oflow == 0x1 & lo_oflow == 0x1,
+                Ite(oflow_priority == 0x1, lo_oflow, le_oflow),
+                Ite(le_hit == 0x1 & lo_hit == 0x1,
+                    BvConst(0, 1),
+                    Ite(le_miss == 0x1 & lo_miss == 0x1,
+                        Ite(hybrid_priority == 0x1, lo_oflow, le_oflow),
+                        BvConst(0, 1)
+                    )
+                )
+            )
+        );
+        instr.SetUpdate(m.state("oflow"), oflow);
 
-    //     auto id = 
-    //     Ite(le_uflow & lo_uflow,
-    //         Ite(m.state(NVDLA_SDP_S_LUT_UFLOW_PRIORITY), 0x1, 0x0),
-    //         Ite(le_oflow & lo_oflow,
-    //             Ite(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), 0x1, 0x0),
-    //             Ite(le_hit & lo_hit,
-    //                 Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), 0x1, 0x0),
-    //                 Ite(le_miss & lo_miss,
-    //                     Ite(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), 0x1, 0x0),
-    //                     Ite(le_hit,
-    //                         0x0,
-    //                         0x1
-    //                     )
-    //                 )
-    //             )
-    //         )
-    //     );
-    //     instr.SetUpdate("id", id);
-    // }
+        auto id = 
+        Ite(le_uflow == 0x1 & lo_uflow == 0x1,
+            Ite(uflow_priority == 0x1, BvConst(1, 1), BvConst(0, 1)),
+            Ite(le_oflow == 0x1 & lo_oflow == 0x1,
+                Ite(oflow_priority == 0x1, BvConst(1, 1), BvConst(0, 1)),
+                Ite(le_hit == 0x1 & lo_hit == 0x1,
+                    Ite(hybrid_priority == 0x1, BvConst(1, 1), BvConst(0, 1)),
+                    Ite(le_miss == 0x1 & lo_miss == 0x1,
+                        Ite(hybrid_priority == 0x1, BvConst(1, 1), BvConst(0, 1)),
+                        Ite(le_hit == 0x1,
+                            BvConst(0, 1),
+                            BvConst(1, 1)
+                        )
+                    )
+                )
+            )
+        );
+        instr.SetUpdate(m.state("id"), id);
+    }
 
     // { // Perform interpolation or extrapolation
     //     auto instr = m.NewInstr("Final_LUT_Processing");
+    //     auto reg_group = "group0_";
 
     //     // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
-    //     auto access_type = m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE);
-    //     auto table_id = m.state(NVDLA_SDP_S_LUT_TABLE_ID);
-    //     auto lut_bypass = m.state(NVDLA_SDP_D_EW_LUT_BYPASS);
+    //     auto access_type = SelectBit(m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE), 0);
+    //     auto table_id = SelectBit(m.state(NVDLA_SDP_S_LUT_TABLE_ID), 0);
+    //     auto lut_bypass = SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)), 0);
     //     auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
+    //     auto lut_function = SelectBit(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION), 0); 
 
-    //     instr.SetDecode(!access_type & table_id & !lut_bypass);
+    //     instr.SetDecode(access_type == 0x0 & table_id == 0x1 & lut_bypass == 0x0);
 
-    //     auto the_table = Ite(m.state("id"), m.state("lo_table", m.state("le_table")));
-    //     auto y0 = Load(the_table, m.state("index"));
-    //     auto y1 = Ite(!m.state("oflow") && !m.state("uflow"), Load(the_table, m.state("index") + 1), 0x0);
+    //     auto the_table = Ite(SelectBit(m.state("id"), 0) == 0x1, m.state("lo_table", m.state("le_table")));
+    //     auto y0 = Load(SelectBit(the_table, 0), m.state("index"));
+    //     auto y1 = Ite(SelectBit(m.state("oflow")) == 0x0 && SelectBit(m.state("uflow")) == 0x1, Load(SelectBit(the_table, 0), m.state("index") + 1), 0x0);
     //     auto fraction = m.state("fraction");
 
-    //     auto bias = Ite((m.state("oflow") || m.state("uflow")) && the_table == 0x0 && m.state(NVDLA_SDP_S_LUT_LE_FUNCTION) == 0x0 && !m.state("oflow") && m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 0x1 << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 0x0);
+    //     auto bias = Ite((SelectBit(m.state("oflow"), 0) == 0x0 || SelectBit(m.state("uflow"), 0) == 0x0) && SelectBit(the_table, 0) == 0x0 
+    //     && lut_function == 0x0 && SelectBit(m.state("oflow"), 0) == 0 && m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 0x1 << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 0x0);
         
     //     auto scale = 
     //     Ite(m.state("oflow") || m.state("uflow"),
@@ -685,7 +702,8 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     //         ),
     //         o >> 35
     //     );
-    }
+    // }
+}
 
 
 } // namespace ilang
