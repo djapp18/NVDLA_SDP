@@ -44,9 +44,6 @@ void DefineSDPInput(Ila& m) {
     // m.NewBvInput("credits_add", 4);
 
     // Control Signals
-    m.NewBvInput("pending_clr", 1);
-    m.NewBvInput("sg2dl_vld", 1);
-    m.NewBvInput("sg2wt_vld", 1);
     m.NewBvInput("fifo_clr", 1);
     m.NewBvInput("done", 1);
 

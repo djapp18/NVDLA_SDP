@@ -40,13 +40,11 @@ namespace ilang {
 // - looks like when doing configure, have producer & !group0; here do consumer & group0 (i.e., this is datapath running, no more config here)
 // - remake the following instructions with general functions, will prevent need to have too much code re-write (ie, still have group instructions and just pass in name of group as an arg)
 
-// need an intlof2 and intlog2 fraction as separate funcitons
 ExprRef IntLog2(ExprRef operand) {
     const int length = operand.bit_width();
     
     // Initialization
     ExprRef* result = (ExprRef*)malloc(sizeof(ExprRef) * (length + 1));
-    // auto result[length];
     for (int j = 0; j < length + 1; j++) {
         result[j] = BvConst(0, 32);
     }
@@ -85,6 +83,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     // 3: Producer (op_enable) but not consumer
 
     { // ReLU computation - Group 0
+    // should be !group_unset everywhere or use state == busy
         auto instr = m.NewInstr("Compute_ReLU");
         auto reg_group = "group0_";
 
@@ -93,7 +92,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                     (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)), 0) == 0x1);
         auto x2_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
                     (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
-        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & group0_unset;
+        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
 
         instr.SetDecode(group0_regs);
 
@@ -522,17 +521,17 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         instr.SetDecode(access_type == 0x0 & table_id == 0x1 & lut_bypass == 0x0);
 
         // LUT parameters
-        auto le_index = SelectBit(m.state("le_index"), 0);
-        auto lo_index = SelectBit(m.state("lo_index"), 0);
+        auto le_index = Extract(m.state("le_index"), 6, 0);
+        auto lo_index = Extract(m.state("lo_index"), 8, 0);
+
+        auto le_fraction = Extract(m.state("le_fraction"), 6, 0);
+        auto lo_fraction = Extract(m.state("lo_fraction"), 8, 0);
 
         auto le_uflow = SelectBit(m.state("le_uflow"), 0);
         auto lo_uflow = SelectBit(m.state("lo_uflow"), 0);
 
         auto le_oflow = SelectBit(m.state("le_oflow"), 0);
         auto lo_oflow = SelectBit(m.state("lo_oflow"), 0);
-
-        auto le_fraction = SelectBit(m.state("le_fraction"), 0);
-        auto lo_fraction = SelectBit(m.state("lo_fraction"), 0);
 
         auto le_miss = le_uflow == 0x1 | le_oflow == 0x1;
         auto le_hit = le_miss == 0x0;
@@ -546,15 +545,15 @@ void DefineSDPInstrsDP_Single(Ila& m) {
 
         auto index = 
         Ite(le_uflow == 0x1 & lo_uflow == 0x1,
-            Ite(uflow_priority == 0x1, lo_index, le_index),
+            Ite(uflow_priority == 0x1, lo_index, Concat(BvConst(0, 2), le_index)),
             Ite(le_oflow == 0x1 & lo_oflow == 0x1,
-                Ite(oflow_priority == 0x1, lo_index, le_index),
+                Ite(oflow_priority == 0x1, lo_index, Concat(BvConst(0, 2), le_index)),
                 Ite(le_hit == 0x1 & lo_hit == 0x1,
-                    Ite(hybrid_priority == 0x1, lo_index, le_index),
+                    Ite(hybrid_priority == 0x1, lo_index, Concat(BvConst(0, 2), le_index)),
                     Ite(le_miss == 0x1 & lo_miss == 0x1,
-                        Ite(hybrid_priority == 0x1, lo_index, le_index),
+                        Ite(hybrid_priority == 0x1, lo_index, Concat(BvConst(0, 2), le_index)),
                         Ite(le_hit == 0x1,
-                            le_index,
+                            Concat(BvConst(0, 2), le_index),
                             lo_index
                         )
                     )
@@ -565,15 +564,15 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     
         auto fraction = 
         Ite(le_uflow == 0x1 & lo_uflow == 0x1,
-            Ite(uflow_priority == 0x1, lo_fraction, le_fraction),
+            Ite(uflow_priority == 0x1, lo_fraction, Concat(BvConst(0, 2), le_fraction)),
             Ite(le_oflow == 0x1 & lo_oflow == 0x1,
-                Ite(oflow_priority == 0x1, lo_fraction, le_fraction),
+                Ite(oflow_priority == 0x1, lo_fraction, Concat(BvConst(0, 2), le_fraction)),
                 Ite(le_hit == 0x1 & lo_hit == 0x1,
-                    Ite(hybrid_priority == 0x1, lo_fraction, le_fraction),
+                    Ite(hybrid_priority == 0x1, lo_fraction, Concat(BvConst(0, 2), le_fraction)),
                     Ite(le_miss == 0x1 & lo_miss == 0x1,
-                        Ite(hybrid_priority == 0x1, lo_fraction, le_fraction),
+                        Ite(hybrid_priority == 0x1, lo_fraction, Concat(BvConst(0, 2), le_fraction)),
                         Ite(le_hit == 0x1,
-                            le_fraction,
+                            Concat(BvConst(0, 2), le_fraction),
                             lo_fraction
                         )
                     )
@@ -647,52 +646,62 @@ void DefineSDPInstrsDP_Single(Ila& m) {
 
     //     instr.SetDecode(access_type == 0x0 & table_id == 0x1 & lut_bypass == 0x0);
 
-    //     auto the_table = Ite(SelectBit(m.state("id"), 0) == 0x1, m.state("lo_table", m.state("le_table")));
-    //     auto y0 = Load(SelectBit(the_table, 0), m.state("index"));
-    //     auto y1 = Ite(SelectBit(m.state("oflow")) == 0x0 && SelectBit(m.state("uflow")) == 0x1, Load(SelectBit(the_table, 0), m.state("index") + 1), 0x0);
-    //     auto fraction = m.state("fraction");
+    //     // LUT parameters
+    //     auto index = Extract(m.state("index"), 8, 0);
+    //     auto fraction = Extract(m.state("fraction"), 8, 0);
+    //     auto oflow = SelectBit(m.state("oflow"), 0);
+    //     auto uflow = SelectBit(m.state("uflow"), 0);
+    //     auto id = SelectBit(m.state("id"), 0);
 
-    //     auto bias = Ite((SelectBit(m.state("oflow"), 0) == 0x0 || SelectBit(m.state("uflow"), 0) == 0x0) && SelectBit(the_table, 0) == 0x0 
-    //     && lut_function == 0x0 && SelectBit(m.state("oflow"), 0) == 0 && m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 0x1 << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 0x0);
+    //     // LUT outputs
+    //     auto the_table = Ite(id == 0x1, m.state("lo_table"), m.state("le_table"));
+    //     auto y0 = Load(SelectBit(the_table, 0), index);
+    //     auto y1 = Ite(oflow == 0x0 & uflow == 0x1, Load(SelectBit(the_table, 0), index + 1), BvConst(0, 16));
+
+    //     auto bias = 
+    //     Ite((oflow == 0x0 | uflow == 0x0) & SelectBit(the_table, 0) == 0x0 & lut_function == 0x0 & oflow == 0 & m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 
+    //         BvConst(1, 8) << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 
+    //         BvConst(0, 8)
+    //     );
         
     //     auto scale = 
-    //     Ite(m.state("oflow") || m.state("uflow"),
-    //         Ite(m.state("id") == 0x0,
-    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SCALE)),
-    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SCALE)),
+    //     Ite(oflow == 0x1 | uflow == 0x1,
+    //         Ite(id == 0x0,
+    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SCALE)),
+    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SCALE))
     //         ),
-    //         0x0
+    //         BvConst(0, 16)
     //     );
 
     //     auto shift = 
-    //     Ite(m.state("oflow") || m.state("uflow"),
-    //         Ite(m.state("id") == 0x0,
-    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SHIFT)),
-    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SHIFT)),
+    //     Ite(oflow == 0x1 | uflow == 0x1,
+    //         Ite(id == 0x0,
+    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SHIFT)),
+    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SHIFT))
     //         ),
-    //         0x0
+    //         BvConst(0, 5)
     //     );
 
     //     auto offset = 
-    //     Ite(m.state("oflow") || m.state("uflow"),
-    //         Ite(m.state("id") == 0x0,
-    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LE_END), m.state(NVDLA_SDP_S_LUT_LE_START)),
-    //             Ite(m.state("oflow"), m.state(NVDLA_SDP_S_LUT_LO_END), m.state(NVDLA_SDP_S_LUT_LO_START)),
+    //     Ite(oflow == 0x1 | uflow == 0x1,
+    //         Ite(id == 0x0,
+    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LE_END), m.state(NVDLA_SDP_S_LUT_LE_START)),
+    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LO_END), m.state(NVDLA_SDP_S_LUT_LO_START))
     //         ),
-    //         0x0
+    //         BvConst(0, 32)
     //     );
 
     //     // Interpolation and extrapolation
     //     auto o =
-    //     Ite(m.state("oflow") || m.state("uflow"),
+    //     Ite(oflow == 0x1 | uflow == 0x1,
     //         y0 + ((lut_data - bias - offset) * scale) >> shift,
     //         (((1 << 35) - fraction) * y0) + (fraction * y1)
     //     );
 
-    //     auto oMax = (1 << 31) - 1;
+    //     auto oMax = (BvConst(1, 32) << 31) - 1;
     //     auto oMin = -(1 << 31);
     //     auto out_data =
-    //     Ite(m.state("oflow") || m.state("uflow"),
+    //     Ite(oflow == 0x1 | uflow == 0x1,
     //         Ite(o > oMax, 
     //             oMax,
     //             Ite(o < oMin,
@@ -703,6 +712,34 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     //         o >> 35
     //     );
     // }
+
+    // { // Perform conversion on inputs to the Y sub-unit
+    //     // Determine the source of the operands
+    //     auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
+    //     auto data_source = m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_SRC));
+    //     auto mul_shift = m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_SHIFT_VALUE));
+    //     auto ew_mul_cvt_bypass = m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_CVT_BYPASS));
+    //     auto ew_mul_cvt_offset = m.state(GetVarName(reg_group, NVDLA_SDP_D_DP_EW_MUL_CVT_OFFSET_VALUE));
+    //     auto ew_mul_cvt_scale = m.state(GetVarName(reg_group, NVDLA_SDP_D_DP_EW_MUL_CVT_SCALE_VALUE));
+    //     auto ew_mul_cvt_truncate = m.state(GetVarName(reg_group, NVDLA_SDP_D_DP_EW_MUL_CVT_TRUNCATE_VALUE));
+
+    //     for (int i = 0; i < 16; i++) {
+    //         // Setup operands
+    //         auto input = Ite(SelectBit(flying_mode, 0) == 0x1, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
+    //         auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
+    //         auto operand_alu = Ite(SelectBit(data_source, 0) == 0x1, m.input(GetVarName("dma_data_", (std::to_string(i)))), m.input(GetVarName("regs_data_", (std::to_string(i)))));
+
+    //         // Converter
+    //         operand_mul = Ite(SelectBit(ew_mul_cvt_bypass, 0), operand_alu, operand_alu - Extract(ew_mul_cvt_offset, 31, 0));
+    //         operand_tct = Ite(SelectBit(ew_mul_cvt_bypass, 0), operand_mul, operand_mul * Extract(ew_mul_cvt_scale, 15, 0));
+    //         operand = Ite(SelectBit(ew_mul_cvt_bypass, 0), operand_tct, operand_tct >> Extract(ew_mul_cvt_truncate, 5, 0));
+
+    //         // Compute PReLU
+    //         auto output = Ite((input > 0x0), input, (Concat(BvConst(0, 16), operand) * input) >> Concat(BvConst(0, 24), mul_shift));
+    //         instr.SetUpdate(pdp_output, output);
+    //     }
+    // }
+
 }
 
 

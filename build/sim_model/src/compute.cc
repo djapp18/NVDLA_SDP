@@ -22,9 +22,6 @@ sdp_csb_addr = sdp_csb_addr_in.read();
 sdp_csb_data = sdp_csb_data_in.read();
 sdp_csb_write = sdp_csb_write_in.read();
 sdp_csb_vld = sdp_csb_vld_in.read();
-sdp_pending_clr = sdp_pending_clr_in.read();
-sdp_sg2dl_vld = sdp_sg2dl_vld_in.read();
-sdp_sg2wt_vld = sdp_sg2wt_vld_in.read();
 sdp_fifo_clr = sdp_fifo_clr_in.read();
 sdp_done = sdp_done_in.read();
 sdp_cacc_data_0 = sdp_cacc_data_0_in.read();
@@ -617,6 +614,30 @@ if (valid_sdp() && decode_sdp_PERF_ENABLE_group1()) {
   update_sdp_PERF_ENABLE_group1();
   #ifdef ILATOR_VERBOSE
   LogInstrSequence("PERF_ENABLE_group1");
+#endif
+}
+if (valid_sdp() && decode_sdp_Start_group0()) {
+  update_sdp_Start_group0();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Start_group0");
+#endif
+}
+if (valid_sdp() && decode_sdp_Start_group1()) {
+  update_sdp_Start_group1();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Start_group1");
+#endif
+}
+if (valid_sdp() && decode_sdp_Busy2Done_group0()) {
+  update_sdp_Busy2Done_group0();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Busy2Done_group0");
+#endif
+}
+if (valid_sdp() && decode_sdp_Done2Idle_group0()) {
+  update_sdp_Done2Idle_group0();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Done2Idle_group0");
 #endif
 }
 if (valid_sdp() && decode_sdp_Compute_ReLU()) {

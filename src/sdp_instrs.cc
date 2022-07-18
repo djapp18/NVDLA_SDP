@@ -41,7 +41,8 @@ void DefineSDPInstrs(Ila& m) {
     auto group1_unset = m.state(GetVarName("group1_", NVDLA_SDP_D_OP_ENABLE)) == BvConst(0,1);
     auto producer = m.state(NVDLA_SDP_S_PRODUCER);
     auto consumer = m.state(NVDLA_SDP_S_CONSUMER);
-    auto csc_state = m.state("csc_state");
+    auto group0_sdp_state = m.state("group0_sdp_state");
+    auto group1_sdp_state = m.state("group1_sdp_state");
 
     // Status: 3
     // 1: IDLE
@@ -791,70 +792,41 @@ void DefineSDPInstrs(Ila& m) {
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_PERF_DMA_EN)), SelectBit(m.input("csb_data"), 0));
     }
 
-    // { // Start from IDLE
-    //     auto instr = m.NewInstr("Start");
-    //     auto group0_ok = consumer == BvConst(0,1) & m.state(GetVarName("group0_", NVDLA_CSC_D_OP_ENABLE)) == BvConst(1,1);
-    //     auto group1_ok = consumer == BvConst(1,1) & m.state(GetVarName("group1_", NVDLA_CSC_D_OP_ENABLE)) == BvConst(1,1);
-    //     instr.SetDecode(csc_state == IDLE & (group0_ok | group1_ok));
+    // Start register group from IDLE
+    { // Group 0
+        auto instr = m.NewInstr("Start_group0");
+        auto group0_ok = consumer == BvConst(0,1) & m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)) == BvConst(1,1);
+        instr.SetDecode(group0_sdp_state == IDLE & group0_ok);
 
-    //     auto pending0 = consumer == BvConst(0,1) & (m.state(GetVarName("group0_", NVDLA_CSC_D_DATA_BANK)) != m.state("last_data_bank") | 
-    //                                                m.state(GetVarName("group0_", NVDLA_CSC_D_WEIGHT_BANK)) != m.state("last_weight_bank") );
-    //     auto pending1 = consumer == BvConst(1,1) & (m.state(GetVarName("group1_", NVDLA_CSC_D_DATA_BANK)) != m.state("last_data_bank") | 
-    //                                                m.state(GetVarName("group1_", NVDLA_CSC_D_WEIGHT_BANK)) != m.state("last_weight_bank") );
-    //     auto need_pending = pending0 | pending1;
-    //     instr.SetUpdate(csc_state, Ite(need_pending, PEND, BUSY));
-    // }
+        instr.SetUpdate(group0_sdp_state, BUSY);
+    }
 
-    // { // Pend2Busy
-    //     auto instr = m.NewInstr("Pend2Busy");
-    //     instr.SetDecode(csc_state == PEND & m.input("pending_clr") == BvConst(1,1));
-    //     instr.SetUpdate(csc_state, BUSY);
-    // }
+    { // Group 1
+        auto instr = m.NewInstr("Start_group1");
+        auto group1_ok = consumer == BvConst(1,1) & m.state(GetVarName("group1_", NVDLA_SDP_D_OP_ENABLE)) == BvConst(1,1);
+        instr.SetDecode(group1_sdp_state == IDLE & group1_ok);
 
-    // { // DataOutput 21 cycles
-    //   // Abstract the data computation
-    //     auto instr = m.NewInstr("Data_Output");
-    //     instr.SetDecode(csc_state == BUSY & m.input("sg2dl_vld") == BvConst(1,1));
-    //     instr.SetUpdate(m.state("data_valid"), BvConst(1, 1));
-    // }
+        instr.SetUpdate(group1_sdp_state, BUSY);
+    }
 
-    // { // WeightOutput 21 cycles
-    //   // Abstract the data computation
-    //     auto instr = m.NewInstr("Weight_Output");
-    //     instr.SetDecode(csc_state == BUSY & m.input("sg2wt_vld") == BvConst(1,1));
-    //     instr.SetUpdate(m.state("weight_valid"), BvConst(1, 1));
-    // }
+    // Busy2Done
+    { // Group 0
+        auto instr = m.NewInstr("Busy2Done_group0");
+        instr.SetDecode(group0_sdp_state == BUSY & SelectBit(m.input("fifo_clr"), 0) == 0x1);
 
-    // { // Busy2Done
-    //     auto instr = m.NewInstr("Busy2Done");
-    //     instr.SetDecode(csc_state == BUSY & m.input("fifo_clr"));
+        instr.SetUpdate(group0_sdp_state, DONE);
+    }
 
-    //     instr.SetUpdate(csc_state, DONE);
-    // }
+    // Done2Idle0
+    { // Group 0
+        auto instr = m.NewInstr("Done2Idle_group0");
+        instr.SetDecode(group0_sdp_state == DONE & m.input("done") & consumer == BvConst(0,1));
 
-    // { // Done2Idle0
-    //     auto instr = m.NewInstr("Done2Idle_0");
-    //     instr.SetDecode(csc_state == DONE & m.input("done") & consumer == BvConst(0,1));
+        instr.SetUpdate(group0_sdp_state, IDLE);
+        instr.SetUpdate(consumer, BvConst(1,1));
 
-    //     instr.SetUpdate(csc_state, IDLE);
-    //     instr.SetUpdate(consumer, BvConst(1,1));
-    //     instr.SetUpdate(m.state("last_data_bank"), m.state(GetVarName("group0_", NVDLA_CSC_D_DATA_BANK)));
-    //     instr.SetUpdate(m.state("last_weight_bank"), m.state(GetVarName("group0_", NVDLA_CSC_D_WEIGHT_BANK)));
-
-    //     instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_CSC_D_OP_ENABLE)), BvConst(0,1));
-    // }
-
-    // { // Done2Idle1
-    //     auto instr = m.NewInstr("Done2Idle_1");
-    //     instr.SetDecode(csc_state == DONE & m.input("done") & consumer == BvConst(1,1));
-
-    //     instr.SetUpdate(csc_state, IDLE);
-    //     instr.SetUpdate(consumer, BvConst(0,1));
-    //     instr.SetUpdate(m.state("last_data_bank"), m.state(GetVarName("group1_", NVDLA_CSC_D_DATA_BANK)));
-    //     instr.SetUpdate(m.state("last_weight_bank"), m.state(GetVarName("group1_", NVDLA_CSC_D_WEIGHT_BANK)));
-
-    //     instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_CSC_D_OP_ENABLE)), BvConst(0,1));
-    // }
+        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), BvConst(0,1));
+    }
 
 }
 

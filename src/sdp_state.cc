@@ -293,7 +293,8 @@ void DefineSDPState(Ila& m) {
     // m.NewBvState("credits", 9);
 
     // State
-    m.NewBvState("sdp_state", 2);
+    m.NewBvState("group0_sdp_state", 2);
+    m.NewBvState("group1_sdp_state", 2);
 }
 
 
