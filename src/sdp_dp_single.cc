@@ -94,6 +94,10 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                     (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
         auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
 
+        // config group 0 -> sdp_state = IDLE
+        // enable group 0 -> sdp_state = BUSY
+        // consumer is group 0 + config group 1 -> sdp_state = BUSY
+
         instr.SetDecode(group0_regs);
 
         // Determine the source of the input
@@ -120,7 +124,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
                     (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_ALGO)), 1, 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
         // auto y_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS))) & 
         //             (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_BYPASS)));
-        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & group0_unset;
+        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
 
         instr.SetDecode(group0_regs);
 
@@ -633,85 +637,85 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         instr.SetUpdate(m.state("id"), id);
     }
 
-    // { // Perform interpolation or extrapolation
-    //     auto instr = m.NewInstr("Final_LUT_Processing");
-    //     auto reg_group = "group0_";
+    { // Perform interpolation or extrapolation
+        auto instr = m.NewInstr("Final_LUT_Processing");
+        auto reg_group = "group0_";
 
-    //     // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
-    //     auto access_type = SelectBit(m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE), 0);
-    //     auto table_id = SelectBit(m.state(NVDLA_SDP_S_LUT_TABLE_ID), 0);
-    //     auto lut_bypass = SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)), 0);
-    //     auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
-    //     auto lut_function = SelectBit(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION), 0); 
+        // ... lut access type needs to be 1 for write, table id needs to be 1 for lo and 0 for le
+        auto access_type = SelectBit(m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE), 0);
+        auto table_id = SelectBit(m.state(NVDLA_SDP_S_LUT_TABLE_ID), 0);
+        auto lut_bypass = SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)), 0);
+        auto lut_data = m.state(NVDLA_SDP_S_LUT_ACCESS_DATA);
+        auto lut_function = SelectBit(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION), 0); 
 
-    //     instr.SetDecode(access_type == 0x0 & table_id == 0x1 & lut_bypass == 0x0);
+        instr.SetDecode(access_type == 0x0 & table_id == 0x1 & lut_bypass == 0x0);
 
-    //     // LUT parameters
-    //     auto index = Extract(m.state("index"), 8, 0);
-    //     auto fraction = Extract(m.state("fraction"), 8, 0);
-    //     auto oflow = SelectBit(m.state("oflow"), 0);
-    //     auto uflow = SelectBit(m.state("uflow"), 0);
-    //     auto id = SelectBit(m.state("id"), 0);
+        // LUT parameters
+        auto index = Extract(m.state("index"), 8, 0);
+        auto fraction = Extract(m.state("fraction"), 8, 0);
+        auto oflow = SelectBit(m.state("oflow"), 0);
+        auto uflow = SelectBit(m.state("uflow"), 0);
+        auto id = SelectBit(m.state("id"), 0);
 
-    //     // LUT outputs
-    //     auto the_table = Ite(id == 0x1, m.state("lo_table"), m.state("le_table"));
-    //     auto y0 = Load(SelectBit(the_table, 0), index);
-    //     auto y1 = Ite(oflow == 0x0 & uflow == 0x1, Load(SelectBit(the_table, 0), index + 1), BvConst(0, 16));
+        // LUT outputs
+        auto the_table = Ite(id == 0x1, m.state("lo_tbl"), m.state("le_tbl"));
+        auto y0 = Load(SelectBit(the_table, 0), index);
+        auto y1 = Ite(oflow == 0x0 & uflow == 0x1, Load(SelectBit(the_table, 0), index + 1), BvConst(0, 16));
 
-    //     auto bias = 
-    //     Ite((oflow == 0x0 | uflow == 0x0) & SelectBit(the_table, 0) == 0x0 & lut_function == 0x0 & oflow == 0 & m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 
-    //         BvConst(1, 8) << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 
-    //         BvConst(0, 8)
-    //     );
+        auto bias = 
+        Ite((oflow == 0x0 | uflow == 0x0) & SelectBit(the_table, 0) == 0x0 & lut_function == 0x0 & oflow == 0 & m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 
+            BvConst(1, 8) << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 
+            BvConst(0, 8)
+        );
         
-    //     auto scale = 
-    //     Ite(oflow == 0x1 | uflow == 0x1,
-    //         Ite(id == 0x0,
-    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SCALE)),
-    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SCALE))
-    //         ),
-    //         BvConst(0, 16)
-    //     );
+        auto scale = 
+        Ite(oflow == 0x1 | uflow == 0x1,
+            Ite(id == 0x0,
+                Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SCALE)),
+                Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SCALE), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SCALE))
+            ),
+            BvConst(0, 16)
+        );
 
-    //     auto shift = 
-    //     Ite(oflow == 0x1 | uflow == 0x1,
-    //         Ite(id == 0x0,
-    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SHIFT)),
-    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SHIFT))
-    //         ),
-    //         BvConst(0, 5)
-    //     );
+        auto shift = 
+        Ite(oflow == 0x1 | uflow == 0x1,
+            Ite(id == 0x0,
+                Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SHIFT)),
+                Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SHIFT), m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SHIFT))
+            ),
+            BvConst(0, 5)
+        );
 
-    //     auto offset = 
-    //     Ite(oflow == 0x1 | uflow == 0x1,
-    //         Ite(id == 0x0,
-    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LE_END), m.state(NVDLA_SDP_S_LUT_LE_START)),
-    //             Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LO_END), m.state(NVDLA_SDP_S_LUT_LO_START))
-    //         ),
-    //         BvConst(0, 32)
-    //     );
+        auto offset = 
+        Ite(oflow == 0x1 | uflow == 0x1,
+            Ite(id == 0x0,
+                Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LE_END), m.state(NVDLA_SDP_S_LUT_LE_START)),
+                Ite(oflow == 0x1, m.state(NVDLA_SDP_S_LUT_LO_END), m.state(NVDLA_SDP_S_LUT_LO_START))
+            ),
+            BvConst(0, 32)
+        );
 
-    //     // Interpolation and extrapolation
-    //     auto o =
-    //     Ite(oflow == 0x1 | uflow == 0x1,
-    //         y0 + ((lut_data - bias - offset) * scale) >> shift,
-    //         (((1 << 35) - fraction) * y0) + (fraction * y1)
-    //     );
+        // Interpolation and extrapolation
+        auto o =
+        Ite(oflow == 0x1 | uflow == 0x1,
+            y0 + ((lut_data - bias - offset) * scale) >> shift,
+            (((BvConst(1, 35) << 35) - fraction) * y0) + (fraction * y1)
+        );
 
-    //     auto oMax = (BvConst(1, 32) << 31) - 1;
-    //     auto oMin = -(1 << 31);
-    //     auto out_data =
-    //     Ite(oflow == 0x1 | uflow == 0x1,
-    //         Ite(o > oMax, 
-    //             oMax,
-    //             Ite(o < oMin,
-    //                 oMin,
-    //                 o
-    //             )            
-    //         ),
-    //         o >> 35
-    //     );
-    // }
+        auto oMax = (BvConst(1, 32) << 31) - 1;
+        auto oMin = -(BvConst(1, 32) << 31);
+        auto out_data =
+        Ite(oflow == 0x1 | uflow == 0x1,
+            Ite(o > oMax, 
+                oMax,
+                Ite(o < oMin,
+                    oMin,
+                    o
+                )            
+            ),
+            o >> 35
+        );
+    }
 
     // { // Perform conversion on inputs to the Y sub-unit
     //     // Determine the source of the operands

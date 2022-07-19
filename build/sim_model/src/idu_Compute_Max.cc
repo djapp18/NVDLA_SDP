@@ -60,8 +60,9 @@ bool local_var_68 = (sdp_s_consumer == local_var_67);
 bool local_var_69 = (local_var_65 & local_var_68);
 sc_biguint<1> local_var_71 = 0;
 bool local_var_72 = (sdp_group0_d_op_en == local_var_71);
-bool local_var_73 = (local_var_69 & local_var_72);
-auto& univ_var_95 = local_var_73;
+bool local_var_73 = !local_var_72;
+bool local_var_74 = (local_var_69 & local_var_73);
+auto& univ_var_95 = local_var_74;
 return univ_var_95;
 }
 void sdp::update_sdp_Compute_Max() {

@@ -138,6 +138,10 @@ SC_MODULE(testbench) {
 
 
     // will need to use a for loop here; basically, look at the corresponding signals in sdp.h
+    for (int i = 0; i < 16; i++) {
+
+    }
+
     sdp_inst.sdp_sdp_top_cacc_data_in(sdp_cacc_data_signal);
     sdp_inst.sdp_sdp_vir_mrdma_data_in(sdp_mrdma_data_signal);
     sdp_inst.sdp_sdp_vir_regs_data_in(sdp_regs_data_signal);
@@ -163,19 +167,24 @@ SC_MODULE(testbench) {
 
     ofstream fout;
     fout.open(output_path, ios::out | ios::trunc);
-    std::vector<json> result_v;
-    for (auto it : vta_inst.vta_vta_virtual_dram_out) {
-      std::stringstream s_addr;
-      std::stringstream s_data;
-      s_addr << std::hex << it.first;
-      s_data << std::hex << it.second;
-      json temp = {
-        {"addr", "0x" + s_addr.str()},
-        {"data", "0x" + s_data.str()}
-      };
-      result_v.push_back(temp);
-    }
-    json result = result_v;
+
+    fout << "    sdp_pdp_output_0 => " << std::hex << "0x" << sdp_pdp_output_0 << std::endl; 
+    fout << "    sdp_pdp_output_1 => " << std::hex << "0x" << sdp_pdp_output_1 << std::endl; 
+    fout << "    sdp_pdp_output_10 => " << std::hex << "0x" << sdp_pdp_output_10 << std::endl; 
+    fout << "    sdp_pdp_output_11 => " << std::hex << "0x" << sdp_pdp_output_11 << std::endl; 
+    fout << "    sdp_pdp_output_12 => " << std::hex << "0x" << sdp_pdp_output_12 << std::endl; 
+    fout << "    sdp_pdp_output_13 => " << std::hex << "0x" << sdp_pdp_output_13 << std::endl; 
+    fout << "    sdp_pdp_output_14 => " << std::hex << "0x" << sdp_pdp_output_14 << std::endl; 
+    fout << "    sdp_pdp_output_15 => " << std::hex << "0x" << sdp_pdp_output_15 << std::endl; 
+    fout << "    sdp_pdp_output_2 => " << std::hex << "0x" << sdp_pdp_output_2 << std::endl; 
+    fout << "    sdp_pdp_output_3 => " << std::hex << "0x" << sdp_pdp_output_3 << std::endl; 
+    fout << "    sdp_pdp_output_4 => " << std::hex << "0x" << sdp_pdp_output_4 << std::endl; 
+    fout << "    sdp_pdp_output_5 => " << std::hex << "0x" << sdp_pdp_output_5 << std::endl; 
+    fout << "    sdp_pdp_output_6 => " << std::hex << "0x" << sdp_pdp_output_6 << std::endl; 
+    fout << "    sdp_pdp_output_7 => " << std::hex << "0x" << sdp_pdp_output_7 << std::endl; 
+    fout << "    sdp_pdp_output_8 => " << std::hex << "0x" << sdp_pdp_output_8 << std::endl; 
+    fout << "    sdp_pdp_output_9 => " << std::hex << "0x" << sdp_pdp_output_9 << std::endl; 
+
     fout << std::setw(2) << result;
 
     fout.close();
