@@ -644,6 +644,7 @@ SC_MODULE(sdp) {
   bool decode_sdp_Done2Idle_group0();
   bool decode_sdp_FEATURE_MODE_CFG_group0();
   bool decode_sdp_FEATURE_MODE_CFG_group1();
+  bool decode_sdp_Final_LUT_Processing();
   bool decode_sdp_LUT_ACCESS_CFG();
   bool decode_sdp_LUT_ACCESS_DATA();
   bool decode_sdp_LUT_CFG();
@@ -748,6 +749,7 @@ SC_MODULE(sdp) {
   void update_sdp_Done2Idle_group0();
   void update_sdp_FEATURE_MODE_CFG_group0();
   void update_sdp_FEATURE_MODE_CFG_group1();
+  void update_sdp_Final_LUT_Processing();
   void update_sdp_LUT_ACCESS_CFG();
   void update_sdp_LUT_ACCESS_DATA();
   void update_sdp_LUT_CFG();
