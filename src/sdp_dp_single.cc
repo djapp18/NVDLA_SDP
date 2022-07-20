@@ -40,6 +40,10 @@ namespace ilang {
 // - looks like when doing configure, have producer & !group0; here do consumer & group0 (i.e., this is datapath running, no more config here)
 // - remake the following instructions with general functions, will prevent need to have too much code re-write (ie, still have group instructions and just pass in name of group as an arg)
 
+// =============================================================================
+// Datapath modules
+// =============================================================================
+
 ExprRef IntLog2(ExprRef operand) {
     const int length = operand.bit_width();
     
@@ -63,9 +67,15 @@ ExprRef IntLog2Frac(ExprRef operand, ExprRef index) {
     return operand & ((BvConst(1, 32) << index) - 1);
 }
 
+    // config group 0 -> sdp_state = IDLE
+    // enable group 0 -> sdp_state = BUSY
+    // consumer is group 0 + config group 1 -> sdp_state = BUSY
+
 void DefineSDPInstrsDP_Single(Ila& m) {
-    // m.AddInit(m.state(NVDLA_CSC_S_STATUS_0) == BvConst(0, 2));
-    // m.AddInit(m.state(NVDLA_CSC_S_STATUS_1) == BvConst(0, 2));
+
+    // =============================================================================
+    // Setup
+    // =============================================================================
 
     // CSB MIMO
     auto csb_addr = Extract(Concat(m.input("csb_addr"), BvConst(0,2)), 11, 0);
@@ -82,23 +92,27 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     // 2: Producer (op_enable) and Consumer
     // 3: Producer (op_enable) but not consumer
 
-    { // ReLU computation - Group 0
-    // should be !group_unset everywhere or use state == busy
-        auto instr = m.NewInstr("Compute_ReLU");
-        auto reg_group = "group0_";
+    auto group0 = "group0_";
+    auto group1 = "group1_";
+
+    // =============================================================================
+    // Instruction execution
+    // =============================================================================
+
+    // ReLU only
+    // isntead of using lambda, just kick this back out of the function and pass in m as an arg
+    InstrRef ReLU_Compute = [&m](string reg_group) {
+        // should be !group_unset everywhere or use state == busy
+        auto instr = m.NewInstr("Compute_ReLU_" + reg_group);
 
         // Account for possibility that ReLU can be computed using either the X1 module or the X2 module
         auto x1_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
                     (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)), 0) == 0x1);
         auto x2_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
                     (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
-        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
+        auto group_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
 
-        // config group 0 -> sdp_state = IDLE
-        // enable group 0 -> sdp_state = BUSY
-        // consumer is group 0 + config group 1 -> sdp_state = BUSY
-
-        instr.SetDecode(group0_regs);
+        instr.SetDecode(group_regs);
 
         // Determine the source of the input
         auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
@@ -111,6 +125,16 @@ void DefineSDPInstrsDP_Single(Ila& m) {
             auto output = Ite((input > 0x0), input, BvConst(0, 32));
             instr.SetUpdate(pdp_output, output);
         }
+
+        return instr;
+    };
+
+    { // Group 0
+        auto instr = ReLU_Compute(group0);  
+    }
+
+    { // Group 1
+        auto instr = ReLU_Compute(group1);  
     }
 
     { // ALU max computation - Group 0
@@ -657,13 +681,17 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         auto uflow = SelectBit(m.state("uflow"), 0);
         auto id = SelectBit(m.state("id"), 0);
 
-        // LUT outputs
-        auto the_table = Ite(id == 0x1, m.state("lo_tbl"), m.state("le_tbl"));
-        auto y0 = Load(SelectBit(the_table, 0), index);
-        auto y1 = Ite(oflow == 0x0 & uflow == 0x1, Load(SelectBit(the_table, 0), index + 1), BvConst(0, 16));
+        // LUT outputs       
+        
+        auto y0 = Ite(id == 0x1, Load(m.state("lo_tbl"), index), Load(m.state("le_tbl"), Extract(index, 6, 0)));
+        auto y1 = 
+        Ite(id == 0x1,
+            Ite(oflow == 0x0 & uflow == 0x1, Load(m.state("lo_tbl"), index + 1), BvConst(0, 16)),
+            Ite(oflow == 0x0 & uflow == 0x1, Load(m.state("le_tbl"), Extract(index, 6, 0) + 1), BvConst(0, 16))
+        );    
 
         auto bias = 
-        Ite((oflow == 0x0 | uflow == 0x0) & SelectBit(the_table, 0) == 0x0 & lut_function == 0x0 & oflow == 0 & m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 
+        Ite((oflow == 0x0 | uflow == 0x0) & id == 0x0 & lut_function == 0x0 & oflow == 0 & m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 
             BvConst(1, 8) << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 
             BvConst(0, 8)
         );
@@ -698,18 +726,18 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         // Interpolation and extrapolation
         auto o =
         Ite(oflow == 0x1 | uflow == 0x1,
-            y0 + ((lut_data - bias - offset) * scale) >> shift,
-            (((BvConst(1, 35) << 35) - fraction) * y0) + (fraction * y1)
+            Concat(BvConst(0, 3), Concat(BvConst(0, 16), y0) + ((Concat(BvConst(0, 16), lut_data) - Concat(BvConst(0, 24), bias) - offset) * Concat(BvConst(0, 16), scale)) >> Concat(BvConst(0, 27), shift)),
+            (((BvConst(1, 35) << 35) - Concat(BvConst(0, 26), fraction)) * Concat(BvConst(0, 19), y0)) + (Concat(BvConst(0, 26), fraction) * Concat(BvConst(0, 19), y1))
         );
 
         auto oMax = (BvConst(1, 32) << 31) - 1;
         auto oMin = -(BvConst(1, 32) << 31);
         auto out_data =
         Ite(oflow == 0x1 | uflow == 0x1,
-            Ite(o > oMax, 
-                oMax,
-                Ite(o < oMin,
-                    oMin,
+            Ite(o > Concat(BvConst(0, 3), oMax), 
+                Concat(BvConst(0, 3), oMax),
+                Ite(o < Concat(BvConst(0, 3), oMin),
+                    Concat(BvConst(0, 3), oMin),
                     o
                 )            
             ),
