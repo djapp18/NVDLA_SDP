@@ -119,6 +119,7 @@ SC_MODULE(testbench) {
     sdp_inst("sdp_inst"),
     src("source")
   {
+    // Parse from the prog_frag file
     src.clk(clk);
     src.sdp_cacc_data(sdp_cacc_data_signal);
     src.sdp_mrdma_data(sdp_mrdma_data_signal);
@@ -135,17 +136,93 @@ SC_MODULE(testbench) {
 
     src.input_done(input_done);
 
+    // Link with the sdp.h SystemC model
 
+    // Possible to have loops with maps?
+    // Source: https://stackoverflow.com/questions/4294100/creating-a-class-indexer-operator-allowing-string-parameter-string-index
+    // for relu, have the next instructions be setting the bypass logic for group 0, then set enable bit and go with dp instr
 
-    // will need to use a for loop here; basically, look at the corresponding signals in sdp.h
-    for (int i = 0; i < 16; i++) {
+    // All CACC input signals
+    sdp_instr.sdp_cacc_data_0_in(sdp_cacc_data_signal[0]);
+    sdp_instr.sdp_cacc_data_1_in(sdp_cacc_data_signal[1]);
+    sdp_instr.sdp_cacc_data_2_in(sdp_cacc_data_signal[2]);
+    sdp_instr.sdp_cacc_data_3_in(sdp_cacc_data_signal[3]);
+    sdp_instr.sdp_cacc_data_4_in(sdp_cacc_data_signal[4]);
+    sdp_instr.sdp_cacc_data_5_in(sdp_cacc_data_signal[5]);
+    sdp_instr.sdp_cacc_data_6_in(sdp_cacc_data_signal[6]);
+    sdp_instr.sdp_cacc_data_7_in(sdp_cacc_data_signal[7]);
+    sdp_instr.sdp_cacc_data_8_in(sdp_cacc_data_signal[8]);
+    sdp_instr.sdp_cacc_data_9_in(sdp_cacc_data_signal[9]);
+    sdp_instr.sdp_cacc_data_10_in(sdp_cacc_data_signal[10]);
+    sdp_instr.sdp_cacc_data_11_in(sdp_cacc_data_signal[11]);
+    sdp_instr.sdp_cacc_data_12_in(sdp_cacc_data_signal[12]);
+    sdp_instr.sdp_cacc_data_13_in(sdp_cacc_data_signal[13]);
+    sdp_instr.sdp_cacc_data_14_in(sdp_cacc_data_signal[14]);
+    sdp_instr.sdp_cacc_data_15_in(sdp_cacc_data_signal[15]);
 
-    }
+    // All MRDMA input signals
+    sdp_instr.sdp_mrdma_data_0_in(sdp_mrdma_data_signal[0]);
+    sdp_instr.sdp_mrdma_data_1_in(sdp_mrdma_data_signal[1]);
+    sdp_instr.sdp_mrdma_data_2_in(sdp_mrdma_data_signal[2]);
+    sdp_instr.sdp_mrdma_data_3_in(sdp_mrdma_data_signal[3]);
+    sdp_instr.sdp_mrdma_data_4_in(sdp_mrdma_data_signal[4]);
+    sdp_instr.sdp_mrdma_data_5_in(sdp_mrdma_data_signal[5]);
+    sdp_instr.sdp_mrdma_data_6_in(sdp_mrdma_data_signal[6]);
+    sdp_instr.sdp_mrdma_data_7_in(sdp_mrdma_data_signal[7]);
+    sdp_instr.sdp_mrdma_data_8_in(sdp_mrdma_data_signal[8]);
+    sdp_instr.sdp_mrdma_data_9_in(sdp_mrdma_data_signal[9]);
+    sdp_instr.sdp_mrdma_data_10_in(sdp_mrdma_data_signal[10]);
+    sdp_instr.sdp_mrdma_data_11_in(sdp_mrdma_data_signal[11]);
+    sdp_instr.sdp_mrdma_data_12_in(sdp_mrdma_data_signal[12]);
+    sdp_instr.sdp_mrdma_data_13_in(sdp_mrdma_data_signal[13]);
+    sdp_instr.sdp_mrdma_data_14_in(sdp_mrdma_data_signal[14]);
+    sdp_instr.sdp_mrdma_data_15_in(sdp_mrdma_data_signal[15]);
 
-    sdp_inst.sdp_sdp_top_cacc_data_in(sdp_cacc_data_signal);
-    sdp_inst.sdp_sdp_vir_mrdma_data_in(sdp_mrdma_data_signal);
-    sdp_inst.sdp_sdp_vir_regs_data_in(sdp_regs_data_signal);
-    sdp_inst.sdp_sdp_vir_dma_data_in(sdp_dma_data_signal);
+    // All regs input signals
+    sdp_instr.sdp_regs_data_0_in(sdp_regs_data_signal[0]);
+    sdp_instr.sdp_regs_data_1_in(sdp_regs_data_signal[1]);
+    sdp_instr.sdp_regs_data_2_in(sdp_regs_data_signal[2]);
+    sdp_instr.sdp_regs_data_3_in(sdp_regs_data_signal[3]);
+    sdp_instr.sdp_regs_data_4_in(sdp_regs_data_signal[4]);
+    sdp_instr.sdp_regs_data_5_in(sdp_regs_data_signal[5]);
+    sdp_instr.sdp_regs_data_6_in(sdp_regs_data_signal[6]);
+    sdp_instr.sdp_regs_data_7_in(sdp_regs_data_signal[7]);
+    sdp_instr.sdp_regs_data_8_in(sdp_regs_data_signal[8]);
+    sdp_instr.sdp_regs_data_9_in(sdp_regs_data_signal[9]);
+    sdp_instr.sdp_regs_data_10_in(sdp_regs_data_signal[10]);
+    sdp_instr.sdp_regs_data_11_in(sdp_regs_data_signal[11]);
+    sdp_instr.sdp_regs_data_12_in(sdp_regs_data_signal[12]);
+    sdp_instr.sdp_regs_data_13_in(sdp_regs_data_signal[13]);
+    sdp_instr.sdp_regs_data_14_in(sdp_regs_data_signal[14]);
+    sdp_instr.sdp_regs_data_15_in(sdp_regs_data_signal[15]);
+
+    // All DMA input signals
+    sdp_instr.sdp_dma_data_0_in(sdp_dma_data_signal[0]);
+    sdp_instr.sdp_dma_data_1_in(sdp_dma_data_signal[1]);
+    sdp_instr.sdp_dma_data_2_in(sdp_dma_data_signal[2]);
+    sdp_instr.sdp_dma_data_3_in(sdp_dma_data_signal[3]);
+    sdp_instr.sdp_dma_data_4_in(sdp_dma_data_signal[4]);
+    sdp_instr.sdp_dma_data_5_in(sdp_dma_data_signal[5]);
+    sdp_instr.sdp_dma_data_6_in(sdp_dma_data_signal[6]);
+    sdp_instr.sdp_dma_data_7_in(sdp_dma_data_signal[7]);
+    sdp_instr.sdp_dma_data_8_in(sdp_dma_data_signal[8]);
+    sdp_instr.sdp_dma_data_9_in(sdp_dma_data_signal[9]);
+    sdp_instr.sdp_dma_data_10_in(sdp_dma_data_signal[10]);
+    sdp_instr.sdp_dma_data_11_in(sdp_dma_data_signal[11]);
+    sdp_instr.sdp_dma_data_12_in(sdp_dma_data_signal[12]);
+    sdp_instr.sdp_dma_data_13_in(sdp_dma_data_signal[13]);
+    sdp_instr.sdp_dma_data_14_in(sdp_dma_data_signal[14]);
+    sdp_instr.sdp_dma_data_15_in(sdp_dma_data_signal[15]);
+
+    // All CSB input signals
+    sdp_instr.sdp_csb_addr_in(sdp_csb_addr_signal);
+    sdp_instr.sdp_csb_data_in(sdp_csb_data_signal;
+    sdp_instr.sdp_csb_write_in(sdp_csb_write_signal);
+    sdp_instr.sdp_csb_vld_in(sdp_csb_vld_signal);
+
+    // All remaining input signals
+    sdp_instr.sdp_fifo_clr_in(sdp_fifo_clr_signal);
+    sdp_instr.sdp_done_in(sdp_done_signal);
 
     SC_THREAD(run);
   }

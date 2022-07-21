@@ -27,7 +27,8 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Min.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Multiply.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_PReLU.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_ReLU.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_ReLU_group0_.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_ReLU_group1_.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_CHANNEL_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_CHANNEL_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_HEIGHT_group0.cc

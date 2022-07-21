@@ -67,6 +67,41 @@ ExprRef IntLog2Frac(ExprRef operand, ExprRef index) {
     return operand & ((BvConst(1, 32) << index) - 1);
 }
 
+
+// =============================================================================
+// Instruction execution
+// =============================================================================
+
+// ReLU only
+InstrRef ReLU_Compute(Ila& m, string reg_group, ExprRef group_unset) {
+    // should be !group_unset everywhere or use state == busy
+    auto instr = m.NewInstr("Compute_ReLU_" + reg_group);
+    auto consumer = m.state(NVDLA_SDP_S_CONSUMER);
+
+    // Account for possibility that ReLU can be computed using either the X1 module or the X2 module
+    auto x1_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
+                (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)), 0) == 0x1);
+    auto x2_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
+                (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
+    auto group_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group_unset;
+
+    instr.SetDecode(group_regs);
+
+    // Determine the source of the input
+    auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
+
+    for (int i = 0; i < 16; i++) {
+        auto input = Ite(SelectBit(flying_mode, 0) == 0x1, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
+        auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
+
+        // Compute ReLU
+        auto output = Ite((input > 0x0), input, BvConst(0, 32));
+        instr.SetUpdate(pdp_output, output);
+    }
+
+    return instr;
+}
+
     // config group 0 -> sdp_state = IDLE
     // enable group 0 -> sdp_state = BUSY
     // consumer is group 0 + config group 1 -> sdp_state = BUSY
@@ -95,46 +130,12 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     auto group0 = "group0_";
     auto group1 = "group1_";
 
-    // =============================================================================
-    // Instruction execution
-    // =============================================================================
-
-    // ReLU only
-    // isntead of using lambda, just kick this back out of the function and pass in m as an arg
-    InstrRef ReLU_Compute = [&m](string reg_group) {
-        // should be !group_unset everywhere or use state == busy
-        auto instr = m.NewInstr("Compute_ReLU_" + reg_group);
-
-        // Account for possibility that ReLU can be computed using either the X1 module or the X2 module
-        auto x1_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
-                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)), 0) == 0x1);
-        auto x2_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
-                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
-        auto group_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
-
-        instr.SetDecode(group_regs);
-
-        // Determine the source of the input
-        auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
-
-        for (int i = 0; i < 16; i++) {
-            auto input = Ite(SelectBit(flying_mode, 0) == 0x1, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
-            auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
-
-            // Compute ReLU
-            auto output = Ite((input > 0x0), input, BvConst(0, 32));
-            instr.SetUpdate(pdp_output, output);
-        }
-
-        return instr;
-    };
-
     { // Group 0
-        auto instr = ReLU_Compute(group0);  
+        auto instr = ReLU_Compute(m, group0, group0_unset);  
     }
 
     { // Group 1
-        auto instr = ReLU_Compute(group1);  
+        auto instr = ReLU_Compute(m, group1, group1_unset);  
     }
 
     { // ALU max computation - Group 0

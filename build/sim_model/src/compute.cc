@@ -640,10 +640,16 @@ if (valid_sdp() && decode_sdp_Done2Idle_group0()) {
   LogInstrSequence("Done2Idle_group0");
 #endif
 }
-if (valid_sdp() && decode_sdp_Compute_ReLU()) {
-  update_sdp_Compute_ReLU();
+if (valid_sdp() && decode_sdp_Compute_ReLU_group0_()) {
+  update_sdp_Compute_ReLU_group0_();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_ReLU");
+  LogInstrSequence("Compute_ReLU_group0_");
+#endif
+}
+if (valid_sdp() && decode_sdp_Compute_ReLU_group1_()) {
+  update_sdp_Compute_ReLU_group1_();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Compute_ReLU_group1_");
 #endif
 }
 if (valid_sdp() && decode_sdp_Compute_Max()) {
