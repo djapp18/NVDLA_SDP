@@ -37,12 +37,11 @@ void DefineSDPInstrs(Ila& m) {
     auto csb_addr = Extract(Concat(m.input("csb_addr"), BvConst(0,2)), 11, 0);
     auto csb_valid = (m.state("csb_rdy") == BvConst(1,1)) & (m.input("csb_vld") == BvConst(1,1));
     auto csb_write = m.input("csb_write") == BvConst(1,1);
-    auto group0_unset = m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)) == BvConst(0,1);
-    auto group1_unset = m.state(GetVarName("group1_", NVDLA_SDP_D_OP_ENABLE)) == BvConst(0,1);
-    auto producer = m.state(NVDLA_SDP_S_PRODUCER);
-    auto consumer = m.state(NVDLA_SDP_S_CONSUMER);
-    auto group0_sdp_state = m.state("group0_sdp_state");
-    auto group1_sdp_state = m.state("group1_sdp_state");
+    auto group0_unset = SelectBit(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), 0) == BvConst(0,1);
+    auto group1_unset = SelectBit(m.state(GetVarName("group1_", NVDLA_SDP_D_OP_ENABLE)), 0) == BvConst(0,1);
+    auto producer = SelectBit(m.state(NVDLA_SDP_S_PRODUCER), 0);
+    auto consumer = SelectBit(m.state(NVDLA_SDP_S_CONSUMER), 0);
+    auto done = SelectBit(m.input("done"), 0);
 
     // Status: 3
     // 1: IDLE
@@ -54,7 +53,7 @@ void DefineSDPInstrs(Ila& m) {
         auto instr = m.NewInstr("SET_PRODUCER");
         instr.SetDecode(csb_addr == 0x004 & csb_valid & csb_write);
 
-        instr.SetUpdate(producer, Extract(m.input("csb_data"), 0, 0));
+        instr.SetUpdate(m.state(NVDLA_SDP_S_PRODUCER), Extract(m.input("csb_data"), 0, 0));
     }
 
     // LUT ACCESS CFG
@@ -792,40 +791,16 @@ void DefineSDPInstrs(Ila& m) {
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_PERF_DMA_EN)), SelectBit(m.input("csb_data"), 0));
     }
 
-    // Start register group from IDLE
-    { // Group 0
-        auto instr = m.NewInstr("Start_group0");
-        auto group0_ok = consumer == BvConst(0,1) & m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)) == BvConst(1,1);
-        instr.SetDecode(group0_sdp_state == IDLE & group0_ok);
+    // Receive DONE interrupt
+    // need to somehow reset all registers associated with previous group
+    // does the decode step need to be "exclusive"? so should every other instruction include & !done (both datapath and config)
+    { 
+        auto instr = m.NewInstr("DONE");
+        instr.SetDecode(done == BvConst(1, 1));
 
-        instr.SetUpdate(group0_sdp_state, BUSY);
-    }
-
-    { // Group 1
-        auto instr = m.NewInstr("Start_group1");
-        auto group1_ok = consumer == BvConst(1,1) & m.state(GetVarName("group1_", NVDLA_SDP_D_OP_ENABLE)) == BvConst(1,1);
-        instr.SetDecode(group1_sdp_state == IDLE & group1_ok);
-
-        instr.SetUpdate(group1_sdp_state, BUSY);
-    }
-
-    // Busy2Done
-    { // Group 0
-        auto instr = m.NewInstr("Busy2Done_group0");
-        instr.SetDecode(group0_sdp_state == BUSY & SelectBit(m.input("fifo_clr"), 0) == 0x1);
-
-        instr.SetUpdate(group0_sdp_state, DONE);
-    }
-
-    // Done2Idle0
-    { // Group 0
-        auto instr = m.NewInstr("Done2Idle_group0");
-        instr.SetDecode(group0_sdp_state == DONE & m.input("done") & consumer == BvConst(0,1));
-
-        instr.SetUpdate(group0_sdp_state, IDLE);
-        instr.SetUpdate(consumer, BvConst(1,1));
-
-        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), BvConst(0,1));
+        auto new_consumer = Ite(SelectBit(m.state(NVDLA_SDP_S_CONSUMER), 0) == 0x0, BvConst(1, 1), BvConst(0, 1));
+        instr.SetUpdate(m.state(NVDLA_SDP_S_CONSUMER), new_consumer);
+        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), BvConst(0, 1));
     }
 
 }

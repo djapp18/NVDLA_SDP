@@ -373,12 +373,6 @@ inline std::string GetVarName(const std::string& var_name0, const std::string& v
 #define NVDLA_SDP_D_PERF_LUT_LO_HIT   "d_lut_lo_hit"
 #define NVDLA_SDP_D_PERF_LUT_LO_HIT_WIDTH 32
 
-// states
-#define IDLE BvConst(0,2)
-#define PEND BvConst(1,2)
-#define BUSY BvConst(2,2)
-#define DONE BvConst(3,2)
-
 } // namespace ilang
 
 #endif // NVDLA_SDP_CONFIG_H__

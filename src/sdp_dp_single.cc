@@ -39,6 +39,7 @@ namespace ilang {
 // - make a copy of every instruction for group 1
 // - looks like when doing configure, have producer & !group0; here do consumer & group0 (i.e., this is datapath running, no more config here)
 // - remake the following instructions with general functions, will prevent need to have too much code re-write (ie, still have group instructions and just pass in name of group as an arg)
+// do this with a for loop eventually + add flag to alu_compute so it allows for LUT to follow
 
 // =============================================================================
 // Datapath modules
@@ -102,6 +103,64 @@ InstrRef ReLU_Compute(Ila& m, string reg_group, ExprRef group_unset) {
     return instr;
 }
 
+InstrRef ALU_Compute(Ila &m, string reg_group, ExprRef group_unset, int alu_op) {
+    string alu_op_name;
+    if (alu_op == 0x0) {
+        auto alu_op_name = "Max_";
+    } else if (alu_op == 0x1) {
+        auto alu_op_name = "Min_";
+    } else if (alu_op == 0x2) {
+        auto alu_op_name = "Add_";
+    }
+
+    auto instr = m.NewInstr("Compute_" + alu_op_name + reg_group);
+    auto consumer = m.state(NVDLA_SDP_S_CONSUMER);
+
+    // Account for possibility that ALU max can be computed using either the X1 module, X2 module, or Y module
+    auto x1_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
+                (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_ALGO)), 1, 0) == alu_op & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)), 0) == 0x1);
+    auto x2_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
+                (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_ALGO)), 1, 0) == alu_op & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
+    // auto y_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS))) & 
+    //             (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_BYPASS)));
+    auto group_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group_unset;
+
+    instr.SetDecode(group_regs);
+
+    // Determine the source of the operands
+    auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
+    auto data_source = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SRC));
+    auto alu_shift = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SHIFT_VALUE));
+
+    for (int i = 0; i < 16; i++) {
+        // Setup operands
+        auto input = Ite(SelectBit(flying_mode, 0) == 0x1, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
+        auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
+        auto operand = Ite(SelectBit(data_source, 0) == 0x1, m.input(GetVarName("dma_data_", (std::to_string(i)))), m.input(GetVarName("regs_data_", (std::to_string(i)))));
+
+        // Compute ALU operation
+        auto operand_shifted = operand << Concat(BvConst(0, 10), alu_shift);
+        auto operand_shifted_extend = Concat(BvConst(0, 16), operand_shifted);
+        auto output = 
+        Ite(BvConst(alu_op, 2) == BvConst(0, 2), 
+            Ite(input > operand_shifted_extend,
+                input,
+                operand_shifted_extend
+            ),
+            Ite(BvConst(alu_op, 2) == BvConst(1, 2),
+                Ite(input < operand_shifted_extend,
+                    input,
+                    operand_shifted_extend
+                ),
+                input + operand_shifted_extend
+            )
+        );
+        instr.SetUpdate(pdp_output, output);
+    }
+
+    return instr;
+}
+
     // config group 0 -> sdp_state = IDLE
     // enable group 0 -> sdp_state = BUSY
     // consumer is group 0 + config group 1 -> sdp_state = BUSY
@@ -116,10 +175,10 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     auto csb_addr = Extract(Concat(m.input("csb_addr"), BvConst(0,2)), 11, 0);
     auto csb_valid = (m.state("csb_rdy") == BvConst(1,1)) & (m.input("csb_vld") == BvConst(1,1));
     auto csb_write = m.input("csb_write") == BvConst(1,1);
-    auto group0_unset = m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)) == BvConst(0,1);
-    auto group1_unset = m.state(GetVarName("group1_", NVDLA_SDP_D_OP_ENABLE)) == BvConst(0,1);
-    auto producer = m.state(NVDLA_SDP_S_PRODUCER);
-    auto consumer = m.state(NVDLA_SDP_S_CONSUMER);
+    auto group0_unset = SelectBit(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), 0) == BvConst(0,1);
+    auto group1_unset = SelectBit(m.state(GetVarName("group1_", NVDLA_SDP_D_OP_ENABLE)), 0) == BvConst(0,1);
+    auto producer = SelectBit(m.state(NVDLA_SDP_S_PRODUCER), 0);
+    auto consumer = SelectBit(m.state(NVDLA_SDP_S_CONSUMER), 0);
     auto csc_state = m.state("csc_state");
 
     // Status: 3
@@ -130,6 +189,7 @@ void DefineSDPInstrsDP_Single(Ila& m) {
     auto group0 = "group0_";
     auto group1 = "group1_";
 
+    // ReLU Only
     { // Group 0
         auto instr = ReLU_Compute(m, group0, group0_unset);  
     }
@@ -138,106 +198,31 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         auto instr = ReLU_Compute(m, group1, group1_unset);  
     }
 
-    { // ALU max computation - Group 0
-        auto instr = m.NewInstr("Compute_Max");
-        auto reg_group = "group0_";
-
-        // Account for possibility that ALU max can be computed using either the X1 module, X2 module, or Y module
-        auto x1_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
-                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_ALGO)), 1, 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)), 0) == 0x1);
-        auto x2_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
-                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_ALGO)), 1, 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
-        // auto y_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS))) & 
-        //             (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_BYPASS)));
-        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & !group0_unset;
-
-        instr.SetDecode(group0_regs);
-
-        // Determine the source of the operands
-        auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
-        auto data_source = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SRC));
-        auto alu_shift = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SHIFT_VALUE));
-
-        for (int i = 0; i < 16; i++) {
-            // Setup operands
-            auto input = Ite(SelectBit(flying_mode, 0) == 0x1, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
-            auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
-            auto operand = Ite(SelectBit(data_source, 0) == 0x1, m.input(GetVarName("dma_data_", (std::to_string(i)))), m.input(GetVarName("regs_data_", (std::to_string(i)))));
-
-            // Compute maximum
-            auto operand_shifted = operand << Concat(BvConst(0, 10), alu_shift);
-            auto operand_shifted_extend = Concat(BvConst(0, 16), operand_shifted);
-            auto output = Ite((input > operand_shifted_extend), input, operand_shifted_extend);
-            instr.SetUpdate(pdp_output, output);
-        }
+    // ALU Max Only
+    { // Group 0
+        auto instr = ALU_Compute(m, group0, group0_unset, 0);
     }
 
-    { // ALU min computation - Group 0
-        auto instr = m.NewInstr("Compute_Min");
-        auto reg_group = "group0_";
-
-        // Account for possibility that ALU min can be computed using either the X1 module, X2 module, or Y module
-        auto x1_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
-                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_ALGO)), 1, 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)), 0) == 0x1);
-        auto x2_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
-                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_ALGO)), 1, 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
-        // auto y_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS))) & 
-        //             (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_BYPASS)));
-        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & group0_unset;
-
-        instr.SetDecode(group0_regs);
-
-        // Determine the source of the operands
-        auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
-        auto data_source = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SRC));
-        auto alu_shift = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SHIFT_VALUE));
-
-        for (int i = 0; i < 16; i++) {
-            // Setup operands
-            auto input = Ite(SelectBit(flying_mode, 0) == 0x1, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
-            auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
-            auto operand = Ite(SelectBit(data_source, 0) == 0x1, m.input(GetVarName("dma_data_", (std::to_string(i)))), m.input(GetVarName("regs_data_", (std::to_string(i)))));
-
-            // Compute minimum
-            auto operand_shifted = operand << Concat(BvConst(0, 10), alu_shift);
-            auto operand_shifted_extend = Concat(BvConst(0, 16), operand_shifted);
-            auto output = Ite((input < operand_shifted_extend), input, operand_shifted_extend);
-            instr.SetUpdate(pdp_output, output);
-        }
+    { // Group 1
+        auto instr = ALU_Compute(m, group1, group1_unset, 0);
     }
 
-    { // ALU add computation - Group 0
-        auto instr = m.NewInstr("Compute_Add");
-        auto reg_group = "group0_";
+    // ALU Min Only
+    { // Group 0
+        auto instr = ALU_Compute(m, group0, group0_unset, 1);
+    }
 
-        // Account for possibility that ALU add can be computed using either the X1 module, X2 module, or Y module
-        auto x1_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
-                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_ALGO)), 1, 0) == 0x2 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_MUL_BYPASS)), 0) == 0x1);
-        auto x2_ok_g0 = (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS)), 0) == 0x0 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)), 0) == 0x1) & 
-                    (SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_BYPASS)), 0) == 0x0 & Extract(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_ALU_ALGO)), 1, 0) == 0x2 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_RELU_BYPASS)), 0) == 0x1 & SelectBit(m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_MUL_BYPASS)), 0) == 0x1);
-        // auto y_ok_g0 = (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_BN_BYPASS))) & 
-        //             (!m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_ALU_ALGO)) == 0x0 & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_LUT_BYPASS)) & m.state(GetVarName(reg_group, NVDLA_SDP_D_EW_MUL_BYPASS)));
-        auto group0_regs = (x1_ok_g0 | x2_ok_g0) & consumer == BvConst(0, 1) & group0_unset;
+    { // Group 1
+        auto instr = ALU_Compute(m, group1, group1_unset, 1);
+    }
 
-        instr.SetDecode(group0_regs);
+    // ALU Add Only
+    { // Group 0
+        auto instr = ALU_Compute(m, group0, group0_unset, 2);
+    }
 
-        // Determine the source of the operands
-        auto flying_mode = m.state(GetVarName(reg_group, NVDLA_SDP_D_FLYING_MODE));
-        auto data_source = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SRC));
-        auto alu_shift = m.state(GetVarName(reg_group, NVDLA_SDP_D_BS_ALU_SHIFT_VALUE));
-
-        for (int i = 0; i < 16; i++) {
-            // Setup operands
-            auto input = Ite(SelectBit(flying_mode, 0) == 0x1, m.input(GetVarName("cacc_data_", (std::to_string(i)))), m.input(GetVarName("mrdma_data_", (std::to_string(i)))));
-            auto pdp_output = m.state(GetVarName("pdp_output_", (std::to_string(i))));
-            auto operand = Ite(SelectBit(data_source, 0) == 0x1, m.input(GetVarName("dma_data_", (std::to_string(i)))), m.input(GetVarName("regs_data_", (std::to_string(i)))));
-
-            // Compute add
-            auto operand_shifted = operand << Concat(BvConst(0, 10), alu_shift);
-            auto operand_shifted_extend = Concat(BvConst(0, 16), operand_shifted);
-            auto output = input + operand_shifted_extend;
-            instr.SetUpdate(pdp_output, output);
-        }
+    { // Group 1
+        auto instr = ALU_Compute(m, group1, group1_unset, 2);
     }
 
     { // MUL multiply computation - Group 0

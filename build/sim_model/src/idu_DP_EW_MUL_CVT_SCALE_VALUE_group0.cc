@@ -14,13 +14,15 @@ bool local_var_13 = (local_var_5 & local_var_12);
 sc_biguint<1> local_var_15 = 1;
 bool local_var_16 = (sdp_csb_write == local_var_15);
 bool local_var_17 = (local_var_13 & local_var_16);
-sc_biguint<1> local_var_19 = 0;
-bool local_var_20 = (sdp_s_producer == local_var_19);
-bool local_var_21 = (local_var_17 & local_var_20);
-sc_biguint<1> local_var_23 = 0;
-bool local_var_24 = (sdp_group0_d_op_en == local_var_23);
-bool local_var_25 = (local_var_21 & local_var_24);
-auto& univ_var_68 = local_var_25;
+auto local_var_19 = sdp_s_producer.range(0, 0);
+sc_biguint<1> local_var_20 = 0;
+bool local_var_21 = (local_var_19 == local_var_20);
+bool local_var_22 = (local_var_17 & local_var_21);
+auto local_var_24 = sdp_group0_d_op_en.range(0, 0);
+sc_biguint<1> local_var_25 = 0;
+bool local_var_26 = (local_var_24 == local_var_25);
+bool local_var_27 = (local_var_22 & local_var_26);
+auto& univ_var_68 = local_var_27;
 return univ_var_68;
 }
 void sdp::update_sdp_DP_EW_MUL_CVT_SCALE_VALUE_group0() {

@@ -15,7 +15,6 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/all_valid_funcs_in_hier.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/compute.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/constant_memory_def.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Busy2Done_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_OFFSET_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_OFFSET_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_SCALE_group0.cc
@@ -23,12 +22,13 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_SHIFT_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_CVT_SHIFT_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Add.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Max.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Min.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Multiply.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_PReLU.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_ReLU_group0_.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_ReLU_group1_.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_group0_.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_group1_.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_CHANNEL_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_CHANNEL_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_HEIGHT_group0.cc
@@ -37,6 +37,7 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_CUBE_WIDTH_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_FORMAT_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DATA_FORMAT_group1.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DONE.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DP_BN_ALU_CFG_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DP_BN_ALU_CFG_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DP_BN_ALU_SRC_VALUE_group0.cc
@@ -92,7 +93,6 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DST_LINE_STRIDE_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DST_SURFACE_STRIDE_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_DST_SURFACE_STRIDE_group1.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Done2Idle_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_FEATURE_MODE_CFG_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_FEATURE_MODE_CFG_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Final_LUT_Processing.cc
@@ -116,8 +116,6 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Read_LUT_LE.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Read_LUT_LO.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_SET_PRODUCER.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Start_group0.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Start_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Write_LUT_LE.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Write_LUT_LO.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/memory_update_functions_0.cc

@@ -288,13 +288,6 @@ void DefineSDPState(Ila& m) {
     m.NewBvState("index", 9);
     m.NewBvState("fraction", 35);
     m.NewBvState("id", 1);
-
-    // // States
-    // m.NewBvState("credits", 9);
-
-    // State
-    m.NewBvState("group0_sdp_state", 2);
-    m.NewBvState("group1_sdp_state", 2);
 }
 
 

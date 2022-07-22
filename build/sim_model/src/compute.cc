@@ -616,28 +616,10 @@ if (valid_sdp() && decode_sdp_PERF_ENABLE_group1()) {
   LogInstrSequence("PERF_ENABLE_group1");
 #endif
 }
-if (valid_sdp() && decode_sdp_Start_group0()) {
-  update_sdp_Start_group0();
+if (valid_sdp() && decode_sdp_DONE()) {
+  update_sdp_DONE();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Start_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_Start_group1()) {
-  update_sdp_Start_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Start_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_Busy2Done_group0()) {
-  update_sdp_Busy2Done_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Busy2Done_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_Done2Idle_group0()) {
-  update_sdp_Done2Idle_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Done2Idle_group0");
+  LogInstrSequence("DONE");
 #endif
 }
 if (valid_sdp() && decode_sdp_Compute_ReLU_group0_()) {
@@ -652,10 +634,16 @@ if (valid_sdp() && decode_sdp_Compute_ReLU_group1_()) {
   LogInstrSequence("Compute_ReLU_group1_");
 #endif
 }
-if (valid_sdp() && decode_sdp_Compute_Max()) {
-  update_sdp_Compute_Max();
+if (valid_sdp() && decode_sdp_Compute_group0_()) {
+  update_sdp_Compute_group0_();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_Max");
+  LogInstrSequence("Compute_group0_");
+#endif
+}
+if (valid_sdp() && decode_sdp_Compute_group1_()) {
+  update_sdp_Compute_group1_();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Compute_group1_");
 #endif
 }
 if (valid_sdp() && decode_sdp_Compute_Min()) {

@@ -50,12 +50,13 @@ bool local_var_55 = (local_var_28 | local_var_54);
 sc_biguint<1> local_var_57 = 0;
 bool local_var_58 = (sdp_s_consumer == local_var_57);
 bool local_var_59 = (local_var_55 & local_var_58);
-sc_biguint<1> local_var_61 = 0;
-bool local_var_62 = (sdp_group0_d_op_en == local_var_61);
-bool local_var_63 = !local_var_62;
-bool local_var_64 = (local_var_59 & local_var_63);
-auto& univ_var_94 = local_var_64;
-return univ_var_94;
+auto local_var_61 = sdp_group0_d_op_en.range(0, 0);
+sc_biguint<1> local_var_62 = 0;
+bool local_var_63 = (local_var_61 == local_var_62);
+bool local_var_64 = !local_var_63;
+bool local_var_65 = (local_var_59 & local_var_64);
+auto& univ_var_91 = local_var_65;
+return univ_var_91;
 }
 void sdp::update_sdp_Compute_ReLU_group0_() {
 auto local_var_1 = sdp_group0_d_flying_mode.range(0, 0);

@@ -11,8 +11,8 @@ auto local_var_10 = sdp_group0_d_ew_lut_bypass.range(0, 0);
 sc_biguint<1> local_var_11 = 0;
 bool local_var_12 = (local_var_10 == local_var_11);
 bool local_var_13 = (local_var_8 & local_var_12);
-auto& univ_var_305 = local_var_13;
-return univ_var_305;
+auto& univ_var_335 = local_var_13;
+return univ_var_335;
 }
 void sdp::update_sdp_Final_LUT_Processing() {
 #ifdef ILATOR_VERBOSE
