@@ -657,13 +657,17 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         auto uflow = SelectBit(m.state("uflow"), 0);
         auto id = SelectBit(m.state("id"), 0);
 
-        // LUT outputs
-        auto the_table = Ite(id == 0x1, m.state("lo_tbl"), m.state("le_tbl"));
-        auto y0 = Load(SelectBit(the_table, 0), index);
-        auto y1 = Ite(oflow == 0x0 & uflow == 0x1, Load(SelectBit(the_table, 0), index + 1), BvConst(0, 16));
+        // LUT outputs       
+        
+        auto y0 = Ite(id == 0x1, Load(m.state("lo_tbl"), index), Load(m.state("le_tbl"), Extract(index, 6, 0)));
+        auto y1 = 
+        Ite(id == 0x1,
+            Ite(oflow == 0x0 & uflow == 0x1, Load(m.state("lo_tbl"), index + 1), BvConst(0, 16)),
+            Ite(oflow == 0x0 & uflow == 0x1, Load(m.state("le_tbl"), Extract(index, 6, 0) + 1), BvConst(0, 16))
+        );    
 
         auto bias = 
-        Ite((oflow == 0x0 | uflow == 0x0) & SelectBit(the_table, 0) == 0x0 & lut_function == 0x0 & oflow == 0 & m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 
+        Ite((oflow == 0x0 | uflow == 0x0) & id == 0x0 & lut_function == 0x0 & oflow == 0 & m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET) > 0x0, 
             BvConst(1, 8) << m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 
             BvConst(0, 8)
         );
@@ -698,18 +702,18 @@ void DefineSDPInstrsDP_Single(Ila& m) {
         // Interpolation and extrapolation
         auto o =
         Ite(oflow == 0x1 | uflow == 0x1,
-            y0 + ((lut_data - bias - offset) * scale) >> shift,
-            (((BvConst(1, 35) << 35) - fraction) * y0) + (fraction * y1)
+            Concat(BvConst(0, 3), Concat(BvConst(0, 16), y0) + ((Concat(BvConst(0, 16), lut_data) - Concat(BvConst(0, 24), bias) - offset) * Concat(BvConst(0, 16), scale)) >> Concat(BvConst(0, 27), shift)),
+            (((BvConst(1, 35) << 35) - Concat(BvConst(0, 26), fraction)) * Concat(BvConst(0, 19), y0)) + (Concat(BvConst(0, 26), fraction) * Concat(BvConst(0, 19), y1))
         );
 
         auto oMax = (BvConst(1, 32) << 31) - 1;
         auto oMin = -(BvConst(1, 32) << 31);
         auto out_data =
         Ite(oflow == 0x1 | uflow == 0x1,
-            Ite(o > oMax, 
-                oMax,
-                Ite(o < oMin,
-                    oMin,
+            Ite(o > Concat(BvConst(0, 3), oMax), 
+                Concat(BvConst(0, 3), oMax),
+                Ite(o < Concat(BvConst(0, 3), oMin),
+                    Concat(BvConst(0, 3), oMin),
                     o
                 )            
             ),

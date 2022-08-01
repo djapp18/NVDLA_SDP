@@ -706,6 +706,12 @@ if (valid_sdp() && decode_sdp_Present_LUT_Output()) {
   LogInstrSequence("Present_LUT_Output");
 #endif
 }
+if (valid_sdp() && decode_sdp_Final_LUT_Processing()) {
+  update_sdp_Final_LUT_Processing();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Final_LUT_Processing");
+#endif
+}
 while (1) {
   int schedule_counter = 0;
   if (schedule_counter == 0) {

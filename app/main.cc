@@ -47,9 +47,14 @@ int main(int argc, char* argv[]) {
   }
 
   ILA_INFO << "#state: " << sdp.state_num();
+  auto total = 0;
   for (auto i = 0; i < sdp.state_num(); i++) {
     ILA_INFO << sdp.state(i);
+    // total += sdp.state(i).bit_width();
   }
+  // cout << "\n";
+  // cout << total;
+  // cout << "\n";
 
   ILA_INFO << "#input: " << sdp.input_num();
   for (auto i = 0; i < sdp.input_num(); i++) {

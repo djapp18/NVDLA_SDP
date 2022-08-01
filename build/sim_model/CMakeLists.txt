@@ -94,6 +94,7 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Done2Idle_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_FEATURE_MODE_CFG_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_FEATURE_MODE_CFG_group1.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Final_LUT_Processing.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_LUT_ACCESS_CFG.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_LUT_ACCESS_DATA.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_LUT_CFG.cc
