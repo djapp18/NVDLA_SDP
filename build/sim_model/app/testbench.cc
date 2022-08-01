@@ -216,7 +216,7 @@ SC_MODULE(testbench) {
 
     // All CSB input signals
     sdp_instr.sdp_csb_addr_in(sdp_csb_addr_signal);
-    sdp_instr.sdp_csb_data_in(sdp_csb_data_signal;
+    sdp_instr.sdp_csb_data_in(sdp_csb_data_signal);
     sdp_instr.sdp_csb_write_in(sdp_csb_write_signal);
     sdp_instr.sdp_csb_vld_in(sdp_csb_vld_signal);
 

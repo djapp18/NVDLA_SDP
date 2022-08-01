@@ -88,622 +88,76 @@ sdp_cacc_data_15 = sdp_cacc_data_15_in.read();
 sdp_mrdma_data_15 = sdp_mrdma_data_15_in.read();
 sdp_regs_data_15 = sdp_regs_data_15_in.read();
 sdp_dma_data_15 = sdp_dma_data_15_in.read();
-if (valid_sdp() && decode_sdp_SET_PRODUCER()) {
-  update_sdp_SET_PRODUCER();
+if (valid_sdp() && decode_sdp_Compute_ReLU_group0()) {
+  update_sdp_Compute_ReLU_group0();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("SET_PRODUCER");
+  LogInstrSequence("Compute_ReLU_group0");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_ACCESS_CFG()) {
-  update_sdp_LUT_ACCESS_CFG();
+if (valid_sdp() && decode_sdp_Compute_ReLU_group1()) {
+  update_sdp_Compute_ReLU_group1();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_ACCESS_CFG");
+  LogInstrSequence("Compute_ReLU_group1");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_ACCESS_DATA()) {
-  update_sdp_LUT_ACCESS_DATA();
+if (valid_sdp() && decode_sdp_Compute_Max_group0()) {
+  update_sdp_Compute_Max_group0();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_ACCESS_DATA");
+  LogInstrSequence("Compute_Max_group0");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_CFG()) {
-  update_sdp_LUT_CFG();
+if (valid_sdp() && decode_sdp_Compute_Max_group1()) {
+  update_sdp_Compute_Max_group1();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_CFG");
+  LogInstrSequence("Compute_Max_group1");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_INFO()) {
-  update_sdp_LUT_INFO();
+if (valid_sdp() && decode_sdp_Compute_Min_group0()) {
+  update_sdp_Compute_Min_group0();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_INFO");
+  LogInstrSequence("Compute_Min_group0");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_LE_START()) {
-  update_sdp_LUT_LE_START();
+if (valid_sdp() && decode_sdp_Compute_Min_group1()) {
+  update_sdp_Compute_Min_group1();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_LE_START");
+  LogInstrSequence("Compute_Min_group1");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_LE_END()) {
-  update_sdp_LUT_LE_END();
+if (valid_sdp() && decode_sdp_Compute_Add_group0()) {
+  update_sdp_Compute_Add_group0();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_LE_END");
+  LogInstrSequence("Compute_Add_group0");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_LO_START()) {
-  update_sdp_LUT_LO_START();
+if (valid_sdp() && decode_sdp_Compute_Add_group1()) {
+  update_sdp_Compute_Add_group1();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_LO_START");
+  LogInstrSequence("Compute_Add_group1");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_LO_END()) {
-  update_sdp_LUT_LO_END();
+if (valid_sdp() && decode_sdp_Compute_Multiply_group0()) {
+  update_sdp_Compute_Multiply_group0();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_LO_END");
+  LogInstrSequence("Compute_Multiply_group0");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_LE_SLOPE_SCALE()) {
-  update_sdp_LUT_LE_SLOPE_SCALE();
+if (valid_sdp() && decode_sdp_Compute_Multiply_group1()) {
+  update_sdp_Compute_Multiply_group1();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_LE_SLOPE_SCALE");
+  LogInstrSequence("Compute_Multiply_group1");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_LE_SLOPE_SHIFT()) {
-  update_sdp_LUT_LE_SLOPE_SHIFT();
+if (valid_sdp() && decode_sdp_Compute_PReLU_group0()) {
+  update_sdp_Compute_PReLU_group0();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_LE_SLOPE_SHIFT");
+  LogInstrSequence("Compute_PReLU_group0");
 #endif
 }
-if (valid_sdp() && decode_sdp_LUT_LO_SLOPE_SCALE()) {
-  update_sdp_LUT_LO_SLOPE_SCALE();
+if (valid_sdp() && decode_sdp_Compute_PReLU_group1()) {
+  update_sdp_Compute_PReLU_group1();
   #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_LO_SLOPE_SCALE");
-#endif
-}
-if (valid_sdp() && decode_sdp_LUT_LO_SLOPE_SHIFT()) {
-  update_sdp_LUT_LO_SLOPE_SHIFT();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("LUT_LO_SLOPE_SHIFT");
-#endif
-}
-if (valid_sdp() && decode_sdp_OP_ENABLE_group0()) {
-  update_sdp_OP_ENABLE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("OP_ENABLE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_OP_ENABLE_group1()) {
-  update_sdp_OP_ENABLE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("OP_ENABLE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DATA_CUBE_WIDTH_group0()) {
-  update_sdp_DATA_CUBE_WIDTH_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DATA_CUBE_WIDTH_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DATA_CUBE_WIDTH_group1()) {
-  update_sdp_DATA_CUBE_WIDTH_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DATA_CUBE_WIDTH_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DATA_CUBE_HEIGHT_group0()) {
-  update_sdp_DATA_CUBE_HEIGHT_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DATA_CUBE_HEIGHT_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DATA_CUBE_HEIGHT_group1()) {
-  update_sdp_DATA_CUBE_HEIGHT_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DATA_CUBE_HEIGHT_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DATA_CUBE_CHANNEL_group0()) {
-  update_sdp_DATA_CUBE_CHANNEL_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DATA_CUBE_CHANNEL_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DATA_CUBE_CHANNEL_group1()) {
-  update_sdp_DATA_CUBE_CHANNEL_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DATA_CUBE_CHANNEL_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_BASE_ADDR_LOW_group0()) {
-  update_sdp_DST_BASE_ADDR_LOW_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_BASE_ADDR_LOW_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_BASE_ADDR_LOW_group1()) {
-  update_sdp_DST_BASE_ADDR_LOW_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_BASE_ADDR_LOW_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_BASE_ADDR_HIGH_group0()) {
-  update_sdp_DST_BASE_ADDR_HIGH_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_BASE_ADDR_HIGH_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_BASE_ADDR_HIGH_group1()) {
-  update_sdp_DST_BASE_ADDR_HIGH_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_BASE_ADDR_HIGH_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_LINE_STRIDE_group0()) {
-  update_sdp_DST_LINE_STRIDE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_LINE_STRIDE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_LINE_STRIDE_group1()) {
-  update_sdp_DST_LINE_STRIDE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_LINE_STRIDE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_SURFACE_STRIDE_group0()) {
-  update_sdp_DST_SURFACE_STRIDE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_SURFACE_STRIDE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_SURFACE_STRIDE_group1()) {
-  update_sdp_DST_SURFACE_STRIDE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_SURFACE_STRIDE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_CFG_group0()) {
-  update_sdp_DP_BS_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_CFG_group1()) {
-  update_sdp_DP_BS_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_ALU_CFG_group0()) {
-  update_sdp_DP_BS_ALU_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_ALU_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_ALU_CFG_group1()) {
-  update_sdp_DP_BS_ALU_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_ALU_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_ALU_SRC_VALUE_group0()) {
-  update_sdp_DP_BS_ALU_SRC_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_ALU_SRC_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_ALU_SRC_VALUE_group1()) {
-  update_sdp_DP_BS_ALU_SRC_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_ALU_SRC_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_MUL_CFG_group0()) {
-  update_sdp_DP_BS_MUL_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_MUL_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_MUL_CFG_group1()) {
-  update_sdp_DP_BS_MUL_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_MUL_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_MUL_SRC_VALUE_group0()) {
-  update_sdp_DP_BS_MUL_SRC_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_MUL_SRC_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BS_MUL_SRC_VALUE_group1()) {
-  update_sdp_DP_BS_MUL_SRC_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BS_MUL_SRC_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_CFG_group0()) {
-  update_sdp_DP_BN_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_CFG_group1()) {
-  update_sdp_DP_BN_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_ALU_CFG_group0()) {
-  update_sdp_DP_BN_ALU_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_ALU_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_ALU_CFG_group1()) {
-  update_sdp_DP_BN_ALU_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_ALU_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_ALU_SRC_VALUE_group0()) {
-  update_sdp_DP_BN_ALU_SRC_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_ALU_SRC_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_ALU_SRC_VALUE_group1()) {
-  update_sdp_DP_BN_ALU_SRC_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_ALU_SRC_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_MUL_CFG_group0()) {
-  update_sdp_DP_BN_MUL_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_MUL_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_MUL_CFG_group1()) {
-  update_sdp_DP_BN_MUL_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_MUL_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_MUL_SRC_VALUE_group0()) {
-  update_sdp_DP_BN_MUL_SRC_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_MUL_SRC_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_BN_MUL_SRC_VALUE_group1()) {
-  update_sdp_DP_BN_MUL_SRC_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_BN_MUL_SRC_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_CFG_group0()) {
-  update_sdp_DP_EW_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_CFG_group1()) {
-  update_sdp_DP_EW_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_ALU_CFG_group0()) {
-  update_sdp_DP_EW_ALU_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_ALU_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_ALU_CFG_group1()) {
-  update_sdp_DP_EW_ALU_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_ALU_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_ALU_SRC_VALUE_group0()) {
-  update_sdp_DP_EW_ALU_SRC_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_ALU_SRC_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_ALU_CVT_OFFSET_VALUE_group0()) {
-  update_sdp_DP_EW_ALU_CVT_OFFSET_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_ALU_CVT_OFFSET_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_ALU_CVT_OFFSET_VALUE_group1()) {
-  update_sdp_DP_EW_ALU_CVT_OFFSET_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_ALU_CVT_OFFSET_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_ALU_CVT_SCALE_VALUE_group0()) {
-  update_sdp_DP_EW_ALU_CVT_SCALE_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_ALU_CVT_SCALE_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_ALU_CVT_SCALE_VALUE_group1()) {
-  update_sdp_DP_EW_ALU_CVT_SCALE_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_ALU_CVT_SCALE_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_ALU_CVT_TRUNCATE_VALUE_group0()) {
-  update_sdp_DP_EW_ALU_CVT_TRUNCATE_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_ALU_CVT_TRUNCATE_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_ALU_CVT_TRUNCATE_VALUE_group1()) {
-  update_sdp_DP_EW_ALU_CVT_TRUNCATE_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_ALU_CVT_TRUNCATE_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_CFG_group0()) {
-  update_sdp_DP_EW_MUL_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_CFG_group1()) {
-  update_sdp_DP_EW_MUL_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_SRC_VALUE_group0()) {
-  update_sdp_DP_EW_MUL_SRC_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_SRC_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_SRC_VALUE_group1()) {
-  update_sdp_DP_EW_MUL_SRC_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_SRC_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_CVT_OFFSET_VALUE_group0()) {
-  update_sdp_DP_EW_MUL_CVT_OFFSET_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_CVT_OFFSET_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_CVT_OFFSET_VALUE_group1()) {
-  update_sdp_DP_EW_MUL_CVT_OFFSET_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_CVT_OFFSET_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_CVT_SCALE_VALUE_group0()) {
-  update_sdp_DP_EW_MUL_CVT_SCALE_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_CVT_SCALE_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_CVT_SCALE_VALUE_group1()) {
-  update_sdp_DP_EW_MUL_CVT_SCALE_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_CVT_SCALE_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_CVT_TRUNCATE_VALUE_group0()) {
-  update_sdp_DP_EW_MUL_CVT_TRUNCATE_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_CVT_TRUNCATE_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_MUL_CVT_TRUNCATE_VALUE_group1()) {
-  update_sdp_DP_EW_MUL_CVT_TRUNCATE_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_MUL_CVT_TRUNCATE_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_TRUNCATE_VALUE_group0()) {
-  update_sdp_DP_EW_TRUNCATE_VALUE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_TRUNCATE_VALUE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DP_EW_TRUNCATE_VALUE_group1()) {
-  update_sdp_DP_EW_TRUNCATE_VALUE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DP_EW_TRUNCATE_VALUE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_FEATURE_MODE_CFG_group0()) {
-  update_sdp_FEATURE_MODE_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("FEATURE_MODE_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_FEATURE_MODE_CFG_group1()) {
-  update_sdp_FEATURE_MODE_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("FEATURE_MODE_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_DMA_CFG_group0()) {
-  update_sdp_DST_DMA_CFG_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_DMA_CFG_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_DMA_CFG_group1()) {
-  update_sdp_DST_DMA_CFG_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_DMA_CFG_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_BATCH_STRIDE_group0()) {
-  update_sdp_DST_BATCH_STRIDE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_BATCH_STRIDE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DST_BATCH_STRIDE_group1()) {
-  update_sdp_DST_BATCH_STRIDE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DST_BATCH_STRIDE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DATA_FORMAT_group0()) {
-  update_sdp_DATA_FORMAT_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DATA_FORMAT_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_DATA_FORMAT_group1()) {
-  update_sdp_DATA_FORMAT_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DATA_FORMAT_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_CVT_OFFSET_group0()) {
-  update_sdp_CVT_OFFSET_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("CVT_OFFSET_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_CVT_OFFSET_group1()) {
-  update_sdp_CVT_OFFSET_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("CVT_OFFSET_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_CVT_SCALE_group0()) {
-  update_sdp_CVT_SCALE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("CVT_SCALE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_CVT_SCALE_group1()) {
-  update_sdp_CVT_SCALE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("CVT_SCALE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_CVT_SHIFT_group0()) {
-  update_sdp_CVT_SHIFT_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("CVT_SHIFT_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_CVT_SHIFT_group1()) {
-  update_sdp_CVT_SHIFT_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("CVT_SHIFT_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_PERF_ENABLE_group0()) {
-  update_sdp_PERF_ENABLE_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("PERF_ENABLE_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_PERF_ENABLE_group1()) {
-  update_sdp_PERF_ENABLE_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("PERF_ENABLE_group1");
-#endif
-}
-if (valid_sdp() && decode_sdp_DONE()) {
-  update_sdp_DONE();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("DONE");
-#endif
-}
-if (valid_sdp() && decode_sdp_Compute_ReLU_group0_()) {
-  update_sdp_Compute_ReLU_group0_();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_ReLU_group0_");
-#endif
-}
-if (valid_sdp() && decode_sdp_Compute_ReLU_group1_()) {
-  update_sdp_Compute_ReLU_group1_();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_ReLU_group1_");
-#endif
-}
-if (valid_sdp() && decode_sdp_Compute_group0_()) {
-  update_sdp_Compute_group0_();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_group0_");
-#endif
-}
-if (valid_sdp() && decode_sdp_Compute_group1_()) {
-  update_sdp_Compute_group1_();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_group1_");
-#endif
-}
-if (valid_sdp() && decode_sdp_Compute_Min()) {
-  update_sdp_Compute_Min();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_Min");
-#endif
-}
-if (valid_sdp() && decode_sdp_Compute_Add()) {
-  update_sdp_Compute_Add();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_Add");
-#endif
-}
-if (valid_sdp() && decode_sdp_Compute_Multiply()) {
-  update_sdp_Compute_Multiply();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_Multiply");
-#endif
-}
-if (valid_sdp() && decode_sdp_Compute_PReLU()) {
-  update_sdp_Compute_PReLU();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_PReLU");
-#endif
-}
-if (valid_sdp() && decode_sdp_Write_LUT_LE()) {
-  update_sdp_Write_LUT_LE();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Write_LUT_LE");
-#endif
-}
-if (valid_sdp() && decode_sdp_Write_LUT_LO()) {
-  update_sdp_Write_LUT_LO();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Write_LUT_LO");
-#endif
-}
-if (valid_sdp() && decode_sdp_Read_LUT_LE()) {
-  update_sdp_Read_LUT_LE();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Read_LUT_LE");
-#endif
-}
-if (valid_sdp() && decode_sdp_Read_LUT_LO()) {
-  update_sdp_Read_LUT_LO();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Read_LUT_LO");
-#endif
-}
-if (valid_sdp() && decode_sdp_Present_LUT_Output()) {
-  update_sdp_Present_LUT_Output();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Present_LUT_Output");
-#endif
-}
-if (valid_sdp() && decode_sdp_Final_LUT_Processing()) {
-  update_sdp_Final_LUT_Processing();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Final_LUT_Processing");
+  LogInstrSequence("Compute_PReLU_group1");
 #endif
 }
 while (1) {
