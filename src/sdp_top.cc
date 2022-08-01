@@ -48,7 +48,7 @@ Ila GetSDPIla(const std::string& model_name) {
     // Instructions
     //
     // Config Instructions
-    DefineSDPInstrs(m);
+    // DefineSDPInstrs(m);
 
     // Datapath Instructions
     DefineSDPInstrsDP_Single(m);
