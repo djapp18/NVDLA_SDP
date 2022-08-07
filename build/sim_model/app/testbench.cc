@@ -45,10 +45,10 @@ SC_MODULE(Source) {
 
   void source_input() {
     // reset the ports
-    sdp_cacc_data = {};
-    sdp_mrdma_data = {};
-    sdp_regs_data = {};
-    sdp_dma_data = {};
+    std::fill(sdp_cacc_data, sdp_cacc_data + 16, 0);
+    std::fill(sdp_mrdma_data, sdp_mrdma_data + 16, 0);
+    std::fill(sdp_regs_data, sdp_regs_data + 16, 0);
+    std::fill(sdp_dma_data, sdp_dma_data + 16, 0);
 
     sdp_csb_addr = 0;
     sdp_csb_data = 0;
@@ -70,8 +70,8 @@ SC_MODULE(Source) {
     fin >> cmd_seq;
 
     // pass the command to the ports
-    for (int i = 0; i < cmd_seq["program fragment"].size(); i++) {
-      for (int j = 0; j < 16; j++) {
+    for (size_t i = 0; i < cmd_seq["program fragment"].size(); i++) {
+      for (size_t j = 0; j < 16; j++) {
         sdp_cacc_data[j] = cmd_seq["program fragment"][i]["cacc_data_" + j].get<int>();
         sdp_mrdma_data[j] = cmd_seq["program fragment"][i]["mrdma_data_" + j].get<int>();
         sdp_regs_data[j] = cmd_seq["program fragment"][i]["regs_data" + j].get<int>();
@@ -121,10 +121,13 @@ SC_MODULE(testbench) {
   {
     // Parse from the prog_frag file
     src.clk(clk);
-    src.sdp_cacc_data(sdp_cacc_data_signal);
-    src.sdp_mrdma_data(sdp_mrdma_data_signal);
-    src.sdp_regs_data(sdp_regs_data_signal);
-    src.sdp_dma_data(sdp_dma_data_signal);
+    
+    for (size_t i = 0; i < 16; i++) {
+        src.sdp_cacc_data[i](sdp_cacc_data_signal[i]);
+        src.sdp_mrdma_data[i](sdp_mrdma_data_signal[i]);
+        src.sdp_regs_data[i](sdp_regs_data_signal[i]);
+        src.sdp_dma_data[i](sdp_dma_data_signal[i]);
+    }
 
     src.sdp_csb_addr(sdp_csb_addr_signal);
     src.sdp_csb_data(sdp_csb_data_signal);
@@ -143,86 +146,86 @@ SC_MODULE(testbench) {
     // for relu, have the next instructions be setting the bypass logic for group 0, then set enable bit and go with dp instr
 
     // All CACC input signals
-    sdp_instr.sdp_cacc_data_0_in(sdp_cacc_data_signal[0]);
-    sdp_instr.sdp_cacc_data_1_in(sdp_cacc_data_signal[1]);
-    sdp_instr.sdp_cacc_data_2_in(sdp_cacc_data_signal[2]);
-    sdp_instr.sdp_cacc_data_3_in(sdp_cacc_data_signal[3]);
-    sdp_instr.sdp_cacc_data_4_in(sdp_cacc_data_signal[4]);
-    sdp_instr.sdp_cacc_data_5_in(sdp_cacc_data_signal[5]);
-    sdp_instr.sdp_cacc_data_6_in(sdp_cacc_data_signal[6]);
-    sdp_instr.sdp_cacc_data_7_in(sdp_cacc_data_signal[7]);
-    sdp_instr.sdp_cacc_data_8_in(sdp_cacc_data_signal[8]);
-    sdp_instr.sdp_cacc_data_9_in(sdp_cacc_data_signal[9]);
-    sdp_instr.sdp_cacc_data_10_in(sdp_cacc_data_signal[10]);
-    sdp_instr.sdp_cacc_data_11_in(sdp_cacc_data_signal[11]);
-    sdp_instr.sdp_cacc_data_12_in(sdp_cacc_data_signal[12]);
-    sdp_instr.sdp_cacc_data_13_in(sdp_cacc_data_signal[13]);
-    sdp_instr.sdp_cacc_data_14_in(sdp_cacc_data_signal[14]);
-    sdp_instr.sdp_cacc_data_15_in(sdp_cacc_data_signal[15]);
+    sdp_inst.sdp_cacc_data_0_in(sdp_cacc_data_signal[0]);
+    sdp_inst.sdp_cacc_data_1_in(sdp_cacc_data_signal[1]);
+    sdp_inst.sdp_cacc_data_2_in(sdp_cacc_data_signal[2]);
+    sdp_inst.sdp_cacc_data_3_in(sdp_cacc_data_signal[3]);
+    sdp_inst.sdp_cacc_data_4_in(sdp_cacc_data_signal[4]);
+    sdp_inst.sdp_cacc_data_5_in(sdp_cacc_data_signal[5]);
+    sdp_inst.sdp_cacc_data_6_in(sdp_cacc_data_signal[6]);
+    sdp_inst.sdp_cacc_data_7_in(sdp_cacc_data_signal[7]);
+    sdp_inst.sdp_cacc_data_8_in(sdp_cacc_data_signal[8]);
+    sdp_inst.sdp_cacc_data_9_in(sdp_cacc_data_signal[9]);
+    sdp_inst.sdp_cacc_data_10_in(sdp_cacc_data_signal[10]);
+    sdp_inst.sdp_cacc_data_11_in(sdp_cacc_data_signal[11]);
+    sdp_inst.sdp_cacc_data_12_in(sdp_cacc_data_signal[12]);
+    sdp_inst.sdp_cacc_data_13_in(sdp_cacc_data_signal[13]);
+    sdp_inst.sdp_cacc_data_14_in(sdp_cacc_data_signal[14]);
+    sdp_inst.sdp_cacc_data_15_in(sdp_cacc_data_signal[15]);
 
     // All MRDMA input signals
-    sdp_instr.sdp_mrdma_data_0_in(sdp_mrdma_data_signal[0]);
-    sdp_instr.sdp_mrdma_data_1_in(sdp_mrdma_data_signal[1]);
-    sdp_instr.sdp_mrdma_data_2_in(sdp_mrdma_data_signal[2]);
-    sdp_instr.sdp_mrdma_data_3_in(sdp_mrdma_data_signal[3]);
-    sdp_instr.sdp_mrdma_data_4_in(sdp_mrdma_data_signal[4]);
-    sdp_instr.sdp_mrdma_data_5_in(sdp_mrdma_data_signal[5]);
-    sdp_instr.sdp_mrdma_data_6_in(sdp_mrdma_data_signal[6]);
-    sdp_instr.sdp_mrdma_data_7_in(sdp_mrdma_data_signal[7]);
-    sdp_instr.sdp_mrdma_data_8_in(sdp_mrdma_data_signal[8]);
-    sdp_instr.sdp_mrdma_data_9_in(sdp_mrdma_data_signal[9]);
-    sdp_instr.sdp_mrdma_data_10_in(sdp_mrdma_data_signal[10]);
-    sdp_instr.sdp_mrdma_data_11_in(sdp_mrdma_data_signal[11]);
-    sdp_instr.sdp_mrdma_data_12_in(sdp_mrdma_data_signal[12]);
-    sdp_instr.sdp_mrdma_data_13_in(sdp_mrdma_data_signal[13]);
-    sdp_instr.sdp_mrdma_data_14_in(sdp_mrdma_data_signal[14]);
-    sdp_instr.sdp_mrdma_data_15_in(sdp_mrdma_data_signal[15]);
+    sdp_inst.sdp_mrdma_data_0_in(sdp_mrdma_data_signal[0]);
+    sdp_inst.sdp_mrdma_data_1_in(sdp_mrdma_data_signal[1]);
+    sdp_inst.sdp_mrdma_data_2_in(sdp_mrdma_data_signal[2]);
+    sdp_inst.sdp_mrdma_data_3_in(sdp_mrdma_data_signal[3]);
+    sdp_inst.sdp_mrdma_data_4_in(sdp_mrdma_data_signal[4]);
+    sdp_inst.sdp_mrdma_data_5_in(sdp_mrdma_data_signal[5]);
+    sdp_inst.sdp_mrdma_data_6_in(sdp_mrdma_data_signal[6]);
+    sdp_inst.sdp_mrdma_data_7_in(sdp_mrdma_data_signal[7]);
+    sdp_inst.sdp_mrdma_data_8_in(sdp_mrdma_data_signal[8]);
+    sdp_inst.sdp_mrdma_data_9_in(sdp_mrdma_data_signal[9]);
+    sdp_inst.sdp_mrdma_data_10_in(sdp_mrdma_data_signal[10]);
+    sdp_inst.sdp_mrdma_data_11_in(sdp_mrdma_data_signal[11]);
+    sdp_inst.sdp_mrdma_data_12_in(sdp_mrdma_data_signal[12]);
+    sdp_inst.sdp_mrdma_data_13_in(sdp_mrdma_data_signal[13]);
+    sdp_inst.sdp_mrdma_data_14_in(sdp_mrdma_data_signal[14]);
+    sdp_inst.sdp_mrdma_data_15_in(sdp_mrdma_data_signal[15]);
 
     // All regs input signals
-    sdp_instr.sdp_regs_data_0_in(sdp_regs_data_signal[0]);
-    sdp_instr.sdp_regs_data_1_in(sdp_regs_data_signal[1]);
-    sdp_instr.sdp_regs_data_2_in(sdp_regs_data_signal[2]);
-    sdp_instr.sdp_regs_data_3_in(sdp_regs_data_signal[3]);
-    sdp_instr.sdp_regs_data_4_in(sdp_regs_data_signal[4]);
-    sdp_instr.sdp_regs_data_5_in(sdp_regs_data_signal[5]);
-    sdp_instr.sdp_regs_data_6_in(sdp_regs_data_signal[6]);
-    sdp_instr.sdp_regs_data_7_in(sdp_regs_data_signal[7]);
-    sdp_instr.sdp_regs_data_8_in(sdp_regs_data_signal[8]);
-    sdp_instr.sdp_regs_data_9_in(sdp_regs_data_signal[9]);
-    sdp_instr.sdp_regs_data_10_in(sdp_regs_data_signal[10]);
-    sdp_instr.sdp_regs_data_11_in(sdp_regs_data_signal[11]);
-    sdp_instr.sdp_regs_data_12_in(sdp_regs_data_signal[12]);
-    sdp_instr.sdp_regs_data_13_in(sdp_regs_data_signal[13]);
-    sdp_instr.sdp_regs_data_14_in(sdp_regs_data_signal[14]);
-    sdp_instr.sdp_regs_data_15_in(sdp_regs_data_signal[15]);
+    sdp_inst.sdp_regs_data_0_in(sdp_regs_data_signal[0]);
+    sdp_inst.sdp_regs_data_1_in(sdp_regs_data_signal[1]);
+    sdp_inst.sdp_regs_data_2_in(sdp_regs_data_signal[2]);
+    sdp_inst.sdp_regs_data_3_in(sdp_regs_data_signal[3]);
+    sdp_inst.sdp_regs_data_4_in(sdp_regs_data_signal[4]);
+    sdp_inst.sdp_regs_data_5_in(sdp_regs_data_signal[5]);
+    sdp_inst.sdp_regs_data_6_in(sdp_regs_data_signal[6]);
+    sdp_inst.sdp_regs_data_7_in(sdp_regs_data_signal[7]);
+    sdp_inst.sdp_regs_data_8_in(sdp_regs_data_signal[8]);
+    sdp_inst.sdp_regs_data_9_in(sdp_regs_data_signal[9]);
+    sdp_inst.sdp_regs_data_10_in(sdp_regs_data_signal[10]);
+    sdp_inst.sdp_regs_data_11_in(sdp_regs_data_signal[11]);
+    sdp_inst.sdp_regs_data_12_in(sdp_regs_data_signal[12]);
+    sdp_inst.sdp_regs_data_13_in(sdp_regs_data_signal[13]);
+    sdp_inst.sdp_regs_data_14_in(sdp_regs_data_signal[14]);
+    sdp_inst.sdp_regs_data_15_in(sdp_regs_data_signal[15]);
 
     // All DMA input signals
-    sdp_instr.sdp_dma_data_0_in(sdp_dma_data_signal[0]);
-    sdp_instr.sdp_dma_data_1_in(sdp_dma_data_signal[1]);
-    sdp_instr.sdp_dma_data_2_in(sdp_dma_data_signal[2]);
-    sdp_instr.sdp_dma_data_3_in(sdp_dma_data_signal[3]);
-    sdp_instr.sdp_dma_data_4_in(sdp_dma_data_signal[4]);
-    sdp_instr.sdp_dma_data_5_in(sdp_dma_data_signal[5]);
-    sdp_instr.sdp_dma_data_6_in(sdp_dma_data_signal[6]);
-    sdp_instr.sdp_dma_data_7_in(sdp_dma_data_signal[7]);
-    sdp_instr.sdp_dma_data_8_in(sdp_dma_data_signal[8]);
-    sdp_instr.sdp_dma_data_9_in(sdp_dma_data_signal[9]);
-    sdp_instr.sdp_dma_data_10_in(sdp_dma_data_signal[10]);
-    sdp_instr.sdp_dma_data_11_in(sdp_dma_data_signal[11]);
-    sdp_instr.sdp_dma_data_12_in(sdp_dma_data_signal[12]);
-    sdp_instr.sdp_dma_data_13_in(sdp_dma_data_signal[13]);
-    sdp_instr.sdp_dma_data_14_in(sdp_dma_data_signal[14]);
-    sdp_instr.sdp_dma_data_15_in(sdp_dma_data_signal[15]);
+    sdp_inst.sdp_dma_data_0_in(sdp_dma_data_signal[0]);
+    sdp_inst.sdp_dma_data_1_in(sdp_dma_data_signal[1]);
+    sdp_inst.sdp_dma_data_2_in(sdp_dma_data_signal[2]);
+    sdp_inst.sdp_dma_data_3_in(sdp_dma_data_signal[3]);
+    sdp_inst.sdp_dma_data_4_in(sdp_dma_data_signal[4]);
+    sdp_inst.sdp_dma_data_5_in(sdp_dma_data_signal[5]);
+    sdp_inst.sdp_dma_data_6_in(sdp_dma_data_signal[6]);
+    sdp_inst.sdp_dma_data_7_in(sdp_dma_data_signal[7]);
+    sdp_inst.sdp_dma_data_8_in(sdp_dma_data_signal[8]);
+    sdp_inst.sdp_dma_data_9_in(sdp_dma_data_signal[9]);
+    sdp_inst.sdp_dma_data_10_in(sdp_dma_data_signal[10]);
+    sdp_inst.sdp_dma_data_11_in(sdp_dma_data_signal[11]);
+    sdp_inst.sdp_dma_data_12_in(sdp_dma_data_signal[12]);
+    sdp_inst.sdp_dma_data_13_in(sdp_dma_data_signal[13]);
+    sdp_inst.sdp_dma_data_14_in(sdp_dma_data_signal[14]);
+    sdp_inst.sdp_dma_data_15_in(sdp_dma_data_signal[15]);
 
     // All CSB input signals
-    sdp_instr.sdp_csb_addr_in(sdp_csb_addr_signal);
-    sdp_instr.sdp_csb_data_in(sdp_csb_data_signal);
-    sdp_instr.sdp_csb_write_in(sdp_csb_write_signal);
-    sdp_instr.sdp_csb_vld_in(sdp_csb_vld_signal);
+    sdp_inst.sdp_csb_addr_in(sdp_csb_addr_signal);
+    sdp_inst.sdp_csb_data_in(sdp_csb_data_signal);
+    sdp_inst.sdp_csb_write_in(sdp_csb_write_signal);
+    sdp_inst.sdp_csb_vld_in(sdp_csb_vld_signal);
 
     // All remaining input signals
-    sdp_instr.sdp_fifo_clr_in(sdp_fifo_clr_signal);
-    sdp_instr.sdp_done_in(sdp_done_signal);
+    sdp_inst.sdp_fifo_clr_in(sdp_fifo_clr_signal);
+    sdp_inst.sdp_done_in(sdp_done_signal);
 
     SC_THREAD(run);
   }
@@ -245,24 +248,22 @@ SC_MODULE(testbench) {
     ofstream fout;
     fout.open(output_path, ios::out | ios::trunc);
 
-    fout << "    sdp_pdp_output_0 => " << std::hex << "0x" << sdp_pdp_output_0 << std::endl; 
-    fout << "    sdp_pdp_output_1 => " << std::hex << "0x" << sdp_pdp_output_1 << std::endl; 
-    fout << "    sdp_pdp_output_10 => " << std::hex << "0x" << sdp_pdp_output_10 << std::endl; 
-    fout << "    sdp_pdp_output_11 => " << std::hex << "0x" << sdp_pdp_output_11 << std::endl; 
-    fout << "    sdp_pdp_output_12 => " << std::hex << "0x" << sdp_pdp_output_12 << std::endl; 
-    fout << "    sdp_pdp_output_13 => " << std::hex << "0x" << sdp_pdp_output_13 << std::endl; 
-    fout << "    sdp_pdp_output_14 => " << std::hex << "0x" << sdp_pdp_output_14 << std::endl; 
-    fout << "    sdp_pdp_output_15 => " << std::hex << "0x" << sdp_pdp_output_15 << std::endl; 
-    fout << "    sdp_pdp_output_2 => " << std::hex << "0x" << sdp_pdp_output_2 << std::endl; 
-    fout << "    sdp_pdp_output_3 => " << std::hex << "0x" << sdp_pdp_output_3 << std::endl; 
-    fout << "    sdp_pdp_output_4 => " << std::hex << "0x" << sdp_pdp_output_4 << std::endl; 
-    fout << "    sdp_pdp_output_5 => " << std::hex << "0x" << sdp_pdp_output_5 << std::endl; 
-    fout << "    sdp_pdp_output_6 => " << std::hex << "0x" << sdp_pdp_output_6 << std::endl; 
-    fout << "    sdp_pdp_output_7 => " << std::hex << "0x" << sdp_pdp_output_7 << std::endl; 
-    fout << "    sdp_pdp_output_8 => " << std::hex << "0x" << sdp_pdp_output_8 << std::endl; 
-    fout << "    sdp_pdp_output_9 => " << std::hex << "0x" << sdp_pdp_output_9 << std::endl; 
-
-    fout << std::setw(2) << result;
+    fout << "    sdp_pdp_output_0 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_0 << std::endl; 
+    fout << "    sdp_pdp_output_1 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_1 << std::endl; 
+    fout << "    sdp_pdp_output_10 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_10 << std::endl; 
+    fout << "    sdp_pdp_output_11 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_11 << std::endl; 
+    fout << "    sdp_pdp_output_12 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_12 << std::endl; 
+    fout << "    sdp_pdp_output_13 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_13 << std::endl; 
+    fout << "    sdp_pdp_output_14 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_14 << std::endl; 
+    fout << "    sdp_pdp_output_15 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_15 << std::endl; 
+    fout << "    sdp_pdp_output_2 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_2 << std::endl; 
+    fout << "    sdp_pdp_output_3 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_3 << std::endl; 
+    fout << "    sdp_pdp_output_4 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_4 << std::endl; 
+    fout << "    sdp_pdp_output_5 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_5 << std::endl; 
+    fout << "    sdp_pdp_output_6 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_6 << std::endl; 
+    fout << "    sdp_pdp_output_7 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_7 << std::endl; 
+    fout << "    sdp_pdp_output_8 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_8 << std::endl; 
+    fout << "    sdp_pdp_output_9 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_9 << std::endl; 
 
     fout.close();
     std::cout << "outputs have been store at " << output_path << std::endl;

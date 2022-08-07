@@ -55,8 +55,8 @@ sc_biguint<1> local_var_62 = 0;
 bool local_var_63 = (local_var_61 == local_var_62);
 bool local_var_64 = !local_var_63;
 bool local_var_65 = (local_var_59 & local_var_64);
-auto& univ_var_2 = local_var_65;
-return univ_var_2;
+auto& univ_var_92 = local_var_65;
+return univ_var_92;
 }
 void sdp::update_sdp_Compute_ReLU_group1() {
 auto local_var_1 = sdp_group1_d_flying_mode.range(0, 0);
