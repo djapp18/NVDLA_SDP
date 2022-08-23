@@ -1,21 +1,18 @@
 #include <sdp.h>
 bool sdp::decode_sdp_LUT_CFG() {
-sc_biguint<2> local_var_1 = 0;
-univ_var_1 = (sc_biguint<22>(sdp_csb_addr), sc_biguint<2>(local_var_1));
-auto local_var_3 = univ_var_1.range(11, 0);
-sc_biguint<12> local_var_4 = 16;
-bool local_var_5 = (local_var_3 == local_var_4);
+sc_biguint<22> local_var_1 = 16;
+bool local_var_2 = (sdp_csb_addr == local_var_1);
+sc_biguint<1> local_var_4 = 1;
+bool local_var_5 = (sdp_csb_rdy == local_var_4);
 sc_biguint<1> local_var_7 = 1;
-bool local_var_8 = (sdp_csb_rdy == local_var_7);
-sc_biguint<1> local_var_10 = 1;
-bool local_var_11 = (sdp_csb_vld == local_var_10);
-bool local_var_12 = (local_var_8 & local_var_11);
-bool local_var_13 = (local_var_5 & local_var_12);
-sc_biguint<1> local_var_15 = 1;
-bool local_var_16 = (sdp_csb_write == local_var_15);
-bool local_var_17 = (local_var_13 & local_var_16);
-auto& univ_var_5 = local_var_17;
-return univ_var_5;
+bool local_var_8 = (sdp_csb_vld == local_var_7);
+bool local_var_9 = (local_var_5 & local_var_8);
+bool local_var_10 = (local_var_2 & local_var_9);
+sc_biguint<1> local_var_12 = 1;
+bool local_var_13 = (sdp_csb_write == local_var_12);
+bool local_var_14 = (local_var_10 & local_var_13);
+auto& univ_var_4 = local_var_14;
+return univ_var_4;
 }
 void sdp::update_sdp_LUT_CFG() {
 auto local_var_1 = sdp_csb_data.range(6, 6);

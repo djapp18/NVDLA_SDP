@@ -7,12 +7,12 @@ auto local_var_5 = sdp_s_lut_table_id.range(0, 0);
 sc_biguint<1> local_var_6 = 1;
 bool local_var_7 = (local_var_5 == local_var_6);
 bool local_var_8 = (local_var_3 & local_var_7);
-auto& univ_var_11635 = local_var_8;
-return univ_var_11635;
+auto& univ_var_16262 = local_var_8;
+return univ_var_16262;
 }
 void sdp::update_sdp_Write_LUT_lo_tbl() {
 std::map<sc_biguint<9>, sc_biguint<16>> local_var_0;
-store_11636(local_var_0);
+store_16263(local_var_0);
 for (auto& it : local_var_0) {
   sdp_lo_tbl[it.first] = it.second;
 }

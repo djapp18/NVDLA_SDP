@@ -1,29 +1,26 @@
 #include <sdp.h>
 bool sdp::decode_sdp_CVT_SCALE_group0() {
-sc_biguint<2> local_var_1 = 0;
-univ_var_1 = (sc_biguint<22>(sdp_csb_addr), sc_biguint<2>(local_var_1));
-auto local_var_3 = univ_var_1.range(11, 0);
-sc_biguint<12> local_var_4 = 196;
-bool local_var_5 = (local_var_3 == local_var_4);
+sc_biguint<22> local_var_1 = 196;
+bool local_var_2 = (sdp_csb_addr == local_var_1);
+sc_biguint<1> local_var_4 = 1;
+bool local_var_5 = (sdp_csb_rdy == local_var_4);
 sc_biguint<1> local_var_7 = 1;
-bool local_var_8 = (sdp_csb_rdy == local_var_7);
-sc_biguint<1> local_var_10 = 1;
-bool local_var_11 = (sdp_csb_vld == local_var_10);
-bool local_var_12 = (local_var_8 & local_var_11);
-bool local_var_13 = (local_var_5 & local_var_12);
-sc_biguint<1> local_var_15 = 1;
-bool local_var_16 = (sdp_csb_write == local_var_15);
-bool local_var_17 = (local_var_13 & local_var_16);
-auto local_var_19 = sdp_s_producer.range(0, 0);
-sc_biguint<1> local_var_20 = 0;
-bool local_var_21 = (local_var_19 == local_var_20);
-bool local_var_22 = (local_var_17 & local_var_21);
-auto local_var_24 = sdp_group0_d_op_en.range(0, 0);
-sc_biguint<1> local_var_25 = 0;
-bool local_var_26 = (local_var_24 == local_var_25);
-bool local_var_27 = (local_var_22 & local_var_26);
-auto& univ_var_84 = local_var_27;
-return univ_var_84;
+bool local_var_8 = (sdp_csb_vld == local_var_7);
+bool local_var_9 = (local_var_5 & local_var_8);
+bool local_var_10 = (local_var_2 & local_var_9);
+sc_biguint<1> local_var_12 = 1;
+bool local_var_13 = (sdp_csb_write == local_var_12);
+bool local_var_14 = (local_var_10 & local_var_13);
+auto local_var_16 = sdp_s_producer.range(0, 0);
+sc_biguint<1> local_var_17 = 0;
+bool local_var_18 = (local_var_16 == local_var_17);
+bool local_var_19 = (local_var_14 & local_var_18);
+auto local_var_21 = sdp_group0_d_op_en.range(0, 0);
+sc_biguint<1> local_var_22 = 0;
+bool local_var_23 = (local_var_21 == local_var_22);
+bool local_var_24 = (local_var_19 & local_var_23);
+auto& univ_var_83 = local_var_24;
+return univ_var_83;
 }
 void sdp::update_sdp_CVT_SCALE_group0() {
 auto local_var_1 = sdp_csb_data.range(15, 0);

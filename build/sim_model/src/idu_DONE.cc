@@ -3,8 +3,8 @@ bool sdp::decode_sdp_DONE() {
 auto local_var_1 = sdp_done.range(0, 0);
 sc_biguint<1> local_var_2 = 1;
 bool local_var_3 = (local_var_1 == local_var_2);
-auto& univ_var_90 = local_var_3;
-return univ_var_90;
+auto& univ_var_89 = local_var_3;
+return univ_var_89;
 }
 void sdp::update_sdp_DONE() {
 sc_biguint<1> local_var_0 = 0;

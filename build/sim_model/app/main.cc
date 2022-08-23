@@ -32,6 +32,7 @@ SC_MODULE(Source) {
   sc_out < sc_biguint<32> > sdp_csb_data;
   sc_out < sc_biguint<1> > sdp_csb_write;
   sc_out < sc_biguint<1> > sdp_csb_vld;
+  sc_out < sc_biguint<1> > sdp_csb_rdy;
 
   sc_out < sc_biguint<1> > sdp_fifo_clr;
   sc_out < sc_biguint<1> > sdp_done;
@@ -54,6 +55,7 @@ SC_MODULE(Source) {
     sdp_csb_data = 0;
     sdp_csb_write = 0;
     sdp_csb_vld = 0;
+    sdp_csb_rdy = 0;
 
     sdp_fifo_clr = 0;
     sdp_done = 0;
@@ -67,26 +69,41 @@ SC_MODULE(Source) {
     fin.open(prog_frag_path);
     std::cout << "if prog_frag file open? " << fin.is_open() << std::endl;
     json cmd_seq;
-    fin >> cmd_seq;
+    // fin >> cmd_seq;
+    cmd_seq = json::parse(fin);
+    // cout << cmd_seq["program fragment"].size() << endl;
+    // cout << cmd_seq["program fragment"][7] << endl;
 
     // pass the command to the ports
     for (size_t i = 0; i < cmd_seq["program fragment"].size(); i++) {
       for (size_t j = 0; j < 16; j++) {
-        sdp_cacc_data[j] = cmd_seq["program fragment"][i]["cacc_data_" + j].get<int>();
-        sdp_mrdma_data[j] = cmd_seq["program fragment"][i]["mrdma_data_" + j].get<int>();
-        sdp_regs_data[j] = cmd_seq["program fragment"][i]["regs_data" + j].get<int>();
-        sdp_dma_data[j] = cmd_seq["program fragment"][i]["dma_data_" + j].get<int>();
+        sdp_cacc_data[j] = cmd_seq["program fragment"][i]["cacc_data_" + std::to_string(j)].get<int>();
+        sdp_mrdma_data[j] = cmd_seq["program fragment"][i]["mrdma_data_" + std::to_string(j)].get<int>();
+        // cout << "sdp_mrdma_data" + std::to_string(j) + ": " << sdp_mrdma_data[j] << endl;
+        sdp_regs_data[j] = cmd_seq["program fragment"][i]["regs_data_" + std::to_string(j)].get<int>();
+        sdp_dma_data[j] = cmd_seq["program fragment"][i]["dma_data_" + std::to_string(j)].get<int>();
       }
 
-      sdp_csb_addr = (cmd_seq["program fragment"][i]["csb_addr"].get<std::string>()).c_str();
+      sdp_csb_addr = std::stoi((cmd_seq["program fragment"][i]["csb_addr"].get<std::string>()).c_str(), nullptr, 16);
+     
+      cout << i << endl;
+      cout << "sdp_mrdma_data" + std::to_string(1) + ": " << sdp_mrdma_data[1] << endl;
+      cout << "sdp_mrdma_data" + std::to_string(1) + ": " << cmd_seq["program fragment"][i]["mrdma_data_" + std::to_string(1)].get<int>() << endl;
+      auto test = (cmd_seq["program fragment"][i]["csb_addr"].get<std::string>()).c_str();
+      cout << "test: " << test << endl;
+      cout << "test2: " << std::stoi(test, nullptr, 16) << endl;
+      cout << "sdp_csb_addr: " << sdp_csb_addr << endl;
+
       sdp_csb_data = cmd_seq["program fragment"][i]["csb_data"].get<int>();
       sdp_csb_write = cmd_seq["program fragment"][i]["csb_write"].get<int>();
       sdp_csb_vld = cmd_seq["program fragment"][i]["csb_vld"].get<int>();
+      sdp_csb_rdy = cmd_seq["program fragment"][i]["csb_rdy"].get<int>();
 
       sdp_fifo_clr = cmd_seq["program fragment"][i]["fifo_clr"].get<int>();
       sdp_done = cmd_seq["program fragment"][i]["done"].get<int>();
 
       wait(10, SC_NS);
+      cout << "sdp_mrdma_data" + std::to_string(1) + ": " << sdp_mrdma_data[1] << endl;
     }
 
     input_done = 1;
@@ -108,11 +125,12 @@ SC_MODULE(testbench) {
   sc_out < sc_biguint<32> > sdp_csb_data_signal{"sdp_csb_data_signal"};
   sc_out < sc_biguint<1> > sdp_csb_write_signal{"sdp_csb_write_signal"};
   sc_out < sc_biguint<1> > sdp_csb_vld_signal{"sdp_csb_vld_signal"};
+  sc_out < sc_biguint<1> > sdp_csb_rdy_signal{"sdp_csb_rdy_signal"};
 
   sc_out < sc_biguint<1> > sdp_fifo_clr_signal{"sdp_fifo_clr_signal"};
   sc_out < sc_biguint<1> > sdp_done_signal{"sdp_done_signal"};
 
-  // sc_out< sc_biguint<1> > input_done{"input_done"};
+  sc_out< sc_biguint<1> > input_done{"input_done"};
 
   SC_CTOR(testbench) :
     clk("clk", 1, SC_NS),
@@ -134,11 +152,12 @@ SC_MODULE(testbench) {
     src.sdp_csb_data(sdp_csb_data_signal);
     src.sdp_csb_write(sdp_csb_write_signal);
     src.sdp_csb_vld(sdp_csb_vld_signal);
+    src.sdp_csb_rdy(sdp_csb_rdy_signal);
 
     src.sdp_fifo_clr(sdp_fifo_clr_signal);
     src.sdp_done(sdp_done_signal);
 
-    // src.input_done(input_done);
+    src.input_done(input_done);
 
     // Link with the sdp.h SystemC model
 
@@ -220,9 +239,11 @@ SC_MODULE(testbench) {
 
     // All CSB input signals
     sdp_inst.sdp_csb_addr_in(sdp_csb_addr_signal);
+    //cout << "sdp_csb_addr_in: " << sdp_inst.sdp_csb_addr_in << endl;
     sdp_inst.sdp_csb_data_in(sdp_csb_data_signal);
     sdp_inst.sdp_csb_write_in(sdp_csb_write_signal);
     sdp_inst.sdp_csb_vld_in(sdp_csb_vld_signal);
+    sdp_inst.sdp_csb_rdy_in(sdp_csb_rdy_signal);
 
     // All remaining input signals
     sdp_inst.sdp_fifo_clr_in(sdp_fifo_clr_signal);
@@ -239,24 +260,18 @@ SC_MODULE(testbench) {
     std::cout << "*********** simulation start ***********" << std::endl;
     wait(10, SC_NS);
 
-    // while (input_done == 0) {
-    // //  std::cout << "current simulation time: " << '\t' << sc_time_stamp() << "\r" << std::flush;
-    //   wait(10, SC_NS);
-    // }
+    while (input_done == 0) {
+    //  std::cout << "current simulation time: " << '\t' << sc_time_stamp() << "\r" << std::flush;
+      wait(10, SC_NS);
+    }
 
     wait(1000, SC_NS);
 
-    ofstream fout;
+    std::ofstream fout;
     fout.open(output_path, ios::out | ios::trunc);
-
+ 
     fout << "    sdp_pdp_output_0 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_0 << std::endl; 
     fout << "    sdp_pdp_output_1 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_1 << std::endl; 
-    fout << "    sdp_pdp_output_10 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_10 << std::endl; 
-    fout << "    sdp_pdp_output_11 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_11 << std::endl; 
-    fout << "    sdp_pdp_output_12 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_12 << std::endl; 
-    fout << "    sdp_pdp_output_13 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_13 << std::endl; 
-    fout << "    sdp_pdp_output_14 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_14 << std::endl; 
-    fout << "    sdp_pdp_output_15 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_15 << std::endl; 
     fout << "    sdp_pdp_output_2 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_2 << std::endl; 
     fout << "    sdp_pdp_output_3 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_3 << std::endl; 
     fout << "    sdp_pdp_output_4 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_4 << std::endl; 
@@ -265,6 +280,12 @@ SC_MODULE(testbench) {
     fout << "    sdp_pdp_output_7 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_7 << std::endl; 
     fout << "    sdp_pdp_output_8 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_8 << std::endl; 
     fout << "    sdp_pdp_output_9 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_9 << std::endl; 
+    fout << "    sdp_pdp_output_10 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_10 << std::endl; 
+    fout << "    sdp_pdp_output_11 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_11 << std::endl; 
+    fout << "    sdp_pdp_output_12 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_12 << std::endl; 
+    fout << "    sdp_pdp_output_13 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_13 << std::endl; 
+    fout << "    sdp_pdp_output_14 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_14 << std::endl; 
+    fout << "    sdp_pdp_output_15 => " << std::hex << "0x" << sdp_inst.sdp_pdp_output_15 << std::endl; 
 
     fout.close();
     std::cout << "outputs have been store at " << output_path << std::endl;
@@ -280,12 +301,50 @@ SC_MODULE(testbench) {
 
 int sc_main(int argc, char* argv[]) {
 
+  // Dummy ports
+  sc_signal < sc_biguint<32> > sdp_cacc_data_main[16];
+  sc_signal < sc_biguint<32> > sdp_mrdma_data_main[16];
+  sc_signal < sc_biguint<16> > sdp_regs_data_main[16];
+  sc_signal < sc_biguint<16> > sdp_dma_data_main[16];
+
+  sc_signal < sc_biguint<22> > sdp_csb_addr_main;
+  sc_signal < sc_biguint<32> > sdp_csb_data_main;
+  sc_signal < sc_biguint<1> > sdp_csb_write_main;
+  sc_signal < sc_biguint<1> > sdp_csb_vld_main;
+  sc_signal < sc_biguint<1> > sdp_csb_rdy_main;
+
+  sc_signal < sc_biguint<1> > sdp_fifo_clr_main;
+  sc_signal < sc_biguint<1> > sdp_done_main;
+
+  sc_signal< sc_biguint<1> > input_done_main;
+
+  // Parse input file name
   std::string file_name;
   file_name = argv[1];
-  prog_frag_path = "./prog_frag/" + file_name + "_input.json";
-  output_path = "./result/" + file_name + "_out.json";
+  prog_frag_path = "../prog_frag/" + file_name + "_input.json";
+  output_path = "../result/" + file_name + "_out.json";
   std::cout << "executing " << file_name << std::endl;
   testbench tb("tb");
+
+  // Linking to dummy ports
+  for (size_t i = 0; i < 16; i++) {
+      tb.sdp_cacc_data_signal[i](sdp_cacc_data_main[i]);
+      tb.sdp_mrdma_data_signal[i](sdp_mrdma_data_main[i]);
+      tb.sdp_regs_data_signal[i](sdp_regs_data_main[i]);
+      tb.sdp_dma_data_signal[i](sdp_dma_data_main[i]);
+  }
+
+  tb.sdp_csb_addr_signal(sdp_csb_addr_main);
+  tb.sdp_csb_data_signal(sdp_csb_data_main);
+  tb.sdp_csb_write_signal(sdp_csb_write_main);
+  tb.sdp_csb_vld_signal(sdp_csb_vld_main);
+  tb.sdp_csb_rdy_signal(sdp_csb_rdy_main);
+
+  tb.sdp_fifo_clr_signal(sdp_fifo_clr_main);
+  tb.sdp_done_signal(sdp_done_main);
+
+  tb.input_done(input_done_main);
+
   sc_start();
 
   return 0;

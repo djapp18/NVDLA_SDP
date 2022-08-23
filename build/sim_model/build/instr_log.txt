@@ -1,0 +1,10 @@
+Instr No.    0	SET_PRODUCER is activated
+Instr No.    1	DP_BS_CFG_group0 is activated
+Instr No.    2	DP_BN_CFG_group0 is activated
+Instr No.    3	DP_EW_CFG_group0 is activated
+Instr No.    4	FEATURE_MODE_CFG_group0 is activated
+Instr No.    5	OP_ENABLE_group0 is activated
+Instr No.    6	Compute_ReLU_group0 is activated
+Instr No.    7	Compute_ReLU_group0 is activated
+Instr No.    8	Compute_ReLU_group0 is activated
+Instr No.    9	DONE is activated

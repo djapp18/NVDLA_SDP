@@ -6,5 +6,5 @@ CXX_DEFINES = -DFMT_LOCALE -DFMT_SHARED -DGOOGLE_GLOG_DLL_DECL="" -DGOOGLE_GLOG_
 
 CXX_INCLUDES = -I/u/djacob/Workspace/NVDLA_SDP/include -isystem /u/djacob/ILAng/include -isystem /u/djacob/z3/include
 
-CXX_FLAGS = -g -std=gnu++17
+CXX_FLAGS = -g -Wall -g -std=gnu++17
 

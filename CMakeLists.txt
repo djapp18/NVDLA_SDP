@@ -34,7 +34,7 @@ add_library(${MyTarget}ila
   src/sdp_state.cc
   src/sdp_instrs.cc
   src/sdp_top.cc
-  src/sdp_dp_single.cc
+  src/sdp_dp_instrs.cc
 )
 
 add_library(${PROJECT_NAME}::${MyTarget}ila ALIAS ${MyTarget}ila)

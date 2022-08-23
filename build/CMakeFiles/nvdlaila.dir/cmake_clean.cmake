@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/nvdlaila.dir/src/sdp_dp_single.cc.o"
-  "CMakeFiles/nvdlaila.dir/src/sdp_dp_single.cc.o.d"
+  "CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o"
+  "CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o.d"
   "CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o"
   "CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o.d"
   "CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.o"

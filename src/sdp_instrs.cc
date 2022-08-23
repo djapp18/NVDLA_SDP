@@ -34,8 +34,9 @@ void DefineSDPInstrs(Ila& m) {
     // m.AddInit(m.state(NVDLA_CSC_S_STATUS_0) == BvConst(0, 2));
     // m.AddInit(m.state(NVDLA_CSC_S_STATUS_1) == BvConst(0, 2));
 
-    auto csb_addr = Extract(Concat(m.input("csb_addr"), BvConst(0,2)), 11, 0);
-    auto csb_valid = (m.state("csb_rdy") == BvConst(1,1)) & (m.input("csb_vld") == BvConst(1,1));
+    //auto csb_addr = Extract(Concat(m.input("csb_addr"), BvConst(0,2)), 11, 0);
+    auto csb_addr = m.input("csb_addr");
+    auto csb_valid = (m.input("csb_rdy") == BvConst(1,1)) & (m.input("csb_vld") == BvConst(1,1));
     auto csb_write = m.input("csb_write") == BvConst(1,1);
     auto group0_unset = SelectBit(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), 0) == BvConst(0,1);
     auto group1_unset = SelectBit(m.state(GetVarName("group1_", NVDLA_SDP_D_OP_ENABLE)), 0) == BvConst(0,1);
@@ -51,7 +52,7 @@ void DefineSDPInstrs(Ila& m) {
     // CSB MMIO
     { // 0004
         auto instr = m.NewInstr("SET_PRODUCER");
-        instr.SetDecode(csb_addr == 0x004 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x004) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_PRODUCER), Extract(m.input("csb_data"), 0, 0));
     }
@@ -59,7 +60,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT ACCESS CFG
     { // 0008
         auto instr = m.NewInstr("LUT_ACCESS_CFG");
-        instr.SetDecode(csb_addr == 0x008 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x008) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_ACCESS_TYPE), SelectBit(m.input("csb_data"), 17));
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_ADDR), Extract(m.input("csb_data"), 9, 0));
@@ -69,7 +70,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT ACCESS DATA
     { // 000c
         auto instr = m.NewInstr("LUT_ACCESS_DATA");
-        instr.SetDecode(csb_addr == 0x00c & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x00c) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_ACCESS_DATA), Extract(m.input("csb_data"), 15, 0));
     }
@@ -77,7 +78,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT CFG
     { // 0010
         auto instr = m.NewInstr("LUT_CFG");
-        instr.SetDecode(csb_addr == 0x010 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x010) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_HYBRID_PRIORITY), SelectBit(m.input("csb_data"), 6));
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_OFLOW_PRIORITY), SelectBit(m.input("csb_data"), 5));
@@ -88,7 +89,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT INFO
     { // 0014
         auto instr = m.NewInstr("LUT_INFO");
-        instr.SetDecode(csb_addr == 0x014 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x014) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LO_INDEX_SELECT), Extract(m.input("csb_data"), 23, 16));
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LE_INDEX_SELECT), Extract(m.input("csb_data"), 15, 8));
@@ -98,7 +99,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT LE START
     { // 0018
         auto instr = m.NewInstr("LUT_LE_START");
-        instr.SetDecode(csb_addr == 0x018 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x018) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LE_START), Extract(m.input("csb_data"), 31, 0));
     }
@@ -106,7 +107,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT LE END
     { // 001c
         auto instr = m.NewInstr("LUT_LE_END");
-        instr.SetDecode(csb_addr == 0x01c & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x01c) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LE_END), Extract(m.input("csb_data"), 31, 0));
     }
@@ -114,7 +115,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT LO START
     { // 0020
         auto instr = m.NewInstr("LUT_LO_START");
-        instr.SetDecode(csb_addr == 0x020 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x020) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LO_START), Extract(m.input("csb_data"), 31, 0));
     }
@@ -122,7 +123,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT LO END
     { // 0024
         auto instr = m.NewInstr("LUT_LO_END");
-        instr.SetDecode(csb_addr == 0x024 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x024) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LO_END), Extract(m.input("csb_data"), 31, 0));
     }
@@ -130,7 +131,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT LE SLOPE SCALE
     { // 0028
         auto instr = m.NewInstr("LUT_LE_SLOPE_SCALE");
-        instr.SetDecode(csb_addr == 0x028 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x028) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SCALE), Extract(m.input("csb_data"), 31, 16));
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SCALE), Extract(m.input("csb_data"), 15, 0));
@@ -139,7 +140,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT LE SLOPE SHIFT
     { // 002c
         auto instr = m.NewInstr("LUT_LE_SLOPE_SHIFT");
-        instr.SetDecode(csb_addr == 0x028 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x028) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LE_SLOPE_OFLOW_SHIFT), Extract(m.input("csb_data"), 9, 5));
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LE_SLOPE_UFLOW_SHIFT), Extract(m.input("csb_data"), 4, 0));
@@ -148,7 +149,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT LO SLOPE SCALE
     { // 0030
         auto instr = m.NewInstr("LUT_LO_SLOPE_SCALE");
-        instr.SetDecode(csb_addr == 0x030 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x030) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SCALE), Extract(m.input("csb_data"), 31, 16));
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SCALE), Extract(m.input("csb_data"), 15, 0));
@@ -157,7 +158,7 @@ void DefineSDPInstrs(Ila& m) {
     // LUT LO SLOPE SHIFT
     { // 0034
         auto instr = m.NewInstr("LUT_LO_SLOPE_SHIFT");
-        instr.SetDecode(csb_addr == 0x034 & csb_valid & csb_write);
+        instr.SetDecode((csb_addr == 0x034) & csb_valid & csb_write);
 
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LO_SLOPE_OFLOW_SHIFT), Extract(m.input("csb_data"), 9, 5));
         instr.SetUpdate(m.state(NVDLA_SDP_S_LUT_LO_SLOPE_UFLOW_SHIFT), Extract(m.input("csb_data"), 4, 0));
@@ -166,14 +167,14 @@ void DefineSDPInstrs(Ila& m) {
     // OP ENABLE
     { // 0038_group0
         auto instr = m.NewInstr("OP_ENABLE_group0");
-        instr.SetDecode(csb_addr == 0x038 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x038) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), SelectBit(m.input("csb_data"), 0));
     }
 
     { // 0038_group1
         auto instr = m.NewInstr("OP_ENABLE_group1");
-        instr.SetDecode(csb_addr == 0x038 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x038) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_OP_ENABLE)), SelectBit(m.input("csb_data"), 0));
     }
@@ -181,14 +182,14 @@ void DefineSDPInstrs(Ila& m) {
     // DATA CUBE WIDTH
     { // 003c_group0
         auto instr = m.NewInstr("DATA_CUBE_WIDTH_group0");
-        instr.SetDecode(csb_addr == 0x03c & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x03c) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DATA_CUBE_WIDTH)), Extract(m.input("csb_data"), 12, 0));
     }
 
     { // 003c_group1
         auto instr = m.NewInstr("DATA_CUBE_WIDTH_group1");
-        instr.SetDecode(csb_addr == 0x03c & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x03c) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DATA_CUBE_WIDTH)), Extract(m.input("csb_data"), 12, 0));
     }
@@ -196,14 +197,14 @@ void DefineSDPInstrs(Ila& m) {
     // DATA CUBE HEIGHT
     { // 0040_group0
         auto instr = m.NewInstr("DATA_CUBE_HEIGHT_group0");
-        instr.SetDecode(csb_addr == 0x040 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x040) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DATA_CUBE_HEIGHT)), Extract(m.input("csb_data"), 12, 0));
     }
 
     { // 0040_group1
         auto instr = m.NewInstr("DATA_CUBE_HEIGHT_group1");
-        instr.SetDecode(csb_addr == 0x040 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x040) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DATA_CUBE_HEIGHT)), Extract(m.input("csb_data"), 12, 0));
     }
@@ -211,14 +212,14 @@ void DefineSDPInstrs(Ila& m) {
     // DATA CUBE CHANNEL
     { // 0044_group0
         auto instr = m.NewInstr("DATA_CUBE_CHANNEL_group0");
-        instr.SetDecode(csb_addr == 0x044 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x044) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DATA_CUBE_CHANNEL)), Extract(m.input("csb_data"), 12, 0));
     }
 
     { // 0044_group1
         auto instr = m.NewInstr("DATA_CUBE_CHANNEL_group1");
-        instr.SetDecode(csb_addr == 0x044 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x044) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DATA_CUBE_CHANNEL)), Extract(m.input("csb_data"), 12, 0));
     }
@@ -226,14 +227,14 @@ void DefineSDPInstrs(Ila& m) {
     // DST BASE ADDR LOW
     { // 0048_group0
         auto instr = m.NewInstr("DST_BASE_ADDR_LOW_group0");
-        instr.SetDecode(csb_addr == 0x048 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x048) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DST_BASE_ADDR_LOW)), Extract(m.input("csb_data"), 31, 5));
     }
 
     { // 0048_group1
         auto instr = m.NewInstr("DST_BASE_ADDR_LOW_group1");
-        instr.SetDecode(csb_addr == 0x048 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x048) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DST_BASE_ADDR_LOW)), Extract(m.input("csb_data"), 31, 5));
     }
@@ -241,14 +242,14 @@ void DefineSDPInstrs(Ila& m) {
     // DST BASE ADDR HIGH
     { // 004c_group0
         auto instr = m.NewInstr("DST_BASE_ADDR_HIGH_group0");
-        instr.SetDecode(csb_addr == 0x04c & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x04c) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DST_BASE_ADDR_HIGH)), Extract(m.input("csb_data"), 31, 0));
     }
 
     { // 004c_group1
         auto instr = m.NewInstr("DST_BASE_ADDR_HIGH_group1");
-        instr.SetDecode(csb_addr == 0x04c & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x04c) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DST_BASE_ADDR_HIGH)), Extract(m.input("csb_data"), 31, 0));
     }
@@ -256,14 +257,14 @@ void DefineSDPInstrs(Ila& m) {
     // DST LINE STRIDE
     { // 0050_group0
         auto instr = m.NewInstr("DST_LINE_STRIDE_group0");
-        instr.SetDecode(csb_addr == 0x050 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x050) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DST_LINE_STRIDE)), Extract(m.input("csb_data"), 31, 5));
     }
 
     { // 0050_group1
         auto instr = m.NewInstr("DST_LINE_STRIDE_group1");
-        instr.SetDecode(csb_addr == 0x050 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x050) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DST_LINE_STRIDE)), Extract(m.input("csb_data"), 31, 5));
     }
@@ -271,14 +272,14 @@ void DefineSDPInstrs(Ila& m) {
     // DST SURFACE STRIDE
     { // 0054_group0
         auto instr = m.NewInstr("DST_SURFACE_STRIDE_group0");
-        instr.SetDecode(csb_addr == 0x054 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x054) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DST_SURFACE_STRIDE)), Extract(m.input("csb_data"), 31, 5));
     }
 
     { // 0054_group1
         auto instr = m.NewInstr("DST_SURFACE_STRIDE_group1");
-        instr.SetDecode(csb_addr == 0x054 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x054) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DST_SURFACE_STRIDE)), Extract(m.input("csb_data"), 31, 5));
     }
@@ -286,7 +287,7 @@ void DefineSDPInstrs(Ila& m) {
     // DP BS CFG
     { // 0058_group0
         auto instr = m.NewInstr("DP_BS_CFG_group0");
-        instr.SetDecode(csb_addr == 0x058 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x058) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BS_RELU_BYPASS)), SelectBit(m.input("csb_data"), 6));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BS_MUL_PRELU)), SelectBit(m.input("csb_data"), 5));
@@ -298,7 +299,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 0058_group1
         auto instr = m.NewInstr("DP_BS_CFG_group1");
-        instr.SetDecode(csb_addr == 0x058 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x058) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BS_RELU_BYPASS)), SelectBit(m.input("csb_data"), 6));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BS_MUL_PRELU)), SelectBit(m.input("csb_data"), 5));
@@ -311,7 +312,7 @@ void DefineSDPInstrs(Ila& m) {
     // DP BS ALU CFG
     { // 005c_group0
         auto instr = m.NewInstr("DP_BS_ALU_CFG_group0");
-        instr.SetDecode(csb_addr == 0x05c & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x05c) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BS_ALU_SHIFT_VALUE)), Extract(m.input("csb_data"), 13, 8));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BS_ALU_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -319,7 +320,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 005c_group1
         auto instr = m.NewInstr("DP_BS_ALU_CFG_group1");
-        instr.SetDecode(csb_addr == 0x05c & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x05c) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BS_ALU_SHIFT_VALUE)), Extract(m.input("csb_data"), 13, 8));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BS_ALU_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -328,14 +329,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP BS ALU SRC VALUE
     { // 0060_group0
         auto instr = m.NewInstr("DP_BS_ALU_SRC_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x060 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x060) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_BS_ALU_SRC_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
 
     { // 0060_group1
         auto instr = m.NewInstr("DP_BS_ALU_SRC_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x060 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x060) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_BS_ALU_SRC_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
@@ -343,7 +344,7 @@ void DefineSDPInstrs(Ila& m) {
     // DP BS MUL CFG
     { // 0064_group0
         auto instr = m.NewInstr("DP_BS_MUL_CFG_group0");
-        instr.SetDecode(csb_addr == 0x064 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x064) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BS_MUL_SHIFT_VALUE)), Extract(m.input("csb_data"), 15, 8));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BS_MUL_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -351,7 +352,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 0064_group1
         auto instr = m.NewInstr("DP_BS_MUL_CFG_group1");
-        instr.SetDecode(csb_addr == 0x064 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x064) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BS_MUL_SHIFT_VALUE)), Extract(m.input("csb_data"), 15, 8));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BS_MUL_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -360,14 +361,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP BS MUL SRC VALUE
     { // 0068_group0
         auto instr = m.NewInstr("DP_BS_MUL_SRC_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x068 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x068) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_BS_MUL_SRC_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
 
     { // 0068_group1
         auto instr = m.NewInstr("DP_BS_MUL_SRC_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x068 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x068) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_BS_MUL_SRC_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
@@ -375,7 +376,7 @@ void DefineSDPInstrs(Ila& m) {
     // DP BN CFG
     { // 006c_group0
         auto instr = m.NewInstr("DP_BN_CFG_group0");
-        instr.SetDecode(csb_addr == 0x06c & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x06c) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BN_RELU_BYPASS)), SelectBit(m.input("csb_data"), 6));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BN_MUL_PRELU)), SelectBit(m.input("csb_data"), 5));
@@ -387,7 +388,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 006c_group1
         auto instr = m.NewInstr("DP_BN_CFG_group1");
-        instr.SetDecode(csb_addr == 0x06c & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x06c) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BN_RELU_BYPASS)), SelectBit(m.input("csb_data"), 6));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BN_MUL_PRELU)), SelectBit(m.input("csb_data"), 5));
@@ -400,7 +401,7 @@ void DefineSDPInstrs(Ila& m) {
     // DP BN ALU CFG
     { // 0070_group0
         auto instr = m.NewInstr("DP_BN_ALU_CFG_group0");
-        instr.SetDecode(csb_addr == 0x070 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x070) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BN_ALU_SHIFT_VALUE)), Extract(m.input("csb_data"), 13, 8));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BN_ALU_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -408,7 +409,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 0070_group1
         auto instr = m.NewInstr("DP_BN_ALU_CFG_group1");
-        instr.SetDecode(csb_addr == 0x070 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x070) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BN_ALU_SHIFT_VALUE)), Extract(m.input("csb_data"), 13, 8));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BN_ALU_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -417,14 +418,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP BN ALU SRC VALUE
     { // 0074_group0
         auto instr = m.NewInstr("DP_BN_ALU_SRC_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x074 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x074) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_BN_ALU_SRC_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
 
     { // 0074_group1
         auto instr = m.NewInstr("DP_BN_ALU_SRC_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x074 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x074) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_BN_ALU_SRC_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
@@ -432,7 +433,7 @@ void DefineSDPInstrs(Ila& m) {
     // DP BN MUL CFG
     { // 0078_group0
         auto instr = m.NewInstr("DP_BN_MUL_CFG_group0");
-        instr.SetDecode(csb_addr == 0x078 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x078) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BN_MUL_SHIFT_VALUE)), Extract(m.input("csb_data"), 15, 8));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BN_MUL_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -440,7 +441,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 0078_group1
         auto instr = m.NewInstr("DP_BN_MUL_CFG_group1");
-        instr.SetDecode(csb_addr == 0x078 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x078) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BN_MUL_SHIFT_VALUE)), Extract(m.input("csb_data"), 15, 8));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BN_MUL_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -449,14 +450,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP BN MUL SRC VALUE
     { // 007c_group0
         auto instr = m.NewInstr("DP_BN_MUL_SRC_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x07c & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x07c) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_BN_MUL_SRC_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
 
     { // 007c_group1
         auto instr = m.NewInstr("DP_BN_MUL_SRC_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x07c & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x07c) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_BN_MUL_SRC_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
@@ -464,7 +465,7 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW CFG
     { // 0080_group0
         auto instr = m.NewInstr("DP_EW_CFG_group0");
-        instr.SetDecode(csb_addr == 0x080 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x080) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_EW_LUT_BYPASS)), SelectBit(m.input("csb_data"), 6));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_EW_MUL_PRELU)), SelectBit(m.input("csb_data"), 5));
@@ -476,7 +477,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 0080_group1
         auto instr = m.NewInstr("DP_EW_CFG_group1");
-        instr.SetDecode(csb_addr == 0x080 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x080) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_EW_LUT_BYPASS)), SelectBit(m.input("csb_data"), 6));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_EW_MUL_PRELU)), SelectBit(m.input("csb_data"), 5));
@@ -489,7 +490,7 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW ALU CFG
     { // 0084_group0
         auto instr = m.NewInstr("DP_EW_ALU_CFG_group0");
-        instr.SetDecode(csb_addr == 0x084 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x084) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_EW_ALU_CVT_BYPASS)), SelectBit(m.input("csb_data"), 1));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_EW_ALU_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -497,7 +498,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 0084_group1
         auto instr = m.NewInstr("DP_EW_ALU_CFG_group1");
-        instr.SetDecode(csb_addr == 0x084 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x084) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_EW_ALU_CVT_BYPASS)), SelectBit(m.input("csb_data"), 1));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_EW_ALU_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -506,14 +507,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW ALU SRC VALUE
     { // 0088_group0
         auto instr = m.NewInstr("DP_EW_ALU_SRC_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x088 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x088) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_EW_ALU_SRC_VALUE)), Extract(m.input("csb_data"), 31, 0));
     }
 
     { // 0088_group1
         auto instr = m.NewInstr("DP_EW_ALU_SRC_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x088 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x088) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_EW_ALU_SRC_VALUE)), Extract(m.input("csb_data"), 31, 0));
     }
@@ -521,14 +522,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW ALU CVT OFFSET VALUE
     { // 008c_group0
         auto instr = m.NewInstr("DP_EW_ALU_CVT_OFFSET_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x08c & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x08c) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_EW_ALU_CVT_OFFSET_VALUE)), Extract(m.input("csb_data"), 31, 0));
     }
 
     { // 008c_group1
         auto instr = m.NewInstr("DP_EW_ALU_CVT_OFFSET_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x08c & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x08c) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_EW_ALU_CVT_OFFSET_VALUE)), Extract(m.input("csb_data"), 31, 0));
     }
@@ -536,14 +537,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW ALU CVT SCALE VALUE
     { // 0090_group0
         auto instr = m.NewInstr("DP_EW_ALU_CVT_SCALE_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x090 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x090) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_EW_ALU_CVT_SCALE_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
 
     { // 0090_group1
         auto instr = m.NewInstr("DP_EW_ALU_CVT_SCALE_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x090 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x090) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_EW_ALU_CVT_SCALE_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
@@ -551,14 +552,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW ALU CVT TRUNCATE VALUE
     { // 0094_group0
         auto instr = m.NewInstr("DP_EW_ALU_CVT_TRUNCATE_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x094 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x094) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_EW_ALU_CVT_TRUNCATE_VALUE)), Extract(m.input("csb_data"), 5, 0));
     }
 
     { // 0094_group1
         auto instr = m.NewInstr("DP_EW_ALU_CVT_TRUNCATE_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x094 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x094) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_EW_ALU_CVT_TRUNCATE_VALUE)), Extract(m.input("csb_data"), 5, 0));
     }
@@ -566,7 +567,7 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW MUL CFG
     { // 0098_group0
         auto instr = m.NewInstr("DP_EW_MUL_CFG_group0");
-        instr.SetDecode(csb_addr == 0x090 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x090) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_EW_MUL_CVT_BYPASS)), SelectBit(m.input("csb_data"), 1));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_EW_MUL_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -574,7 +575,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 0098_group1
         auto instr = m.NewInstr("DP_EW_MUL_CFG_group1");
-        instr.SetDecode(csb_addr == 0x098 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x098) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_EW_MUL_CVT_BYPASS)), SelectBit(m.input("csb_data"), 1));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_EW_MUL_SRC)), SelectBit(m.input("csb_data"), 0));
@@ -583,14 +584,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW MUL SRC VALUE
     { // 009c_group0
         auto instr = m.NewInstr("DP_EW_MUL_SRC_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x09c & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x09c) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_EW_MUL_SRC_VALUE)), Extract(m.input("csb_data"), 31, 0));
     }
 
     { // 009c_group1
         auto instr = m.NewInstr("DP_EW_MUL_SRC_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x09c & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x09c) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_EW_MUL_SRC_VALUE)), Extract(m.input("csb_data"), 31, 0));
     }
@@ -598,14 +599,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW MUL CVT OFFSET VALUE
     { // 00a0_group0
         auto instr = m.NewInstr("DP_EW_MUL_CVT_OFFSET_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x0a0 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0a0) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_EW_MUL_CVT_OFFSET_VALUE)), Extract(m.input("csb_data"), 31, 0));
     }
 
     { // 00a0_group1
         auto instr = m.NewInstr("DP_EW_MUL_CVT_OFFSET_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x0a0 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0a0) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_EW_MUL_CVT_OFFSET_VALUE)), Extract(m.input("csb_data"), 31, 0));
     }
@@ -613,14 +614,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW MUL CVT SCALE VALUE
     { // 00a4_group0
         auto instr = m.NewInstr("DP_EW_MUL_CVT_SCALE_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x0a4 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0a4) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_EW_MUL_CVT_SCALE_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
 
     { // 00a4_group1
         auto instr = m.NewInstr("DP_EW_MUL_CVT_SCALE_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x0a4 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0a4) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_EW_MUL_CVT_SCALE_VALUE)), Extract(m.input("csb_data"), 15, 0));
     }
@@ -628,14 +629,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW MUL CVT TRUNCATE VALUE
     { // 00a8_group0
         auto instr = m.NewInstr("DP_EW_MUL_CVT_TRUNCATE_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x0a8 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0a8) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_EW_MUL_CVT_TRUNCATE_VALUE)), Extract(m.input("csb_data"), 5, 0));
     }
 
     { // 00a8_group1
         auto instr = m.NewInstr("DP_EW_MUL_CVT_TRUNCATE_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x0a8 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0a8) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_EW_MUL_CVT_TRUNCATE_VALUE)), Extract(m.input("csb_data"), 5, 0));
     }
@@ -643,14 +644,14 @@ void DefineSDPInstrs(Ila& m) {
     // DP EW TRUNCATE VALUE
     { // 00ac_group0
         auto instr = m.NewInstr("DP_EW_TRUNCATE_VALUE_group0");
-        instr.SetDecode(csb_addr == 0x0ac & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0ac) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DP_EW_TRUNCATE_VALUE)), Extract(m.input("csb_data"), 9, 0));
     }
 
     { // 00ac_group1
         auto instr = m.NewInstr("DP_EW_TRUNCATE_VALUE_group1");
-        instr.SetDecode(csb_addr == 0x0ac & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0ac) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DP_EW_TRUNCATE_VALUE)), Extract(m.input("csb_data"), 9, 0));
     }
@@ -658,7 +659,7 @@ void DefineSDPInstrs(Ila& m) {
     // FEATURE MODE CFG
     { // 00b0_group0
         auto instr = m.NewInstr("FEATURE_MODE_CFG_group0");
-        instr.SetDecode(csb_addr == 0x0b0 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0b0) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_BATCH_NUMBER)), Extract(m.input("csb_data"), 12, 8));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_NAN_TO_ZERO)), SelectBit(m.input("csb_data"), 3));
@@ -669,7 +670,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 00b0_group1
         auto instr = m.NewInstr("FEATURE_MODE_CFG_group1");
-        instr.SetDecode(csb_addr == 0x0b0 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0b0) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_BATCH_NUMBER)), Extract(m.input("csb_data"), 12, 8));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_NAN_TO_ZERO)), SelectBit(m.input("csb_data"), 3));
@@ -681,14 +682,14 @@ void DefineSDPInstrs(Ila& m) {
     // DST DMA CFG
     { // 00b4_group0
         auto instr = m.NewInstr("DST_DMA_CFG_group0");
-        instr.SetDecode(csb_addr == 0x0b4 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0b4) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DST_DMA_CFG)), SelectBit(m.input("csb_data"), 0));
     }
 
     { // 00b4_group1
         auto instr = m.NewInstr("DST_DMA_CFG_group1");
-        instr.SetDecode(csb_addr == 0x0b4 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0b4) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DST_DMA_CFG)), SelectBit(m.input("csb_data"), 0));
     }
@@ -696,14 +697,14 @@ void DefineSDPInstrs(Ila& m) {
     // DST BATCH STRIDE
     { // 00b8_group0
         auto instr = m.NewInstr("DST_BATCH_STRIDE_group0");
-        instr.SetDecode(csb_addr == 0x0b8 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0b8) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_DST_BATCH_STRIDE)), Extract(m.input("csb_data"), 31, 5));
     }
 
     { // 00b8_group1
         auto instr = m.NewInstr("DST_BATCH_STRIDE_group1");
-        instr.SetDecode(csb_addr == 0x0b8 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0b8) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_DST_BATCH_STRIDE)), Extract(m.input("csb_data"), 31, 5));
     }
@@ -711,7 +712,7 @@ void DefineSDPInstrs(Ila& m) {
     // DATA FORMAT
     { // 00bc_group0
         auto instr = m.NewInstr("DATA_FORMAT_group0");
-        instr.SetDecode(csb_addr == 0x0bc & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0bc) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_OUT_PRECISION)), Extract(m.input("csb_data"), 3, 2));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_PROC_PRECISION)), Extract(m.input("csb_data"), 1, 0));
@@ -719,7 +720,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 00bc_group1
         auto instr = m.NewInstr("DATA_FORMAT_group1");
-        instr.SetDecode(csb_addr == 0x0bc & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0bc) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_OUT_PRECISION)), Extract(m.input("csb_data"), 3, 2));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_PROC_PRECISION)), Extract(m.input("csb_data"), 1, 0));
@@ -728,14 +729,14 @@ void DefineSDPInstrs(Ila& m) {
     // CVT OFFSET
     { // 00c0_group0
         auto instr = m.NewInstr("CVT_OFFSET_group0");
-        instr.SetDecode(csb_addr == 0x0c0 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0c0) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_CVT_OFFSET)), Extract(m.input("csb_data"), 31, 0));
     }
 
     { // 00c0_group1
         auto instr = m.NewInstr("CVT_OFFSET_group1");
-        instr.SetDecode(csb_addr == 0x0c0 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0c0) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_CVT_OFFSET)), Extract(m.input("csb_data"), 31, 0));
     }
@@ -743,14 +744,14 @@ void DefineSDPInstrs(Ila& m) {
     // CVT SCALE
     { // 00c4_group0
         auto instr = m.NewInstr("CVT_SCALE_group0");
-        instr.SetDecode(csb_addr == 0x0c4 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0c4) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_CVT_SCALE)), Extract(m.input("csb_data"), 15, 0));
     }
 
     { // 00c4_group1
         auto instr = m.NewInstr("CVT_SCALE_group1");
-        instr.SetDecode(csb_addr == 0x0c4 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0c4) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_CVT_SCALE)), Extract(m.input("csb_data"), 15, 0));
     }
@@ -758,14 +759,14 @@ void DefineSDPInstrs(Ila& m) {
     // CVT SHIFT
     { // 00c8_group0
         auto instr = m.NewInstr("CVT_SHIFT_group0");
-        instr.SetDecode(csb_addr == 0x0c8 & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0c8) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_CVT_SHIFT)), Extract(m.input("csb_data"), 5, 0));
     }
 
     { // 00c8_group1
         auto instr = m.NewInstr("CVT_SHIFT_group1");
-        instr.SetDecode(csb_addr == 0x0c8 & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0c8) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_CVT_SHIFT)), Extract(m.input("csb_data"), 5, 0));
     }
@@ -773,7 +774,7 @@ void DefineSDPInstrs(Ila& m) {
     // PERF ENABLE
     { // 00dc_group0
         auto instr = m.NewInstr("PERF_ENABLE_group0");
-        instr.SetDecode(csb_addr == 0x0dc & csb_valid & csb_write & producer == BvConst(0,1) & group0_unset);
+        instr.SetDecode((csb_addr == 0x0dc) & csb_valid & csb_write & (producer == BvConst(0,1)) & group0_unset);
 
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_PERF_NAN_INF_COUNT_EN)), SelectBit(m.input("csb_data"), 3));
         instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_PERF_SAT_EN)), SelectBit(m.input("csb_data"), 2));
@@ -783,7 +784,7 @@ void DefineSDPInstrs(Ila& m) {
 
     { // 00dc_group1
         auto instr = m.NewInstr("PERF_ENABLE_group1");
-        instr.SetDecode(csb_addr == 0x0dc & csb_valid & csb_write & producer == BvConst(1,1) & group1_unset);
+        instr.SetDecode((csb_addr == 0x0dc) & csb_valid & csb_write & (producer == BvConst(1,1)) & group1_unset);
 
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_PERF_NAN_INF_COUNT_EN)), SelectBit(m.input("csb_data"), 3));
         instr.SetUpdate(m.state(GetVarName("group1_", NVDLA_SDP_D_PERF_SAT_EN)), SelectBit(m.input("csb_data"), 2));
@@ -798,9 +799,9 @@ void DefineSDPInstrs(Ila& m) {
         auto instr = m.NewInstr("DONE");
         instr.SetDecode(done == BvConst(1, 1));
 
-        auto new_consumer = Ite(SelectBit(m.state(NVDLA_SDP_S_CONSUMER), 0) == 0x0, BvConst(1, 1), BvConst(0, 1));
+        auto new_consumer = Ite((SelectBit(m.state(NVDLA_SDP_S_CONSUMER), 0) == 0x0), BvConst(1, 1), BvConst(0, 1));
         instr.SetUpdate(m.state(NVDLA_SDP_S_CONSUMER), new_consumer);
-        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), BvConst(0, 1));
+        instr.SetUpdate(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), BvConst(0, 1));  // curently hardcoded - should flip flop between the groups
     }
 
 }

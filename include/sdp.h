@@ -39,7 +39,7 @@ void DefineSDPInput(Ila& m);
 void DefineSDPOutput(Ila& m);
 void DefineSDPState(Ila& m);
 void DefineSDPInstrs(Ila& m);
-void DefineSDPInstrsDP_Single(Ila& m);
+void DefineSDPInstrsDP(Ila& m);
 
 } // namespace ilang
 

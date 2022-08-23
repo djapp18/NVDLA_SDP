@@ -38,6 +38,7 @@ void DefineSDPInput(Ila& m) {
     m.NewBvInput("csb_write", 1);
     // m.NewBvInput("csb_other", 8);
     m.NewBvInput("csb_vld", 1);
+    m.NewBvInput("csb_rdy", 1);
 
     // Control Signals
     m.NewBvInput("fifo_clr", 1);

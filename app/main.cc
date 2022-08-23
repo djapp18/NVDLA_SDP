@@ -42,13 +42,13 @@ int main(int argc, char* argv[]) {
   auto sdp = GetSDPIla("sdp");
 
   ILA_INFO << "#instr: " << sdp.instr_num();
-  for (auto i = 0; i < sdp.instr_num(); i++) {
+  for (size_t i = 0; i < sdp.instr_num(); i++) {
     ILA_INFO << sdp.instr(i);
   }
 
   ILA_INFO << "#state: " << sdp.state_num();
   // auto total = 0;
-  for (auto i = 0; i < sdp.state_num(); i++) {
+  for (size_t i = 0; i < sdp.state_num(); i++) {
     ILA_INFO << sdp.state(i);
     // total += sdp.state(i).bit_width();
   }
@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
   // cout << "\n";
 
   ILA_INFO << "#input: " << sdp.input_num();
-  for (auto i = 0; i < sdp.input_num(); i++) {
+  for (size_t i = 0; i < sdp.input_num(); i++) {
     ILA_INFO << sdp.input(i);
   }
 

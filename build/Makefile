@@ -166,29 +166,29 @@ app/main.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdla.dir/build.make CMakeFiles/nvdla.dir/app/main.cc.s
 .PHONY : app/main.cc.s
 
-src/sdp_dp_single.o: src/sdp_dp_single.cc.o
-.PHONY : src/sdp_dp_single.o
+src/sdp_dp_instrs.o: src/sdp_dp_instrs.cc.o
+.PHONY : src/sdp_dp_instrs.o
 
 # target to build an object file
-src/sdp_dp_single.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_dp_single.cc.o
-.PHONY : src/sdp_dp_single.cc.o
+src/sdp_dp_instrs.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o
+.PHONY : src/sdp_dp_instrs.cc.o
 
-src/sdp_dp_single.i: src/sdp_dp_single.cc.i
-.PHONY : src/sdp_dp_single.i
+src/sdp_dp_instrs.i: src/sdp_dp_instrs.cc.i
+.PHONY : src/sdp_dp_instrs.i
 
 # target to preprocess a source file
-src/sdp_dp_single.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_dp_single.cc.i
-.PHONY : src/sdp_dp_single.cc.i
+src/sdp_dp_instrs.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.i
+.PHONY : src/sdp_dp_instrs.cc.i
 
-src/sdp_dp_single.s: src/sdp_dp_single.cc.s
-.PHONY : src/sdp_dp_single.s
+src/sdp_dp_instrs.s: src/sdp_dp_instrs.cc.s
+.PHONY : src/sdp_dp_instrs.s
 
 # target to generate assembly for a file
-src/sdp_dp_single.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_dp_single.cc.s
-.PHONY : src/sdp_dp_single.cc.s
+src/sdp_dp_instrs.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.s
+.PHONY : src/sdp_dp_instrs.cc.s
 
 src/sdp_input.o: src/sdp_input.cc.o
 .PHONY : src/sdp_input.o
@@ -323,9 +323,9 @@ help:
 	@echo "... app/main.o"
 	@echo "... app/main.i"
 	@echo "... app/main.s"
-	@echo "... src/sdp_dp_single.o"
-	@echo "... src/sdp_dp_single.i"
-	@echo "... src/sdp_dp_single.s"
+	@echo "... src/sdp_dp_instrs.o"
+	@echo "... src/sdp_dp_instrs.i"
+	@echo "... src/sdp_dp_instrs.s"
 	@echo "... src/sdp_input.o"
 	@echo "... src/sdp_input.i"
 	@echo "... src/sdp_input.s"
