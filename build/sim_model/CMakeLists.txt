@@ -25,8 +25,8 @@ add_executable(sdp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Add_Lut_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Add_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Add_group1.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Equal_Lut_group0.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Equal_Lut_group1.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_BatchNorm_group0.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_BatchNorm_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Equal_group0.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Equal_group1.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/idu_Compute_Max_LUT_group0.cc

@@ -5141,8 +5141,8 @@ CMakeFiles/sdp.dir/src/idu_Compute_Add_group1.cc.o
  /usr/include/c++/8/bits/stl_map.h
  /usr/include/c++/8/bits/stl_multimap.h
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o
- /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_Equal_Lut_group0.cc
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o
+ /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_BatchNorm_group0.cc
  /usr/include/stdc-predef.h
  /u/djacob/Workspace/NVDLA_SDP/build/sim_model/include/sdp.h
  /usr/include/c++/8/fstream
@@ -5502,8 +5502,8 @@ CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o
  /usr/include/c++/8/bits/stl_map.h
  /usr/include/c++/8/bits/stl_multimap.h
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o
- /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_Equal_Lut_group1.cc
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o
+ /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_BatchNorm_group1.cc
  /usr/include/stdc-predef.h
  /u/djacob/Workspace/NVDLA_SDP/build/sim_model/include/sdp.h
  /usr/include/c++/8/fstream

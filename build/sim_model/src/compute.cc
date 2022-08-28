@@ -27,68 +27,100 @@ sdp_fifo_clr = sdp_fifo_clr_in.read();
 sdp_done = sdp_done_in.read();
 sdp_cacc_data_0 = sdp_cacc_data_0_in.read();
 sdp_mrdma_data_0 = sdp_mrdma_data_0_in.read();
-sdp_regs_data_0 = sdp_regs_data_0_in.read();
-sdp_dma_data_0 = sdp_dma_data_0_in.read();
+sdp_regs_data_alu_0 = sdp_regs_data_alu_0_in.read();
+sdp_regs_data_mult_0 = sdp_regs_data_mult_0_in.read();
+sdp_dma_data_alu_0 = sdp_dma_data_alu_0_in.read();
+sdp_dma_data_mult_0 = sdp_dma_data_mult_0_in.read();
 sdp_cacc_data_1 = sdp_cacc_data_1_in.read();
 sdp_mrdma_data_1 = sdp_mrdma_data_1_in.read();
-sdp_regs_data_1 = sdp_regs_data_1_in.read();
-sdp_dma_data_1 = sdp_dma_data_1_in.read();
+sdp_regs_data_alu_1 = sdp_regs_data_alu_1_in.read();
+sdp_regs_data_mult_1 = sdp_regs_data_mult_1_in.read();
+sdp_dma_data_alu_1 = sdp_dma_data_alu_1_in.read();
+sdp_dma_data_mult_1 = sdp_dma_data_mult_1_in.read();
 sdp_cacc_data_2 = sdp_cacc_data_2_in.read();
 sdp_mrdma_data_2 = sdp_mrdma_data_2_in.read();
-sdp_regs_data_2 = sdp_regs_data_2_in.read();
-sdp_dma_data_2 = sdp_dma_data_2_in.read();
+sdp_regs_data_alu_2 = sdp_regs_data_alu_2_in.read();
+sdp_regs_data_mult_2 = sdp_regs_data_mult_2_in.read();
+sdp_dma_data_alu_2 = sdp_dma_data_alu_2_in.read();
+sdp_dma_data_mult_2 = sdp_dma_data_mult_2_in.read();
 sdp_cacc_data_3 = sdp_cacc_data_3_in.read();
 sdp_mrdma_data_3 = sdp_mrdma_data_3_in.read();
-sdp_regs_data_3 = sdp_regs_data_3_in.read();
-sdp_dma_data_3 = sdp_dma_data_3_in.read();
+sdp_regs_data_alu_3 = sdp_regs_data_alu_3_in.read();
+sdp_regs_data_mult_3 = sdp_regs_data_mult_3_in.read();
+sdp_dma_data_alu_3 = sdp_dma_data_alu_3_in.read();
+sdp_dma_data_mult_3 = sdp_dma_data_mult_3_in.read();
 sdp_cacc_data_4 = sdp_cacc_data_4_in.read();
 sdp_mrdma_data_4 = sdp_mrdma_data_4_in.read();
-sdp_regs_data_4 = sdp_regs_data_4_in.read();
-sdp_dma_data_4 = sdp_dma_data_4_in.read();
+sdp_regs_data_alu_4 = sdp_regs_data_alu_4_in.read();
+sdp_regs_data_mult_4 = sdp_regs_data_mult_4_in.read();
+sdp_dma_data_alu_4 = sdp_dma_data_alu_4_in.read();
+sdp_dma_data_mult_4 = sdp_dma_data_mult_4_in.read();
 sdp_cacc_data_5 = sdp_cacc_data_5_in.read();
 sdp_mrdma_data_5 = sdp_mrdma_data_5_in.read();
-sdp_regs_data_5 = sdp_regs_data_5_in.read();
-sdp_dma_data_5 = sdp_dma_data_5_in.read();
+sdp_regs_data_alu_5 = sdp_regs_data_alu_5_in.read();
+sdp_regs_data_mult_5 = sdp_regs_data_mult_5_in.read();
+sdp_dma_data_alu_5 = sdp_dma_data_alu_5_in.read();
+sdp_dma_data_mult_5 = sdp_dma_data_mult_5_in.read();
 sdp_cacc_data_6 = sdp_cacc_data_6_in.read();
 sdp_mrdma_data_6 = sdp_mrdma_data_6_in.read();
-sdp_regs_data_6 = sdp_regs_data_6_in.read();
-sdp_dma_data_6 = sdp_dma_data_6_in.read();
+sdp_regs_data_alu_6 = sdp_regs_data_alu_6_in.read();
+sdp_regs_data_mult_6 = sdp_regs_data_mult_6_in.read();
+sdp_dma_data_alu_6 = sdp_dma_data_alu_6_in.read();
+sdp_dma_data_mult_6 = sdp_dma_data_mult_6_in.read();
 sdp_cacc_data_7 = sdp_cacc_data_7_in.read();
 sdp_mrdma_data_7 = sdp_mrdma_data_7_in.read();
-sdp_regs_data_7 = sdp_regs_data_7_in.read();
-sdp_dma_data_7 = sdp_dma_data_7_in.read();
+sdp_regs_data_alu_7 = sdp_regs_data_alu_7_in.read();
+sdp_regs_data_mult_7 = sdp_regs_data_mult_7_in.read();
+sdp_dma_data_alu_7 = sdp_dma_data_alu_7_in.read();
+sdp_dma_data_mult_7 = sdp_dma_data_mult_7_in.read();
 sdp_cacc_data_8 = sdp_cacc_data_8_in.read();
 sdp_mrdma_data_8 = sdp_mrdma_data_8_in.read();
-sdp_regs_data_8 = sdp_regs_data_8_in.read();
-sdp_dma_data_8 = sdp_dma_data_8_in.read();
+sdp_regs_data_alu_8 = sdp_regs_data_alu_8_in.read();
+sdp_regs_data_mult_8 = sdp_regs_data_mult_8_in.read();
+sdp_dma_data_alu_8 = sdp_dma_data_alu_8_in.read();
+sdp_dma_data_mult_8 = sdp_dma_data_mult_8_in.read();
 sdp_cacc_data_9 = sdp_cacc_data_9_in.read();
 sdp_mrdma_data_9 = sdp_mrdma_data_9_in.read();
-sdp_regs_data_9 = sdp_regs_data_9_in.read();
-sdp_dma_data_9 = sdp_dma_data_9_in.read();
+sdp_regs_data_alu_9 = sdp_regs_data_alu_9_in.read();
+sdp_regs_data_mult_9 = sdp_regs_data_mult_9_in.read();
+sdp_dma_data_alu_9 = sdp_dma_data_alu_9_in.read();
+sdp_dma_data_mult_9 = sdp_dma_data_mult_9_in.read();
 sdp_cacc_data_10 = sdp_cacc_data_10_in.read();
 sdp_mrdma_data_10 = sdp_mrdma_data_10_in.read();
-sdp_regs_data_10 = sdp_regs_data_10_in.read();
-sdp_dma_data_10 = sdp_dma_data_10_in.read();
+sdp_regs_data_alu_10 = sdp_regs_data_alu_10_in.read();
+sdp_regs_data_mult_10 = sdp_regs_data_mult_10_in.read();
+sdp_dma_data_alu_10 = sdp_dma_data_alu_10_in.read();
+sdp_dma_data_mult_10 = sdp_dma_data_mult_10_in.read();
 sdp_cacc_data_11 = sdp_cacc_data_11_in.read();
 sdp_mrdma_data_11 = sdp_mrdma_data_11_in.read();
-sdp_regs_data_11 = sdp_regs_data_11_in.read();
-sdp_dma_data_11 = sdp_dma_data_11_in.read();
+sdp_regs_data_alu_11 = sdp_regs_data_alu_11_in.read();
+sdp_regs_data_mult_11 = sdp_regs_data_mult_11_in.read();
+sdp_dma_data_alu_11 = sdp_dma_data_alu_11_in.read();
+sdp_dma_data_mult_11 = sdp_dma_data_mult_11_in.read();
 sdp_cacc_data_12 = sdp_cacc_data_12_in.read();
 sdp_mrdma_data_12 = sdp_mrdma_data_12_in.read();
-sdp_regs_data_12 = sdp_regs_data_12_in.read();
-sdp_dma_data_12 = sdp_dma_data_12_in.read();
+sdp_regs_data_alu_12 = sdp_regs_data_alu_12_in.read();
+sdp_regs_data_mult_12 = sdp_regs_data_mult_12_in.read();
+sdp_dma_data_alu_12 = sdp_dma_data_alu_12_in.read();
+sdp_dma_data_mult_12 = sdp_dma_data_mult_12_in.read();
 sdp_cacc_data_13 = sdp_cacc_data_13_in.read();
 sdp_mrdma_data_13 = sdp_mrdma_data_13_in.read();
-sdp_regs_data_13 = sdp_regs_data_13_in.read();
-sdp_dma_data_13 = sdp_dma_data_13_in.read();
+sdp_regs_data_alu_13 = sdp_regs_data_alu_13_in.read();
+sdp_regs_data_mult_13 = sdp_regs_data_mult_13_in.read();
+sdp_dma_data_alu_13 = sdp_dma_data_alu_13_in.read();
+sdp_dma_data_mult_13 = sdp_dma_data_mult_13_in.read();
 sdp_cacc_data_14 = sdp_cacc_data_14_in.read();
 sdp_mrdma_data_14 = sdp_mrdma_data_14_in.read();
-sdp_regs_data_14 = sdp_regs_data_14_in.read();
-sdp_dma_data_14 = sdp_dma_data_14_in.read();
+sdp_regs_data_alu_14 = sdp_regs_data_alu_14_in.read();
+sdp_regs_data_mult_14 = sdp_regs_data_mult_14_in.read();
+sdp_dma_data_alu_14 = sdp_dma_data_alu_14_in.read();
+sdp_dma_data_mult_14 = sdp_dma_data_mult_14_in.read();
 sdp_cacc_data_15 = sdp_cacc_data_15_in.read();
 sdp_mrdma_data_15 = sdp_mrdma_data_15_in.read();
-sdp_regs_data_15 = sdp_regs_data_15_in.read();
-sdp_dma_data_15 = sdp_dma_data_15_in.read();
+sdp_regs_data_alu_15 = sdp_regs_data_alu_15_in.read();
+sdp_regs_data_mult_15 = sdp_regs_data_mult_15_in.read();
+sdp_dma_data_alu_15 = sdp_dma_data_alu_15_in.read();
+sdp_dma_data_mult_15 = sdp_dma_data_mult_15_in.read();
 if (valid_sdp() && decode_sdp_SET_PRODUCER()) {
   update_sdp_SET_PRODUCER();
   #ifdef ILATOR_VERBOSE
@@ -719,18 +751,6 @@ if (valid_sdp() && decode_sdp_Compute_Equal_group1()) {
   LogInstrSequence("Compute_Equal_group1");
 #endif
 }
-if (valid_sdp() && decode_sdp_Compute_Equal_Lut_group0()) {
-  update_sdp_Compute_Equal_Lut_group0();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_Equal_Lut_group0");
-#endif
-}
-if (valid_sdp() && decode_sdp_Compute_Equal_Lut_group1()) {
-  update_sdp_Compute_Equal_Lut_group1();
-  #ifdef ILATOR_VERBOSE
-  LogInstrSequence("Compute_Equal_Lut_group1");
-#endif
-}
 if (valid_sdp() && decode_sdp_Compute_Multiply_group0()) {
   update_sdp_Compute_Multiply_group0();
   #ifdef ILATOR_VERBOSE
@@ -777,6 +797,18 @@ if (valid_sdp() && decode_sdp_Compute_PReLU_Lut_group1()) {
   update_sdp_Compute_PReLU_Lut_group1();
   #ifdef ILATOR_VERBOSE
   LogInstrSequence("Compute_PReLU_Lut_group1");
+#endif
+}
+if (valid_sdp() && decode_sdp_Compute_BatchNorm_group0()) {
+  update_sdp_Compute_BatchNorm_group0();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Compute_BatchNorm_group0");
+#endif
+}
+if (valid_sdp() && decode_sdp_Compute_BatchNorm_group1()) {
+  update_sdp_Compute_BatchNorm_group1();
+  #ifdef ILATOR_VERBOSE
+  LogInstrSequence("Compute_BatchNorm_group1");
 #endif
 }
 if (valid_sdp() && decode_sdp_Write_LUT_le_tbl()) {

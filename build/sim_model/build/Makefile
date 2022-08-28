@@ -465,53 +465,53 @@ src/idu_Compute_Add_group1.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_Add_group1.cc.s
 .PHONY : src/idu_Compute_Add_group1.cc.s
 
-src/idu_Compute_Equal_Lut_group0.o: src/idu_Compute_Equal_Lut_group0.cc.o
-.PHONY : src/idu_Compute_Equal_Lut_group0.o
+src/idu_Compute_BatchNorm_group0.o: src/idu_Compute_BatchNorm_group0.cc.o
+.PHONY : src/idu_Compute_BatchNorm_group0.o
 
 # target to build an object file
-src/idu_Compute_Equal_Lut_group0.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o
-.PHONY : src/idu_Compute_Equal_Lut_group0.cc.o
+src/idu_Compute_BatchNorm_group0.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o
+.PHONY : src/idu_Compute_BatchNorm_group0.cc.o
 
-src/idu_Compute_Equal_Lut_group0.i: src/idu_Compute_Equal_Lut_group0.cc.i
-.PHONY : src/idu_Compute_Equal_Lut_group0.i
+src/idu_Compute_BatchNorm_group0.i: src/idu_Compute_BatchNorm_group0.cc.i
+.PHONY : src/idu_Compute_BatchNorm_group0.i
 
 # target to preprocess a source file
-src/idu_Compute_Equal_Lut_group0.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.i
-.PHONY : src/idu_Compute_Equal_Lut_group0.cc.i
+src/idu_Compute_BatchNorm_group0.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.i
+.PHONY : src/idu_Compute_BatchNorm_group0.cc.i
 
-src/idu_Compute_Equal_Lut_group0.s: src/idu_Compute_Equal_Lut_group0.cc.s
-.PHONY : src/idu_Compute_Equal_Lut_group0.s
+src/idu_Compute_BatchNorm_group0.s: src/idu_Compute_BatchNorm_group0.cc.s
+.PHONY : src/idu_Compute_BatchNorm_group0.s
 
 # target to generate assembly for a file
-src/idu_Compute_Equal_Lut_group0.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.s
-.PHONY : src/idu_Compute_Equal_Lut_group0.cc.s
+src/idu_Compute_BatchNorm_group0.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.s
+.PHONY : src/idu_Compute_BatchNorm_group0.cc.s
 
-src/idu_Compute_Equal_Lut_group1.o: src/idu_Compute_Equal_Lut_group1.cc.o
-.PHONY : src/idu_Compute_Equal_Lut_group1.o
+src/idu_Compute_BatchNorm_group1.o: src/idu_Compute_BatchNorm_group1.cc.o
+.PHONY : src/idu_Compute_BatchNorm_group1.o
 
 # target to build an object file
-src/idu_Compute_Equal_Lut_group1.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o
-.PHONY : src/idu_Compute_Equal_Lut_group1.cc.o
+src/idu_Compute_BatchNorm_group1.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o
+.PHONY : src/idu_Compute_BatchNorm_group1.cc.o
 
-src/idu_Compute_Equal_Lut_group1.i: src/idu_Compute_Equal_Lut_group1.cc.i
-.PHONY : src/idu_Compute_Equal_Lut_group1.i
+src/idu_Compute_BatchNorm_group1.i: src/idu_Compute_BatchNorm_group1.cc.i
+.PHONY : src/idu_Compute_BatchNorm_group1.i
 
 # target to preprocess a source file
-src/idu_Compute_Equal_Lut_group1.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.i
-.PHONY : src/idu_Compute_Equal_Lut_group1.cc.i
+src/idu_Compute_BatchNorm_group1.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.i
+.PHONY : src/idu_Compute_BatchNorm_group1.cc.i
 
-src/idu_Compute_Equal_Lut_group1.s: src/idu_Compute_Equal_Lut_group1.cc.s
-.PHONY : src/idu_Compute_Equal_Lut_group1.s
+src/idu_Compute_BatchNorm_group1.s: src/idu_Compute_BatchNorm_group1.cc.s
+.PHONY : src/idu_Compute_BatchNorm_group1.s
 
 # target to generate assembly for a file
-src/idu_Compute_Equal_Lut_group1.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.s
-.PHONY : src/idu_Compute_Equal_Lut_group1.cc.s
+src/idu_Compute_BatchNorm_group1.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sdp.dir/build.make CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.s
+.PHONY : src/idu_Compute_BatchNorm_group1.cc.s
 
 src/idu_Compute_Equal_group0.o: src/idu_Compute_Equal_group0.cc.o
 .PHONY : src/idu_Compute_Equal_group0.o
@@ -3180,12 +3180,12 @@ help:
 	@echo "... src/idu_Compute_Add_group1.o"
 	@echo "... src/idu_Compute_Add_group1.i"
 	@echo "... src/idu_Compute_Add_group1.s"
-	@echo "... src/idu_Compute_Equal_Lut_group0.o"
-	@echo "... src/idu_Compute_Equal_Lut_group0.i"
-	@echo "... src/idu_Compute_Equal_Lut_group0.s"
-	@echo "... src/idu_Compute_Equal_Lut_group1.o"
-	@echo "... src/idu_Compute_Equal_Lut_group1.i"
-	@echo "... src/idu_Compute_Equal_Lut_group1.s"
+	@echo "... src/idu_Compute_BatchNorm_group0.o"
+	@echo "... src/idu_Compute_BatchNorm_group0.i"
+	@echo "... src/idu_Compute_BatchNorm_group0.s"
+	@echo "... src/idu_Compute_BatchNorm_group1.o"
+	@echo "... src/idu_Compute_BatchNorm_group1.i"
+	@echo "... src/idu_Compute_BatchNorm_group1.s"
 	@echo "... src/idu_Compute_Equal_group0.o"
 	@echo "... src/idu_Compute_Equal_group0.i"
 	@echo "... src/idu_Compute_Equal_group0.s"

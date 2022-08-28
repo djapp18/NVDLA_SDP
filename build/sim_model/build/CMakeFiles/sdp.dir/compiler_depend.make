@@ -5127,7 +5127,7 @@ CMakeFiles/sdp.dir/src/idu_Compute_Add_group1.cc.o: ../src/idu_Compute_Add_group
   /usr/include/c++/8/bits/stl_map.h \
   /usr/include/c++/8/bits/stl_multimap.h
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o: ../src/idu_Compute_Equal_Lut_group0.cc \
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o: ../src/idu_Compute_BatchNorm_group0.cc \
   /usr/include/stdc-predef.h \
   ../include/sdp.h \
   /usr/include/c++/8/fstream \
@@ -5487,7 +5487,7 @@ CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o: ../src/idu_Compute_Equ
   /usr/include/c++/8/bits/stl_map.h \
   /usr/include/c++/8/bits/stl_multimap.h
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o: ../src/idu_Compute_Equal_Lut_group1.cc \
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o: ../src/idu_Compute_BatchNorm_group1.cc \
   /usr/include/stdc-predef.h \
   ../include/sdp.h \
   /usr/include/c++/8/fstream \
@@ -45200,6 +45200,8 @@ CMakeFiles/sdp.dir/src/setup_initial_condition.cc.o: ../src/setup_initial_condit
 
 ../src/idu_Compute_Equal_group1.cc:
 
+../src/idu_Compute_BatchNorm_group1.cc:
+
 ../src/idu_Compute_Add_group1.cc:
 
 ../src/idu_Compute_Add_group0.cc:
@@ -45309,8 +45311,6 @@ CMakeFiles/sdp.dir/src/setup_initial_condition.cc.o: ../src/setup_initial_condit
 ../src/idu_DP_EW_ALU_CVT_TRUNCATE_VALUE_group0.cc:
 
 /usr/include/c++/8/numeric:
-
-../src/idu_Compute_Equal_Lut_group0.cc:
 
 /usr/include/c++/8/backward/auto_ptr.h:
 
@@ -45546,8 +45546,6 @@ CMakeFiles/sdp.dir/src/setup_initial_condition.cc.o: ../src/setup_initial_condit
 
 /usr/include/c++/8/backward/binders.h:
 
-../src/idu_Compute_Equal_Lut_group1.cc:
-
 /usr/include/c++/8/bits/shared_ptr_base.h:
 
 /usr/include/c++/8/ext/alloc_traits.h:
@@ -45559,6 +45557,8 @@ CMakeFiles/sdp.dir/src/setup_initial_condition.cc.o: ../src/setup_initial_condit
 /usr/include/c++/8/bits/alloc_traits.h:
 
 /usr/include/c++/8/bits/stl_uninitialized.h:
+
+../src/idu_Compute_BatchNorm_group0.cc:
 
 /usr/lib/gcc/x86_64-redhat-linux/8/include/stddef.h:
 

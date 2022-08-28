@@ -265,33 +265,33 @@ CMakeFiles/sdp.dir/src/idu_Compute_Add_group1.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sdp.dir/src/idu_Compute_Add_group1.cc.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_Add_group1.cc -o CMakeFiles/sdp.dir/src/idu_Compute_Add_group1.cc.s
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o: CMakeFiles/sdp.dir/flags.make
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o: ../src/idu_Compute_Equal_Lut_group0.cc
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o: CMakeFiles/sdp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/sim_model/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o -MF CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o.d -o CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o -c /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_Equal_Lut_group0.cc
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o: CMakeFiles/sdp.dir/flags.make
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o: ../src/idu_Compute_BatchNorm_group0.cc
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o: CMakeFiles/sdp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/sim_model/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o -MF CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o.d -o CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o -c /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_BatchNorm_group0.cc
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_Equal_Lut_group0.cc > CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.i
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_BatchNorm_group0.cc > CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.i
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_Equal_Lut_group0.cc -o CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.s
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_BatchNorm_group0.cc -o CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.s
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o: CMakeFiles/sdp.dir/flags.make
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o: ../src/idu_Compute_Equal_Lut_group1.cc
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o: CMakeFiles/sdp.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/sim_model/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o -MF CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o.d -o CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o -c /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_Equal_Lut_group1.cc
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o: CMakeFiles/sdp.dir/flags.make
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o: ../src/idu_Compute_BatchNorm_group1.cc
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o: CMakeFiles/sdp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/sim_model/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o -MF CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o.d -o CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o -c /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_BatchNorm_group1.cc
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_Equal_Lut_group1.cc > CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.i
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_BatchNorm_group1.cc > CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.i
 
-CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_Equal_Lut_group1.cc -o CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.s
+CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/djacob/Workspace/NVDLA_SDP/build/sim_model/src/idu_Compute_BatchNorm_group1.cc -o CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.s
 
 CMakeFiles/sdp.dir/src/idu_Compute_Equal_group0.cc.o: CMakeFiles/sdp.dir/flags.make
 CMakeFiles/sdp.dir/src/idu_Compute_Equal_group0.cc.o: ../src/idu_Compute_Equal_group0.cc
@@ -1835,8 +1835,8 @@ sdp_OBJECTS = \
 "CMakeFiles/sdp.dir/src/idu_Compute_Add_Lut_group1.cc.o" \
 "CMakeFiles/sdp.dir/src/idu_Compute_Add_group0.cc.o" \
 "CMakeFiles/sdp.dir/src/idu_Compute_Add_group1.cc.o" \
-"CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o" \
-"CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o" \
+"CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o" \
+"CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o" \
 "CMakeFiles/sdp.dir/src/idu_Compute_Equal_group0.cc.o" \
 "CMakeFiles/sdp.dir/src/idu_Compute_Equal_group1.cc.o" \
 "CMakeFiles/sdp.dir/src/idu_Compute_Max_LUT_group0.cc.o" \
@@ -1964,8 +1964,8 @@ sdp: CMakeFiles/sdp.dir/src/idu_Compute_Add_Lut_group0.cc.o
 sdp: CMakeFiles/sdp.dir/src/idu_Compute_Add_Lut_group1.cc.o
 sdp: CMakeFiles/sdp.dir/src/idu_Compute_Add_group0.cc.o
 sdp: CMakeFiles/sdp.dir/src/idu_Compute_Add_group1.cc.o
-sdp: CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group0.cc.o
-sdp: CMakeFiles/sdp.dir/src/idu_Compute_Equal_Lut_group1.cc.o
+sdp: CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group0.cc.o
+sdp: CMakeFiles/sdp.dir/src/idu_Compute_BatchNorm_group1.cc.o
 sdp: CMakeFiles/sdp.dir/src/idu_Compute_Equal_group0.cc.o
 sdp: CMakeFiles/sdp.dir/src/idu_Compute_Equal_group1.cc.o
 sdp: CMakeFiles/sdp.dir/src/idu_Compute_Max_LUT_group0.cc.o
