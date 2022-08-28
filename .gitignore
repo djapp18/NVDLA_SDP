@@ -41,3 +41,4 @@ Thumbs.db
 build/sim_model/include/nlohmann/
 build/sim_model/include/json/
 build/sim_model/build/sdp
+build/sim_model/build/sdp_works

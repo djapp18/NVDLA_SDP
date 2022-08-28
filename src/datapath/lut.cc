@@ -42,8 +42,8 @@ LutData ReadLutLE(Ila& m, ExprRef input) {
     // Set the relevant table
     auto lut = m.state("le_tbl");
     auto lut_start = m.state(NVDLA_SDP_S_LUT_LE_START);
-    auto lut_index_offset = m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET);
-    auto lut_index_select = m.state(NVDLA_SDP_S_LUT_LE_INDEX_SELECT);
+    auto lut_index_offset = SignExtend(m.state(NVDLA_SDP_S_LUT_LE_INDEX_OFFSET), 8, 32);
+    auto lut_index_select = SignExtend(m.state(NVDLA_SDP_S_LUT_LE_INDEX_SELECT), 8, 32);
     auto lut_function = SelectBit(m.state(NVDLA_SDP_S_LUT_LE_FUNCTION), 0);
     
     // Determine intermediate values for LUT index
@@ -55,8 +55,8 @@ LutData ReadLutLE(Ila& m, ExprRef input) {
 
     auto le_index_s =
     Ite(lut_function == 0x0,
-        le_index_idx - SignExtend(lut_index_offset, 8, 32),
-        le_index_idx >> SignExtend(lut_index_select, 8, 32)
+        le_index_idx - lut_index_offset,
+        le_index_idx >> lut_index_select
     );
 
     // Generate out-of-bounds flags
@@ -64,7 +64,7 @@ LutData ReadLutLE(Ila& m, ExprRef input) {
     Ite(lut_function == 0x0,
         Ite(input <= lut_start,
             BvConst(1, 1),
-            Ite(le_index_idx < SignExtend(lut_index_offset, 8, 32),
+            Ite(le_index_idx < lut_index_offset,
                 BvConst(1, 1),
                 BvConst(0, 1)
             )
@@ -80,7 +80,7 @@ LutData ReadLutLE(Ila& m, ExprRef input) {
     Ite(lut_function == 0x0,
         Ite(input <= lut_start,
             BvConst(0, 1),
-            Ite(le_index_idx < Concat(BvConst(0, 24), lut_index_offset),
+            Ite(le_index_idx < lut_index_offset,
                 BvConst(0, 1),
                 Ite(le_index_s >= 0x40,
                     BvConst(1, 1),
@@ -103,7 +103,7 @@ LutData ReadLutLE(Ila& m, ExprRef input) {
     Ite(lut_function == 0x0,
         Ite(input <= lut_start,
             BvConst(0, 32),
-            Ite(le_index_idx < Concat(BvConst(0, 24), lut_index_offset),
+            Ite(le_index_idx < lut_index_offset,
                 BvConst(0, 32),
                 Ite(le_index_s >= 0x40,
                     BvConst(64, 32),
@@ -127,7 +127,7 @@ LutData ReadLutLE(Ila& m, ExprRef input) {
     Ite(lut_function == 0x0,
         Ite(input <= lut_start,
             BvConst(0, 32),
-            Ite(le_index_idx < Concat(BvConst(0, 24), lut_index_offset),
+            Ite(le_index_idx < lut_index_offset,
                 BvConst(0, 32),
                 Ite(le_index_s >= 0x40,
                     BvConst(0, 32),
@@ -140,7 +140,7 @@ LutData ReadLutLE(Ila& m, ExprRef input) {
             BvConst(0, 32),
             Ite(le_index_s >= 0x40,
                     BvConst(0, 32),
-                    (le_index_idx & ((BvConst(1, 32) << Concat(BvConst(0, 24), lut_index_select)) - 1)) >> (Concat(BvConst(0, 24), lut_index_select) - BvConst(35, 32))
+                    (le_index_idx & ((BvConst(1, 32) << lut_index_select) - 1)) >> (lut_index_select - BvConst(35, 32))
             )
         )
     );
@@ -155,11 +155,11 @@ LutData ReadLutLO(Ila& m, ExprRef input) {
     // Set the relevant table
     auto lut = m.state("lo_tbl");
     auto lut_start = m.state(NVDLA_SDP_S_LUT_LO_START);
-    auto lut_index_select = m.state(NVDLA_SDP_S_LUT_LO_INDEX_SELECT);
+    auto lut_index_select = SignExtend(m.state(NVDLA_SDP_S_LUT_LO_INDEX_SELECT), 8, 32);
 
     // Determine intermediate values for LUT index
     auto lo_index_idx = input - lut_start;
-    auto lo_index_s = lo_index_idx >> Concat(BvConst(0, 24), lut_index_select);
+    auto lo_index_s = lo_index_idx >> lut_index_select;
 
     // Generate out-of-bounds flags
     auto lo_uflow = 
@@ -194,7 +194,7 @@ LutData ReadLutLO(Ila& m, ExprRef input) {
         BvConst(0, 32),
         Ite(lo_index_s >= 0x100,
                 BvConst(0, 32),
-                (lo_index_idx & ((BvConst(1, 32) << Concat(BvConst(0, 24), lut_index_select)) - 1)) >> (Concat(BvConst(0, 24), lut_index_select) - BvConst(35, 32))
+                (lo_index_idx & ((BvConst(1, 32) << lut_index_select) - 1)) >> (lut_index_select - BvConst(35, 32))
         )
     );
     lo_fraction = Extract(lo_fraction, 8, 0);
@@ -204,12 +204,19 @@ LutData ReadLutLO(Ila& m, ExprRef input) {
 }
 
 // Select LUT sub-table based on a combination of user preference and overflow/underflow logic
+
+// NOTE: Writing this code with lines 210 and 214 activated instead of 211 and 215 respectively
+// will cause the SystemC model to not compile. The issue is that le_data.index and le_data.fraction
+// are the result of an Extract(...) function call, and it seems these statements cannot have the
+// SelectBit(...) operation performed on them.
 LutData SelectLut(Ila& m, LutData& le_data, LutData& lo_data) {
-    // LUT parameters - note that these are all unsigned
-    auto le_index = le_data.index;
+    // LUT parameters
+    //auto le_index = SignExtend(le_data.index, 7, 9);
+    auto le_index = Concat(BvConst(0, 2), le_data.index);
     auto lo_index = lo_data.index;
 
-    auto le_fraction = le_data.fraction;
+    //auto le_fraction = SignExtend(le_data.fraction, 7, 9);
+    auto le_fraction = Concat(BvConst(0, 2), le_data.fraction);
     auto lo_fraction = lo_data.fraction;
 
     auto le_uflow = le_data.uflow;
@@ -233,15 +240,15 @@ LutData SelectLut(Ila& m, LutData& le_data, LutData& lo_data) {
     // Select index by considering every combination of overflow/underflow outcomes and LUT priorities
     auto index = 
     Ite((le_uflow == 0x1) & (lo_uflow == 0x1),
-        Ite(uflow_priority == 0x1, lo_index, Concat(BvConst(0, 2), le_index)),
+        Ite(uflow_priority == 0x1, lo_index, le_index),
         Ite((le_oflow == 0x1) & (lo_oflow == 0x1),
-            Ite(oflow_priority == 0x1, lo_index, Concat(BvConst(0, 2), le_index)),
+            Ite(oflow_priority == 0x1, lo_index, le_index),
             Ite((le_hit == 0x1) & (lo_hit == 0x1),
-                Ite(hybrid_priority == 0x1, lo_index, Concat(BvConst(0, 2), le_index)),
+                Ite(hybrid_priority == 0x1, lo_index, le_index),
                 Ite((le_miss == 0x1) & (lo_miss == 0x1),
-                    Ite(hybrid_priority == 0x1, lo_index, Concat(BvConst(0, 2), le_index)),
+                    Ite(hybrid_priority == 0x1, lo_index, le_index),
                     Ite(le_hit == 0x1,
-                        Concat(BvConst(0, 2), le_index),
+                        le_index,
                         lo_index
                     )
                 )
@@ -252,15 +259,15 @@ LutData SelectLut(Ila& m, LutData& le_data, LutData& lo_data) {
     // Select fraction by considering every combination of overflow/underflow outcomes and LUT priorities
     auto fraction = 
     Ite((le_uflow == 0x1) & (lo_uflow == 0x1),
-        Ite(uflow_priority == 0x1, lo_fraction, Concat(BvConst(0, 2), le_fraction)),
+        Ite(uflow_priority == 0x1, lo_fraction, le_fraction),
         Ite((le_oflow == 0x1) & (lo_oflow == 0x1),
-            Ite(oflow_priority == 0x1, lo_fraction, Concat(BvConst(0, 2), le_fraction)),
+            Ite(oflow_priority == 0x1, lo_fraction, le_fraction),
             Ite((le_hit == 0x1) & (lo_hit == 0x1),
-                Ite(hybrid_priority == 0x1, lo_fraction, Concat(BvConst(0, 2), le_fraction)),
+                Ite(hybrid_priority == 0x1, lo_fraction, le_fraction),
                 Ite((le_miss == 0x1) & (lo_miss == 0x1),
-                    Ite(hybrid_priority == 0x1, lo_fraction, Concat(BvConst(0, 2), le_fraction)),
+                    Ite(hybrid_priority == 0x1, lo_fraction, le_fraction),
                     Ite(le_hit == 0x1,
-                        Concat(BvConst(0, 2), le_fraction),
+                        le_fraction,
                         lo_fraction
                     )
                 )
@@ -325,7 +332,7 @@ LutData SelectLut(Ila& m, LutData& le_data, LutData& lo_data) {
 
 // Present final LUT output by using interpolation/extrapolation
 ExprRef PresentLutOutput(Ila& m, ExprRef input, LutData& data) {
-    // LUT parameters - note that these are all unsigned
+    // LUT parameters
     auto index = data.index;
     auto fraction = data.fraction;
     auto oflow = data.oflow;
@@ -378,18 +385,18 @@ ExprRef PresentLutOutput(Ila& m, ExprRef input, LutData& data) {
     // If oflow | uflow is true, perform extrapolation. Otherwise, perform interpolation.
     auto o =
     Ite((oflow == 0x1) | (uflow == 0x1),
-        Concat(BvConst(0, 3), Concat(BvConst(0, 16), y0) + ((input - Concat(BvConst(0, 24), bias) - offset) * Concat(BvConst(0, 16), scale)) >> Concat(BvConst(0, 27), shift)),
-        (((BvConst(1, 35) << 35) - Concat(BvConst(0, 26), fraction)) * Concat(BvConst(0, 19), y0)) + (Concat(BvConst(0, 26), fraction) * Concat(BvConst(0, 19), y1))
+        SignExtend(SignExtend(y0, 16, 32) + ((input - SignExtend(bias, 8, 32) - offset) * SignExtend(scale, 16, 32)) >> SignExtend(shift, 5, 32), 32, 35),
+        (((BvConst(1, 35) << 35) - SignExtend(fraction, 9, 35)) * SignExtend(y0, 16, 35)) + (SignExtend(fraction, 9, 35) * SignExtend(y1, 16, 35))
     );
 
     // Present LUT output - further work is needed to determine proper bit widths here
     auto out_data =
     Ite((oflow == 0x1) | (uflow == 0x1),
-        SignedConvert(Saturation(SignedConvert(o, 35, 64), 32), 64, 35),
+        Extract(Saturation(SignExtend(o, 35, 64), 32), 34, 0),
         o >> 35
     );
 
-    return SignedConvert(out_data, 35, 32);
+    return Extract(out_data, 31, 0);
 }
 
 // Wrapper function to perform LUT read operation

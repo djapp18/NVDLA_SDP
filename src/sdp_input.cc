@@ -52,10 +52,10 @@ void DefineSDPInput(Ila& m) {
         m.NewBvInput(GetVarName("mrdma_data_", (std::to_string(i))), 32);
         
         // Secondary inputs
-        m.NewBvInput(GetVarName("regs_data_alu", (std::to_string(i))), 16);
-        m.NewBvInput(GetVarName("regs_data_mult", (std::to_string(i))), 16);
-        m.NewBvInput(GetVarName("dma_data_alu", (std::to_string(i))), 16);
-        m.NewBvInput(GetVarName("dma_data_mult", (std::to_string(i))), 16);
+        m.NewBvInput(GetVarName("regs_data_alu_", (std::to_string(i))), 16);
+        m.NewBvInput(GetVarName("regs_data_mult_", (std::to_string(i))), 16);
+        m.NewBvInput(GetVarName("dma_data_alu_", (std::to_string(i))), 16);
+        m.NewBvInput(GetVarName("dma_data_mult_", (std::to_string(i))), 16);
     }
 }
 

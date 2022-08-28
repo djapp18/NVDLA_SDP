@@ -38,6 +38,7 @@ void DefineSDPInstrs(Ila& m) {
     // =============================================================================
 
     auto csb_addr = m.input("csb_addr");
+    // auto csb_addr = Extract(Concat(m.input("csb_addr"), BvConst(0,2)), 11, 0);... is this the correct version?
     auto csb_valid = (m.input("csb_rdy") == BvConst(1,1)) & (m.input("csb_vld") == BvConst(1,1));
     auto csb_write = m.input("csb_write") == BvConst(1,1);
     auto group0_unset = SelectBit(m.state(GetVarName("group0_", NVDLA_SDP_D_OP_ENABLE)), 0) == BvConst(0,1);
@@ -803,8 +804,8 @@ void DefineSDPInstrs(Ila& m) {
     }
 
     // Receive DONE interrupt
-    // need to somehow reset all registers associated with previous group
-    // does the decode step need to be "exclusive"? so should every other instruction include & !done (both datapath and config)
+    // - Need to somehow reset all registers associated with previous group
+    // - Does the decode step need to be "exclusive"? Should every other instruction include & !done (both datapath and config)
     { 
         auto instr = m.NewInstr("DONE");
         instr.SetDecode(done == BvConst(1, 1));

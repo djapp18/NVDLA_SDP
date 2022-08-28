@@ -66,7 +66,10 @@ ExprRef IntLog2(ExprRef operand) {
         flag = flag | Ite(SelectBit(operand, i) == 0x1, BvConst(1, 1), BvConst(0, 1));
     }
 
-    return result[0];
+    auto output = result[0];
+    free(result);
+
+    return output;
 }
 
 // Assuming that index = IntLog2(operand), this function returns the remaining bits to the right

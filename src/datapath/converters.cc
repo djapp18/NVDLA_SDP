@@ -56,7 +56,7 @@ ExprRef OutputCvt(Ila& m, RegGroup& r, ExprRef input) {
     auto operand = operand_tct >> SignExtend(cvt_shift, 6, 32);
 
     // Choose output precision
-    auto output = Ite(SelectBit(out_precision, 0) == 0x0, Saturation(SignExtend(operand, 32, 64), 8), Saturation(SignedExtend(operand, 32, 64), 16));
+    auto output = Ite(SelectBit(out_precision, 0) == 0x0, Saturation(SignExtend(operand, 32, 64), 8), Saturation(SignExtend(operand, 32, 64), 16));
 
     return Extract(output, 31, 0);
 }
@@ -73,7 +73,7 @@ ExprRef ALUCvt(Ila& m, RegGroup& r, ExprRef input) {
     // Converter
     input = SignExtend(input, 16, 32);
     ew_alu_cvt_scale = SignExtend(ew_alu_cvt_scale, 16, 32);
-    ew_alu_cvt_truncate = SignedExtend(ew_alu_cvt_truncate, 6, 32);
+    ew_alu_cvt_truncate = SignExtend(ew_alu_cvt_truncate, 6, 32);
     auto operand_mul = Ite(SelectBit(ew_alu_cvt_bypass, 0) == 0x1, input, input - ew_alu_cvt_offset);
     auto operand_tct = Ite(SelectBit(ew_alu_cvt_bypass, 0) == 0x1, operand_mul, operand_mul * ew_alu_cvt_scale);
     auto operand = Ite(SelectBit(ew_alu_cvt_bypass, 0) == 0x1, operand_tct, operand_tct >> ew_alu_cvt_truncate);
@@ -93,7 +93,7 @@ ExprRef MultCvt(Ila& m, RegGroup& r, ExprRef input) {
     // Converter
     input = SignExtend(input, 16, 32);
     ew_mul_cvt_scale = SignExtend(ew_mul_cvt_scale, 16, 32);
-    ew_mul_cvt_truncate = SignedExtend(ew_mul_cvt_truncate, 6, 32);
+    ew_mul_cvt_truncate = SignExtend(ew_mul_cvt_truncate, 6, 32);
     auto operand_mul = Ite(SelectBit(ew_mul_cvt_bypass, 0) == 0x1, input, input - ew_mul_cvt_offset);
     auto operand_tct = Ite(SelectBit(ew_mul_cvt_bypass, 0) == 0x1, operand_mul, operand_mul * ew_mul_cvt_scale);
     auto operand = Ite(SelectBit(ew_mul_cvt_bypass, 0) == 0x1, operand_tct, operand_tct >> ew_mul_cvt_truncate);
