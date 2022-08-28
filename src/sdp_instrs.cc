@@ -30,11 +30,13 @@
 
 namespace ilang {
 
+// Define SDP instructions relevant to configuration registers
 void DefineSDPInstrs(Ila& m) {
-    // m.AddInit(m.state(NVDLA_CSC_S_STATUS_0) == BvConst(0, 2));
-    // m.AddInit(m.state(NVDLA_CSC_S_STATUS_1) == BvConst(0, 2));
 
-    //auto csb_addr = Extract(Concat(m.input("csb_addr"), BvConst(0,2)), 11, 0);
+    // =============================================================================
+    // Setup
+    // =============================================================================
+
     auto csb_addr = m.input("csb_addr");
     auto csb_valid = (m.input("csb_rdy") == BvConst(1,1)) & (m.input("csb_vld") == BvConst(1,1));
     auto csb_write = m.input("csb_write") == BvConst(1,1);
@@ -44,10 +46,18 @@ void DefineSDPInstrs(Ila& m) {
     auto consumer = SelectBit(m.state(NVDLA_SDP_S_CONSUMER), 0);
     auto done = SelectBit(m.input("done"), 0);
 
+    // Initialize both the PRODUCER and CONSUMER states to be 0
+    m.AddInit(m.state(NVDLA_SDP_S_PRODUCER) == BvConst(0, 1));
+    m.AddInit(m.state(NVDLA_SDP_S_CONSUMER) == BvConst(0, 1));
+
     // Status: 3
     // 1: IDLE
     // 2: Producer (op_enable) and Consumer
     // 3: Producer (op_enable) but not consumer
+
+    // =============================================================================
+    // Instruction definitions
+    // =============================================================================
 
     // CSB MMIO
     { // 0004

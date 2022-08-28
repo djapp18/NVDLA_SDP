@@ -30,6 +30,7 @@
 
 namespace ilang {
 
+// Define SDP states
 void DefineSDPState(Ila& m) {
     // Config Registers
 

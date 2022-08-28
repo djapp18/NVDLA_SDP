@@ -1,4 +1,10 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o"
+  "CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o.d"
+  "CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o"
+  "CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o.d"
+  "CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o"
+  "CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o.d"
   "CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o"
   "CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o.d"
   "CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o"

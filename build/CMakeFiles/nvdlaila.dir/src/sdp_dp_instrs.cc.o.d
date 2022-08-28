@@ -163,4 +163,8 @@ CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o: \
  /usr/include/c++/8/bits/stl_heap.h \
  /usr/include/c++/8/bits/uniform_int_dist.h \
  /u/djacob/ILAng/include/ilang/config.h \
- /u/djacob/Workspace/NVDLA_SDP/include/sdp_config.h
+ /u/djacob/Workspace/NVDLA_SDP/include/sdp_config.h \
+ /u/djacob/Workspace/NVDLA_SDP/include/components.h \
+ /u/djacob/Workspace/NVDLA_SDP/include/datapath_structs.h \
+ /u/djacob/Workspace/NVDLA_SDP/include/converters.h \
+ /u/djacob/Workspace/NVDLA_SDP/include/lut.h

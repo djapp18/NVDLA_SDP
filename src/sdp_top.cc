@@ -33,24 +33,21 @@ Ila GetSDPIla(const std::string& model_name) {
 
     SetUnsignedComparison(true);
     
-    //
-    // Interface Signals
-    //
+    // =============================================================================
+    // Interface signals
+    // =============================================================================
     DefineSDPInput(m);
     DefineSDPOutput(m);
 
-    //
-    // Arch States
-    //
+    // =============================================================================
+    // Arch states
+    // =============================================================================
     DefineSDPState(m);
 
-    //
+    // =============================================================================
     // Instructions
-    //
-    // Config Instructions
+    // =============================================================================
     DefineSDPInstrs(m);
-
-    // Datapath Instructions
     DefineSDPInstrsDP(m);
 
     return m;

@@ -30,10 +30,11 @@
 
 namespace ilang {
 
+// Define SDP inputs
 void DefineSDPInput(Ila& m) {
     // CSB MMIO
     // Total should be 63 bits, omit 8 bits for now
-    m.NewBvInput("csb_addr", 22); // need to offset for 2 bit
+    m.NewBvInput("csb_addr", 22);
     m.NewBvInput("csb_data", 32);
     m.NewBvInput("csb_write", 1);
     // m.NewBvInput("csb_other", 8);
@@ -46,11 +47,15 @@ void DefineSDPInput(Ila& m) {
 
     // Datapath
     for (int i = 0; i < 16; i++) {
+        // Primary inputs
         m.NewBvInput(GetVarName("cacc_data_", (std::to_string(i))), 32);
         m.NewBvInput(GetVarName("mrdma_data_", (std::to_string(i))), 32);
         
-        m.NewBvInput(GetVarName("regs_data_", (std::to_string(i))), 16);
-        m.NewBvInput(GetVarName("dma_data_", (std::to_string(i))), 16);
+        // Secondary inputs
+        m.NewBvInput(GetVarName("regs_data_alu", (std::to_string(i))), 16);
+        m.NewBvInput(GetVarName("regs_data_mult", (std::to_string(i))), 16);
+        m.NewBvInput(GetVarName("dma_data_alu", (std::to_string(i))), 16);
+        m.NewBvInput(GetVarName("dma_data_mult", (std::to_string(i))), 16);
     }
 }
 

@@ -166,6 +166,78 @@ app/main.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdla.dir/build.make CMakeFiles/nvdla.dir/app/main.cc.s
 .PHONY : app/main.cc.s
 
+src/datapath/components.o: src/datapath/components.cc.o
+.PHONY : src/datapath/components.o
+
+# target to build an object file
+src/datapath/components.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o
+.PHONY : src/datapath/components.cc.o
+
+src/datapath/components.i: src/datapath/components.cc.i
+.PHONY : src/datapath/components.i
+
+# target to preprocess a source file
+src/datapath/components.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/datapath/components.cc.i
+.PHONY : src/datapath/components.cc.i
+
+src/datapath/components.s: src/datapath/components.cc.s
+.PHONY : src/datapath/components.s
+
+# target to generate assembly for a file
+src/datapath/components.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/datapath/components.cc.s
+.PHONY : src/datapath/components.cc.s
+
+src/datapath/converters.o: src/datapath/converters.cc.o
+.PHONY : src/datapath/converters.o
+
+# target to build an object file
+src/datapath/converters.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o
+.PHONY : src/datapath/converters.cc.o
+
+src/datapath/converters.i: src/datapath/converters.cc.i
+.PHONY : src/datapath/converters.i
+
+# target to preprocess a source file
+src/datapath/converters.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.i
+.PHONY : src/datapath/converters.cc.i
+
+src/datapath/converters.s: src/datapath/converters.cc.s
+.PHONY : src/datapath/converters.s
+
+# target to generate assembly for a file
+src/datapath/converters.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.s
+.PHONY : src/datapath/converters.cc.s
+
+src/datapath/lut.o: src/datapath/lut.cc.o
+.PHONY : src/datapath/lut.o
+
+# target to build an object file
+src/datapath/lut.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o
+.PHONY : src/datapath/lut.cc.o
+
+src/datapath/lut.i: src/datapath/lut.cc.i
+.PHONY : src/datapath/lut.i
+
+# target to preprocess a source file
+src/datapath/lut.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.i
+.PHONY : src/datapath/lut.cc.i
+
+src/datapath/lut.s: src/datapath/lut.cc.s
+.PHONY : src/datapath/lut.s
+
+# target to generate assembly for a file
+src/datapath/lut.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/nvdlaila.dir/build.make CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.s
+.PHONY : src/datapath/lut.cc.s
+
 src/sdp_dp_instrs.o: src/sdp_dp_instrs.cc.o
 .PHONY : src/sdp_dp_instrs.o
 
@@ -323,6 +395,15 @@ help:
 	@echo "... app/main.o"
 	@echo "... app/main.i"
 	@echo "... app/main.s"
+	@echo "... src/datapath/components.o"
+	@echo "... src/datapath/components.i"
+	@echo "... src/datapath/components.s"
+	@echo "... src/datapath/converters.o"
+	@echo "... src/datapath/converters.i"
+	@echo "... src/datapath/converters.s"
+	@echo "... src/datapath/lut.o"
+	@echo "... src/datapath/lut.i"
+	@echo "... src/datapath/lut.s"
 	@echo "... src/sdp_dp_instrs.o"
 	@echo "... src/sdp_dp_instrs.i"
 	@echo "... src/sdp_dp_instrs.s"

@@ -29,6 +29,9 @@ find_package(ilang REQUIRED 1.1.0)
 # library
 # ---------------------------------------------------------------------------- #
 add_library(${MyTarget}ila
+  src/datapath/components.cc
+  src/datapath/converters.cc
+  src/datapath/lut.cc
   src/sdp_input.cc
   src/sdp_output.cc
   src/sdp_state.cc

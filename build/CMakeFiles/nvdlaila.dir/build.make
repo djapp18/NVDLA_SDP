@@ -69,10 +69,52 @@ include CMakeFiles/nvdlaila.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/nvdlaila.dir/flags.make
 
+CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o: CMakeFiles/nvdlaila.dir/flags.make
+CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o: ../src/datapath/components.cc
+CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o: CMakeFiles/nvdlaila.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o -MF CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o.d -o CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o -c /u/djacob/Workspace/NVDLA_SDP/src/datapath/components.cc
+
+CMakeFiles/nvdlaila.dir/src/datapath/components.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/nvdlaila.dir/src/datapath/components.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/djacob/Workspace/NVDLA_SDP/src/datapath/components.cc > CMakeFiles/nvdlaila.dir/src/datapath/components.cc.i
+
+CMakeFiles/nvdlaila.dir/src/datapath/components.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/nvdlaila.dir/src/datapath/components.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/djacob/Workspace/NVDLA_SDP/src/datapath/components.cc -o CMakeFiles/nvdlaila.dir/src/datapath/components.cc.s
+
+CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o: CMakeFiles/nvdlaila.dir/flags.make
+CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o: ../src/datapath/converters.cc
+CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o: CMakeFiles/nvdlaila.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o -MF CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o.d -o CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o -c /u/djacob/Workspace/NVDLA_SDP/src/datapath/converters.cc
+
+CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/djacob/Workspace/NVDLA_SDP/src/datapath/converters.cc > CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.i
+
+CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/djacob/Workspace/NVDLA_SDP/src/datapath/converters.cc -o CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.s
+
+CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o: CMakeFiles/nvdlaila.dir/flags.make
+CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o: ../src/datapath/lut.cc
+CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o: CMakeFiles/nvdlaila.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o -MF CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o.d -o CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o -c /u/djacob/Workspace/NVDLA_SDP/src/datapath/lut.cc
+
+CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /u/djacob/Workspace/NVDLA_SDP/src/datapath/lut.cc > CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.i
+
+CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /u/djacob/Workspace/NVDLA_SDP/src/datapath/lut.cc -o CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.s
+
 CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o: CMakeFiles/nvdlaila.dir/flags.make
 CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o: ../src/sdp_input.cc
 CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o: CMakeFiles/nvdlaila.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o -MF CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o.d -o CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o -c /u/djacob/Workspace/NVDLA_SDP/src/sdp_input.cc
 
 CMakeFiles/nvdlaila.dir/src/sdp_input.cc.i: cmake_force
@@ -86,7 +128,7 @@ CMakeFiles/nvdlaila.dir/src/sdp_input.cc.s: cmake_force
 CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o: CMakeFiles/nvdlaila.dir/flags.make
 CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o: ../src/sdp_output.cc
 CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o: CMakeFiles/nvdlaila.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o -MF CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o.d -o CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o -c /u/djacob/Workspace/NVDLA_SDP/src/sdp_output.cc
 
 CMakeFiles/nvdlaila.dir/src/sdp_output.cc.i: cmake_force
@@ -100,7 +142,7 @@ CMakeFiles/nvdlaila.dir/src/sdp_output.cc.s: cmake_force
 CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o: CMakeFiles/nvdlaila.dir/flags.make
 CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o: ../src/sdp_state.cc
 CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o: CMakeFiles/nvdlaila.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o -MF CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o.d -o CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o -c /u/djacob/Workspace/NVDLA_SDP/src/sdp_state.cc
 
 CMakeFiles/nvdlaila.dir/src/sdp_state.cc.i: cmake_force
@@ -114,7 +156,7 @@ CMakeFiles/nvdlaila.dir/src/sdp_state.cc.s: cmake_force
 CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.o: CMakeFiles/nvdlaila.dir/flags.make
 CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.o: ../src/sdp_instrs.cc
 CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.o: CMakeFiles/nvdlaila.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.o -MF CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.o.d -o CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.o -c /u/djacob/Workspace/NVDLA_SDP/src/sdp_instrs.cc
 
 CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.i: cmake_force
@@ -128,7 +170,7 @@ CMakeFiles/nvdlaila.dir/src/sdp_instrs.cc.s: cmake_force
 CMakeFiles/nvdlaila.dir/src/sdp_top.cc.o: CMakeFiles/nvdlaila.dir/flags.make
 CMakeFiles/nvdlaila.dir/src/sdp_top.cc.o: ../src/sdp_top.cc
 CMakeFiles/nvdlaila.dir/src/sdp_top.cc.o: CMakeFiles/nvdlaila.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_top.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_top.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nvdlaila.dir/src/sdp_top.cc.o -MF CMakeFiles/nvdlaila.dir/src/sdp_top.cc.o.d -o CMakeFiles/nvdlaila.dir/src/sdp_top.cc.o -c /u/djacob/Workspace/NVDLA_SDP/src/sdp_top.cc
 
 CMakeFiles/nvdlaila.dir/src/sdp_top.cc.i: cmake_force
@@ -142,7 +184,7 @@ CMakeFiles/nvdlaila.dir/src/sdp_top.cc.s: cmake_force
 CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o: CMakeFiles/nvdlaila.dir/flags.make
 CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o: ../src/sdp_dp_instrs.cc
 CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o: CMakeFiles/nvdlaila.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o -MF CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o.d -o CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o -c /u/djacob/Workspace/NVDLA_SDP/src/sdp_dp_instrs.cc
 
 CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.i: cmake_force
@@ -155,6 +197,9 @@ CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.s: cmake_force
 
 # Object files for target nvdlaila
 nvdlaila_OBJECTS = \
+"CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o" \
+"CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o" \
+"CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o" \
 "CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o" \
 "CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o" \
 "CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o" \
@@ -165,6 +210,9 @@ nvdlaila_OBJECTS = \
 # External object files for target nvdlaila
 nvdlaila_EXTERNAL_OBJECTS =
 
+libnvdlaila.a: CMakeFiles/nvdlaila.dir/src/datapath/components.cc.o
+libnvdlaila.a: CMakeFiles/nvdlaila.dir/src/datapath/converters.cc.o
+libnvdlaila.a: CMakeFiles/nvdlaila.dir/src/datapath/lut.cc.o
 libnvdlaila.a: CMakeFiles/nvdlaila.dir/src/sdp_input.cc.o
 libnvdlaila.a: CMakeFiles/nvdlaila.dir/src/sdp_output.cc.o
 libnvdlaila.a: CMakeFiles/nvdlaila.dir/src/sdp_state.cc.o
@@ -173,7 +221,7 @@ libnvdlaila.a: CMakeFiles/nvdlaila.dir/src/sdp_top.cc.o
 libnvdlaila.a: CMakeFiles/nvdlaila.dir/src/sdp_dp_instrs.cc.o
 libnvdlaila.a: CMakeFiles/nvdlaila.dir/build.make
 libnvdlaila.a: CMakeFiles/nvdlaila.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX static library libnvdlaila.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/u/djacob/Workspace/NVDLA_SDP/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX static library libnvdlaila.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/nvdlaila.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/nvdlaila.dir/link.txt --verbose=$(VERBOSE)
 

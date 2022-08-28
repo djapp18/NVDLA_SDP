@@ -1,7 +1,4 @@
-No.0	SET_PRODUCER state updates:
-    sdp_s_producer => 0x0
-
-No.1	DP_BS_CFG_group0 state updates:
+No.0	DP_BS_CFG_group0 state updates:
     sdp_group0_d_bs_alu_algo => 0x0
     sdp_group0_d_bs_alu_bypass => 0x1
     sdp_group0_d_bs_bypass => 0x0
@@ -9,7 +6,7 @@ No.1	DP_BS_CFG_group0 state updates:
     sdp_group0_d_bs_mul_prelu => 0x0
     sdp_group0_d_bs_relu_bypass => 0x0
 
-No.2	DP_BN_CFG_group0 state updates:
+No.1	DP_BN_CFG_group0 state updates:
     sdp_group0_d_bn_alu_algo => 0x0
     sdp_group0_d_bn_alu_bypass => 0x0
     sdp_group0_d_bn_bypass => 0x1
@@ -17,7 +14,7 @@ No.2	DP_BN_CFG_group0 state updates:
     sdp_group0_d_bn_mul_prelu => 0x0
     sdp_group0_d_bn_relu_bypass => 0x0
 
-No.3	DP_EW_CFG_group0 state updates:
+No.2	DP_EW_CFG_group0 state updates:
     sdp_group0_d_ew_alu_algo => 0x0
     sdp_group0_d_ew_alu_bypass => 0x0
     sdp_group0_d_ew_bypass => 0x1
@@ -25,35 +22,17 @@ No.3	DP_EW_CFG_group0 state updates:
     sdp_group0_d_ew_mul_bypass => 0x0
     sdp_group0_d_ew_mul_prelu => 0x0
 
-No.4	FEATURE_MODE_CFG_group0 state updates:
+No.3	FEATURE_MODE_CFG_group0 state updates:
     sdp_group0_d_batch_number => 0x00
     sdp_group0_d_flying_mode => 0x0
     sdp_group0_d_nan_to_zero => 0x0
     sdp_group0_d_output_dst => 0x0
     sdp_group0_d_winograd => 0x0
 
-No.5	OP_ENABLE_group0 state updates:
+No.4	OP_ENABLE_group0 state updates:
     sdp_group0_d_op_en => 0x1
 
-No.6	Compute_ReLU_group0 state updates:
-    sdp_pdp_output_0 => 0x000000000
-    sdp_pdp_output_1 => 0x000000000
-    sdp_pdp_output_10 => 0x000000000
-    sdp_pdp_output_11 => 0x000000000
-    sdp_pdp_output_12 => 0x000000000
-    sdp_pdp_output_13 => 0x000000000
-    sdp_pdp_output_14 => 0x000000000
-    sdp_pdp_output_15 => 0x000000000
-    sdp_pdp_output_2 => 0x000000000
-    sdp_pdp_output_3 => 0x000000000
-    sdp_pdp_output_4 => 0x000000000
-    sdp_pdp_output_5 => 0x000000000
-    sdp_pdp_output_6 => 0x000000000
-    sdp_pdp_output_7 => 0x000000000
-    sdp_pdp_output_8 => 0x000000000
-    sdp_pdp_output_9 => 0x000000000
-
-No.7	Compute_ReLU_group0 state updates:
+No.5	Compute_ReLU_group0 state updates:
     sdp_pdp_output_0 => 0x000000000
     sdp_pdp_output_1 => 0x000000001
     sdp_pdp_output_10 => 0x000000200
@@ -71,25 +50,7 @@ No.7	Compute_ReLU_group0 state updates:
     sdp_pdp_output_8 => 0x000000064
     sdp_pdp_output_9 => 0x000000100
 
-No.8	Compute_ReLU_group0 state updates:
-    sdp_pdp_output_0 => 0x000000000
-    sdp_pdp_output_1 => 0x000000000
-    sdp_pdp_output_10 => 0x000000000
-    sdp_pdp_output_11 => 0x000000000
-    sdp_pdp_output_12 => 0x000000000
-    sdp_pdp_output_13 => 0x000000000
-    sdp_pdp_output_14 => 0x000000000
-    sdp_pdp_output_15 => 0x000000000
-    sdp_pdp_output_2 => 0x000000000
-    sdp_pdp_output_3 => 0x000000000
-    sdp_pdp_output_4 => 0x000000000
-    sdp_pdp_output_5 => 0x000000000
-    sdp_pdp_output_6 => 0x000000000
-    sdp_pdp_output_7 => 0x000000000
-    sdp_pdp_output_8 => 0x000000000
-    sdp_pdp_output_9 => 0x000000000
-
-No.9	DONE state updates:
+No.6	DONE state updates:
     sdp_group0_d_op_en => 0x0
     sdp_s_consumer => 0x1
 

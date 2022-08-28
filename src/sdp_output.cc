@@ -30,12 +30,8 @@
 
 namespace ilang {
 
+// Define SDP outputs
 void DefineSDPOutput(Ila& m) {
-
-    m.NewBvState("data_valid", 1);
-    m.NewBvState("weight_valid", 1);
-    // Config Ready
-    //m.NewBvState("csb_rdy", 1);       // prolly remove this (already have as an input)
 
     // Datapath
     for (int i = 0; i < 16; i++) {
